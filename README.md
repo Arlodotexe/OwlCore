@@ -5,7 +5,7 @@
 ## Our favorite features
 
 - **OwlCore.Remoting** - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
-- **AbstractUI** - Abstract away simple UI elements as pure data. Let something else decide how to display and interact with it.
+- **AbstractUI** - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
 - **AbstractStorage** - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
 - **Provisos** - IAsyncInit, C# 9-in-8 features.
 - **Flow.Debouncer** - For when something fires repeatedly. but you only care about when it stops.
