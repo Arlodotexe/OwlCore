@@ -1,0 +1,314 @@
+### YamlMime:TableOfContent
+- uid: OwlCore
+  name: OwlCore
+  items:
+  - uid: OwlCore.APIs
+    name: APIs
+  - uid: OwlCore.APIs.GetEndpointItemsHandler`1
+    name: APIs.GetEndpointItemsHandler<TResult>
+    name.vb: APIs.GetEndpointItemsHandler(Of TResult)
+  - uid: OwlCore.Flow
+    name: Flow
+  - uid: OwlCore.Threading
+    name: Threading
+  - uid: OwlCore.Threading.DisposableSyncContext
+    name: Threading.DisposableSyncContext
+- uid: OwlCore.AbstractStorage
+  name: OwlCore.AbstractStorage
+  items:
+  - uid: OwlCore.AbstractStorage.CreationCollisionOption
+    name: CreationCollisionOption
+  - uid: OwlCore.AbstractStorage.FileAccessMode
+    name: FileAccessMode
+  - uid: OwlCore.AbstractStorage.IFileData
+    name: IFileData
+  - uid: OwlCore.AbstractStorage.IFileDataProperties
+    name: IFileDataProperties
+  - uid: OwlCore.AbstractStorage.IFileSystemService
+    name: IFileSystemService
+  - uid: OwlCore.AbstractStorage.IFolderData
+    name: IFolderData
+  - uid: OwlCore.AbstractStorage.MusicFileProperties
+    name: MusicFileProperties
+  - uid: OwlCore.AbstractStorage.ThumbnailMode
+    name: ThumbnailMode
+- uid: OwlCore.AbstractStorage.Scanners
+  name: OwlCore.AbstractStorage.Scanners
+  items:
+  - uid: OwlCore.AbstractStorage.Scanners.DepthFirstFileScanner
+    name: DepthFirstFileScanner
+  - uid: OwlCore.AbstractStorage.Scanners.IFileScanner
+    name: IFileScanner
+- uid: OwlCore.AbstractUI.Components
+  name: OwlCore.AbstractUI.Components
+  items:
+  - uid: OwlCore.AbstractUI.Components.AbstractFolderExplorer
+    name: AbstractFolderExplorer
+- uid: OwlCore.AbstractUI.Models
+  name: OwlCore.AbstractUI.Models
+  items:
+  - uid: OwlCore.AbstractUI.Models.AbstractBoolean
+    name: AbstractBoolean
+  - uid: OwlCore.AbstractUI.Models.AbstractButton
+    name: AbstractButton
+  - uid: OwlCore.AbstractUI.Models.AbstractButtonPreferredDisplayMode
+    name: AbstractButtonPreferredDisplayMode
+  - uid: OwlCore.AbstractUI.Models.AbstractButtonType
+    name: AbstractButtonType
+  - uid: OwlCore.AbstractUI.Models.AbstractColorPicker
+    name: AbstractColorPicker
+  - uid: OwlCore.AbstractUI.Models.AbstractDataList
+    name: AbstractDataList
+  - uid: OwlCore.AbstractUI.Models.AbstractDataListPreferredDisplayMode
+    name: AbstractDataListPreferredDisplayMode
+  - uid: OwlCore.AbstractUI.Models.AbstractMultiChoice
+    name: AbstractMultiChoice
+  - uid: OwlCore.AbstractUI.Models.AbstractMultiChoicePreferredDisplayMode
+    name: AbstractMultiChoicePreferredDisplayMode
+  - uid: OwlCore.AbstractUI.Models.AbstractProgressIndicator
+    name: AbstractProgressIndicator
+  - uid: OwlCore.AbstractUI.Models.AbstractRichTextBlock
+    name: AbstractRichTextBlock
+  - uid: OwlCore.AbstractUI.Models.AbstractTextBox
+    name: AbstractTextBox
+  - uid: OwlCore.AbstractUI.Models.AbstractUIBase
+    name: AbstractUIBase
+  - uid: OwlCore.AbstractUI.Models.AbstractUICollection
+    name: AbstractUICollection
+  - uid: OwlCore.AbstractUI.Models.AbstractUIElement
+    name: AbstractUIElement
+  - uid: OwlCore.AbstractUI.Models.AbstractUIMetadata
+    name: AbstractUIMetadata
+  - uid: OwlCore.AbstractUI.Models.PreferredOrientation
+    name: PreferredOrientation
+- uid: OwlCore.AbstractUI.ViewModels
+  name: OwlCore.AbstractUI.ViewModels
+  items:
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractBooleanViewModel
+    name: AbstractBooleanViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractButtonViewModel
+    name: AbstractButtonViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractDataListItemViewModel
+    name: AbstractDataListItemViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractDataListViewModel
+    name: AbstractDataListViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractMultiChoiceItemViewModel
+    name: AbstractMultiChoiceItemViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractMultiChoiceViewModel
+    name: AbstractMultiChoiceViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractProgressIndicatorViewModel
+    name: AbstractProgressIndicatorViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractRichTextBlockViewModel
+    name: AbstractRichTextBlockViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractTextBoxViewModel
+    name: AbstractTextBoxViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel
+    name: AbstractUICollectionViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractUIMetadataViewModel
+    name: AbstractUIMetadataViewModel
+  - uid: OwlCore.AbstractUI.ViewModels.AbstractUIViewModelBase
+    name: AbstractUIViewModelBase
+- uid: OwlCore.Collections
+  name: OwlCore.Collections
+  items:
+  - uid: OwlCore.Collections.SynchronizedObservableCollection`1
+    name: SynchronizedObservableCollection<T>
+    name.vb: SynchronizedObservableCollection(Of T)
+- uid: OwlCore.Collections.Generic
+  name: OwlCore.Collections.Generic
+  items:
+  - uid: OwlCore.Collections.Generic.Deque`1
+    name: Deque<T>
+    name.vb: Deque(Of T)
+  - uid: OwlCore.Collections.Generic.DequeEnum`1
+    name: DequeEnum<T>
+    name.vb: DequeEnum(Of T)
+- uid: OwlCore.EqualityComparers
+  name: OwlCore.EqualityComparers
+  items:
+  - uid: OwlCore.EqualityComparers.ReferenceEqualityComparer
+    name: ReferenceEqualityComparer
+- uid: OwlCore.Events
+  name: OwlCore.Events
+  items:
+  - uid: OwlCore.Events.CollectionChangedEventHandler`1
+    name: CollectionChangedEventHandler<T>
+    name.vb: CollectionChangedEventHandler(Of T)
+  - uid: OwlCore.Events.CollectionChangedItem`1
+    name: CollectionChangedItem<T>
+    name.vb: CollectionChangedItem(Of T)
+- uid: OwlCore.Exceptions
+  name: OwlCore.Exceptions
+  items:
+  - uid: OwlCore.Exceptions.UIElementNotFoundException
+    name: UIElementNotFoundException
+- uid: OwlCore.Extensions
+  name: OwlCore.Extensions
+  items:
+  - uid: OwlCore.Extensions.ArrayExtensions
+    name: ArrayExtensions
+  - uid: OwlCore.Extensions.AsyncExtensions
+    name: AsyncExtensions
+  - uid: OwlCore.Extensions.CollectionsExtensions
+    name: CollectionsExtensions
+  - uid: OwlCore.Extensions.CultureInfoExtensions
+    name: CultureInfoExtensions
+  - uid: OwlCore.Extensions.DateTimeExtensions
+    name: DateTimeExtensions
+  - uid: OwlCore.Extensions.EncodingExtensions
+    name: EncodingExtensions
+  - uid: OwlCore.Extensions.EnumerableExtensions
+    name: EnumerableExtensions
+  - uid: OwlCore.Extensions.GenericExtensions
+    name: GenericExtensions
+  - uid: OwlCore.Extensions.MethodInfoExtensions
+    name: MethodInfoExtensions
+  - uid: OwlCore.Extensions.MethodInfoExtensions.MethodReplacementState
+    name: MethodInfoExtensions.MethodReplacementState
+  - uid: OwlCore.Extensions.ObjectExtensions
+    name: ObjectExtensions
+  - uid: OwlCore.Extensions.ObservableCollectionExtensions
+    name: ObservableCollectionExtensions
+  - uid: OwlCore.Extensions.StreamExtensions
+    name: StreamExtensions
+  - uid: OwlCore.Extensions.StringExtensions
+    name: StringExtensions
+- uid: OwlCore.IO.Streams
+  name: OwlCore.IO.Streams
+  items:
+  - uid: OwlCore.IO.Streams.BitStream
+    name: BitStream
+- uid: OwlCore.Net.HttpClientHandlers
+  name: OwlCore.Net.HttpClientHandlers
+  items:
+  - uid: OwlCore.Net.HttpClientHandlers.CachedHttpClientHandler
+    name: CachedHttpClientHandler
+  - uid: OwlCore.Net.HttpClientHandlers.CachedHttpClientHandlerAction
+    name: CachedHttpClientHandlerAction
+  - uid: OwlCore.Net.HttpClientHandlers.CachedRequestEventArgs
+    name: CachedRequestEventArgs
+  - uid: OwlCore.Net.HttpClientHandlers.CacheEntry
+    name: CacheEntry
+  - uid: OwlCore.Net.HttpClientHandlers.CompositeHttpClientHandler
+    name: CompositeHttpClientHandler
+  - uid: OwlCore.Net.HttpClientHandlers.CompositeHttpClientHandlerAction
+    name: CompositeHttpClientHandlerAction
+  - uid: OwlCore.Net.HttpClientHandlers.CompositeHttpClientHandlerActionBase
+    name: CompositeHttpClientHandlerActionBase
+  - uid: OwlCore.Net.HttpClientHandlers.RateLimitedHttpClientHandler
+    name: RateLimitedHttpClientHandler
+  - uid: OwlCore.Net.HttpClientHandlers.RateLimitedHttpClientHandlerAction
+    name: RateLimitedHttpClientHandlerAction
+- uid: OwlCore.Provisos
+  name: OwlCore.Provisos
+  items:
+  - uid: OwlCore.Provisos.IAsyncInit
+    name: IAsyncInit
+  - uid: OwlCore.Provisos.ILauncher
+    name: ILauncher
+- uid: OwlCore.Remoting
+  name: OwlCore.Remoting
+  items:
+  - uid: OwlCore.Remoting.DataProxy
+    name: DataProxy
+  - uid: OwlCore.Remoting.MemberRemote
+    name: MemberRemote
+  - uid: OwlCore.Remoting.MemberSignatureScope
+    name: MemberSignatureScope
+  - uid: OwlCore.Remoting.MethodEnteredEventArgs
+    name: MethodEnteredEventArgs
+  - uid: OwlCore.Remoting.PropertySetEnteredEventArgs
+    name: PropertySetEnteredEventArgs
+  - uid: OwlCore.Remoting.RemoteLock
+    name: RemoteLock
+  - uid: OwlCore.Remoting.RemoteMessageReceivingEventArgs
+    name: RemoteMessageReceivingEventArgs
+  - uid: OwlCore.Remoting.RemoteMessageSendingEventArgs
+    name: RemoteMessageSendingEventArgs
+  - uid: OwlCore.Remoting.RemoteMethodAttribute
+    name: RemoteMethodAttribute
+  - uid: OwlCore.Remoting.RemoteOptionsAttribute
+    name: RemoteOptionsAttribute
+  - uid: OwlCore.Remoting.RemotePropertyAttribute
+    name: RemotePropertyAttribute
+  - uid: OwlCore.Remoting.RemotingDirection
+    name: RemotingDirection
+  - uid: OwlCore.Remoting.RemotingMode
+    name: RemotingMode
+- uid: OwlCore.Remoting.Transfer
+  name: OwlCore.Remoting.Transfer
+  items:
+  - uid: OwlCore.Remoting.Transfer.IRemoteMemberMessage
+    name: IRemoteMemberMessage
+  - uid: OwlCore.Remoting.Transfer.IRemoteMessage
+    name: IRemoteMessage
+  - uid: OwlCore.Remoting.Transfer.IRemoteMessageConverter
+    name: IRemoteMessageConverter
+  - uid: OwlCore.Remoting.Transfer.IRemoteMessageHandler
+    name: IRemoteMessageHandler
+  - uid: OwlCore.Remoting.Transfer.ParameterData
+    name: ParameterData
+  - uid: OwlCore.Remoting.Transfer.RemoteDataMessage
+    name: RemoteDataMessage
+  - uid: OwlCore.Remoting.Transfer.RemoteExceptionDataMessage
+    name: RemoteExceptionDataMessage
+  - uid: OwlCore.Remoting.Transfer.RemoteMessageBase
+    name: RemoteMessageBase
+  - uid: OwlCore.Remoting.Transfer.RemoteMethodCallMessage
+    name: RemoteMethodCallMessage
+  - uid: OwlCore.Remoting.Transfer.RemotePropertyChangeMessage
+    name: RemotePropertyChangeMessage
+  - uid: OwlCore.Remoting.Transfer.RemotingAction
+    name: RemotingAction
+- uid: OwlCore.Remoting.Transfer.MessageConverters
+  name: OwlCore.Remoting.Transfer.MessageConverters
+  items:
+  - uid: OwlCore.Remoting.Transfer.MessageConverters.NewtonsoftRemoteMessageConverter
+    name: NewtonsoftRemoteMessageConverter
+- uid: OwlCore.Services
+  name: OwlCore.Services
+  items:
+  - uid: OwlCore.Services.ContextualServiceLocator
+    name: ContextualServiceLocator
+  - uid: OwlCore.Services.IInstanceCacheRepository`1
+    name: IInstanceCacheRepository<T>
+    name.vb: IInstanceCacheRepository(Of T)
+  - uid: OwlCore.Services.InstanceCacheRepository`1
+    name: InstanceCacheRepository<T>
+    name.vb: InstanceCacheRepository(Of T)
+- uid: OwlCore.Tests.Extensions
+  name: OwlCore.Tests.Extensions
+  items:
+  - uid: OwlCore.Tests.Extensions.EnumerableExtensions
+    name: EnumerableExtensions
+- uid: OwlCore.Tests.Remoting
+  name: OwlCore.Tests.Remoting
+  items:
+  - uid: OwlCore.Tests.Remoting.MemberRemoteTests
+    name: MemberRemoteTests
+  - uid: OwlCore.Tests.Remoting.MemberType
+    name: MemberType
+  - uid: OwlCore.Tests.Remoting.MethodReturnType
+    name: MethodReturnType
+  - uid: OwlCore.Tests.Remoting.NewtonsoftRemoteMessageConverterTests
+    name: NewtonsoftRemoteMessageConverterTests
+- uid: OwlCore.Tests.Remoting.Mock
+  name: OwlCore.Tests.Remoting.Mock
+  items:
+  - uid: OwlCore.Tests.Remoting.Mock.MemberRemoteTestClass
+    name: MemberRemoteTestClass
+- uid: OwlCore.Tests.Remoting.Transfer
+  name: OwlCore.Tests.Remoting.Transfer
+  items:
+  - uid: OwlCore.Tests.Remoting.Transfer.LoopbackMockMessageHandler
+    name: LoopbackMockMessageHandler
+- uid: OwlCore.Validation
+  name: OwlCore.Validation
+  items:
+  - uid: OwlCore.Validation.Ensure
+    name: Ensure
+- uid: OwlCore.Validation.Mime
+  name: OwlCore.Validation.Mime
+  items:
+  - uid: OwlCore.Validation.Mime.MimeTypeMap
+    name: MimeTypeMap
