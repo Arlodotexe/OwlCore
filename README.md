@@ -1,4 +1,4 @@
-# OwlCore [![Download from Nuget](https://img.shields.io/nuget/v/OwlCore.svg)](https://www.nuget.org/packages/OwlCore/)
+# OwlCore [![Download from Nuget](https://img.shields.io/nuget/v/OwlCore.svg)](https://www.nuget.org/packages/OwlCore/) ![](https://img.shields.io/nuget/dt/OwlCore) ![](https://img.shields.io/github/license/Arlodotexe/OwlCore) [![](https://img.shields.io/badge/Documentation-DocFX-brightgreen)](http://arlo.site/owlcore)
 #### Have you ever seen an Owl do a barrel roll? Me neither.
 
 ## Our favorite features
@@ -17,6 +17,9 @@
 - **RateLimitedHttpClientHandler** - Limit the number of requests within a window of time.
 - **Countless extension methods** - PruneNull, Shuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, and more.
 - ... and so much more.
+
+## Documentation
+Generated documentation is viewable here
 
 ---
 
