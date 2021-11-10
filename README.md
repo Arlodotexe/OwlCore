@@ -17,7 +17,6 @@
 - **RateLimitedHttpClientHandler** - Limit the number of requests within a window of time.
 - **Countless extension methods** - PruneNull, Shuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, and more.
 - ... and so much more.
-- 
 ---
 
 > OwlCore is constantly being improved upon. Until a stable release, breaking changes can happen any time.
