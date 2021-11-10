@@ -1,9 +1,9 @@
 # OwlCore [![Download from Nuget](https://img.shields.io/nuget/v/OwlCore.svg)](https://www.nuget.org/packages/OwlCore/)
-#### Have you ever seen an Owl do a barrel roll? Me neither
-
+#### Have you ever seen an Owl do a barrel roll? Me neither.
 
 ## Our favorite features
 
+- **.NET Standard 2.0** - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
 - **OwlCore.Remoting** - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
 - **AbstractUI** - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
 - **AbstractStorage** - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
