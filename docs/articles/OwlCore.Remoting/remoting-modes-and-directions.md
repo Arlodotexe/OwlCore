@@ -4,7 +4,7 @@ While bidirectional (two-way) remoting is great, you may want to use one-way rem
 
 Implementing two-way remoting is easy. Either:
 - Setup RemotingDirection.Bidirectional on the member you'd like to be two-way.
-- Set `messageHandler.Mode = RemotingMode.Full` to make the node act like both `Host` and `Client`,  evaluating message direction.
+- Set `messageHandler.Mode = RemotingMode.Full` to make the node act like both `Host` and `Client`, letting messages flow both ways regardless of RemotingDirection, except for members with `RemotingDirection` set to `None`.
 
 Implementing one-way remoting in your app requires an understanding of
 - The intent of how a Client or Host node will be used.
@@ -15,3 +15,5 @@ Usually, a `Client` acts as a "listener" while a `Host` acts as a "sender". The 
 `RemotingDirection` is a flag, and you can enable more than one option. For example, you can combine `RemotingDirection.Inbound | RemotingDirection.OutboundHost` to allow receiving in any Mode, but only allow outbound messages when in `Host` mode.
 
 See [RemotingDirection](https://arlo.site/owlcore/api/OwlCore.Remoting.RemotingDirection.html) docs for a list of all possible directions and how they're used.
+
+See [RemotingMode](https://arlo.site/owlcore/api/OwlCore.Remoting.RemotingMode.html) docs for more details about each remoting mode.
