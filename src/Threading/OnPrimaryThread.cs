@@ -12,9 +12,9 @@ namespace OwlCore
     public static partial class Threading
     {
         /// <summary>
-        /// Sets the <see cref="SynchronizationContext"/> for the UI thread.
+        /// Sets the <see cref="SynchronizationContext"/> for your primary thread.
         /// </summary>
-        /// <param name="context">The UI thread.</param>
+        /// <param name="context">Your primary synchronization context. Usually the context used in the project entry point.</param>
         public static void SetPrimarySynchronizationContext(SynchronizationContext context)
         {
             if (!(PrimarySyncContext is null))
@@ -26,7 +26,7 @@ namespace OwlCore
         /// <summary>
         /// Sets a handler to use when invoking <see cref="OnPrimaryThread(Action)"/>.
         /// </summary>
-        /// <param name="handler"></param>
+        /// <param name="handler">A callback that invokes an action on your primary thread.</param>
         public static void SetPrimaryThreadInvokeHandler(Func<Action, Task> handler)
         {
             if (!(PrimaryThreadInvokeHandler is null))
