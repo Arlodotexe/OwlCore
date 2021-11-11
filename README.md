@@ -10,8 +10,8 @@
 - **Flow.Debouncer** - For when something fires repeatedly. but you only care about when it stops.
 - **Flow.EventAsTask** - Wait for an EventHandler to fire (with cancellation).
 - **Flow.EasySemaphore** - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
-- **Threading.PrimaryContext** - Use a "using" statement to execute on main thread. No dispatcher, callbacks or cleanup needed.
-- **Threading.OnPrimaryThread** - Easy invoke a callback to your primary thread.
+- **Threading.PrimaryContext** - Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
+- **Threading.OnPrimaryThread** - Easily invoke a callback on your primary thread.
 - **CompositeHttpClientHandler** - Chain multiple HttpClientHandlers together.
 - **CachedHttpClientHandler** - Cache http requests to disk and return them as needed.
 - **RateLimitedHttpClientHandler** - Limit the number of requests within a window of time.
