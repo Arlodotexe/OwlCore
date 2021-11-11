@@ -10,7 +10,7 @@ This approach can give you a global or per-instance on-off switch at runtime, de
 ### Method 2: Delaying setup of MemberRemote
 It's not always feasible to create a new message handler for every MemberRemote, just to toggle remoting at runtime. 
 
-As stated in the [Member remote](/member-remote.md) docs, a class instance will not receive member changes until you pass it to a member remote.
+As stated in the [Member remote](./member-remote.md) docs, a class instance will not receive member changes until you pass it to a member remote.
 
 That means that by creating your MemberRemote instance outside the constructor, you can keep remoting disabled until the code requires it.
 
