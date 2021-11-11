@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Nito.AsyncEx;
 
 namespace OwlCore.Net.HttpClientHandlers
 {
@@ -14,7 +13,7 @@ namespace OwlCore.Net.HttpClientHandlers
     {
         private readonly TimeSpan _cooldownWindowTimeSpan;
         private readonly int _maxNumberOfRequestsPerCooldownWindow;
-        private static readonly AsyncLock _mutex = new AsyncLock();
+        private static readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
         private static readonly Queue<DateTime> _requestTimestampsInCooldownWindow = new Queue<DateTime>();
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace OwlCore.Net.HttpClientHandlers
         /// <inheritdoc />
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> baseSendAsync)
         {
-            using (await _mutex.LockAsync())
+            using (await Flow.EasySemaphore(_mutex))
             {
                 // store the timestamp of the request being made
                 _requestTimestampsInCooldownWindow.Enqueue(DateTime.Now);

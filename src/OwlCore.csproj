@@ -7,8 +7,13 @@
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.32</Version>
+		<Version>0.0.33</Version>
 		<Product>OwlCore</Product>
 		<Description>
 Have you ever seen an owl do a barrel roll? Me neither.
@@ -33,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.33 ---
+[Breaking changes]
+Removed dependency on Nito.AsyncEx.Coordination. If you were using this as a transitive dependency, install this package in your projects directly.
+
 --- 0.0.32 ---
 [New]
 Added Flow.EasySemaphore() and unit tests. Provides syntactic sugar for releasing a SemaphoreSlim when execution leaves a using statement.
@@ -235,9 +244,12 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.1" />
 		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
 		<PackageReference Include="System.Text.Json" Version="5.0.2" />
 		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
 </Project>
