@@ -8,22 +8,23 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.31</Version>
+		<Version>0.0.32</Version>
 		<Product>OwlCore</Product>
 		<Description>
 Have you ever seen an owl do a barrel roll? Me neither.
 
-OwlCore is a constant work in progress. Until a stable release, breaking changes can happen any time. Comprehensive changelogs always included.
+OwlCore is in a rapid development cycle and is constantly being improved upon. Until a stable release, breaking changes can happen any time. Comprehensive changelogs included with every release.
 
+Our favorite features:
 - .NET Standard 2.0 - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
 - OwlCore.Remoting - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
 - AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
 - AbstractStorage - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
-- Provisos - IAsyncInit, C# 9-in-8 features.
 - Flow.Debouncer - For when something fires repeatedly. but you only care about when it stops.
 - Flow.EventAsTask - Wait for an EventHandler to fire (with cancellation).
-- Threading.PrimaryContext - Easy switch to your main thread via using (Threading.PrimaryContext) { .. }. No dispatcher, callbacks or cleanup needed.
-- Threading.OnPrimaryThread - Easy invoke a callback to your primary thread.
+- Flow.EasySemaphore - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
+- Threading.PrimaryContext -  Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
+- Threading.OnPrimaryThread - Easily invoke a callback on your primary thread.
 - CompositeHttpClientHandler - Chain multiple HttpClientHandlers together.
 - CachedHttpClientHandler - Cache http requests to disk and return them as needed.
 - RateLimitedHttpClientHandler - Limit the number of requests within a window of time.
@@ -32,6 +33,14 @@ OwlCore is a constant work in progress. Until a stable release, breaking changes
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.32 ---
+[New]
+Added Flow.EasySemaphore() and unit tests. Provides syntactic sugar for releasing a SemaphoreSlim when execution leaves a using statement.
+
+[Improvements]
+IRemoteMessageHandler is now only initialized once while maintianing proper concurrency.
+Better docs for SetPrimarySynchronizationContext and SetPrimaryThreadInvokeHandler.
+
 --- 0.0.31 ---
 [New]
 Added OwlCore.Provisos.ILauncher for delegating the launch of Urls and more.
