@@ -1,6 +1,5 @@
 ﻿using System;
 using OwlCore.Remoting;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
