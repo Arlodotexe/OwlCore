@@ -25,6 +25,7 @@ namespace OwlCore.Remoting
     {
         private static IRemoteMessageHandler? _defaultRemoteMessageHandler;
         private readonly SemaphoreSlim _messageReceivedSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _messageHandlerInitSemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Used to internally indicated when a member operation is performed by a <see cref="MemberRemote"/> on a given thread.
@@ -302,7 +303,17 @@ namespace OwlCore.Remoting
             if (eventArgs.Handled)
                 return;
 
-            await MessageHandler.InitAsync();
+            // To avoid breaking concurrency, don't await unless handler needs init. 
+            if (!MessageHandler.IsInitialized)
+            {
+                using (await Flow.EasySemaphore(_messageHandlerInitSemaphore))
+                {
+                    // Check IsInitialized again, in case init happened while waiting for entry.
+                    if (!MessageHandler.IsInitialized)
+                        await MessageHandler.InitAsync();
+                }
+            }
+
             await MessageHandler.SendMessageAsync(message, cancellationToken);
 
             MessageSent?.Invoke(this, message);
