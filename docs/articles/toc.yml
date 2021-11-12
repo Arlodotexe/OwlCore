@@ -1,0 +1,15 @@
+- name: Introduction
+  href: intro.md
+- name: OwlCore.Remoting
+  href: OwlCore.Remoting/index.md
+  items:
+  - name: Getting started
+    href: OwlCore.Remoting/index.md
+  - name: Member Remote
+    href: OwlCore.Remoting/member-remote.md
+  - name: Message handling
+    href: OwlCore.Remoting/message-handling.md
+  - name: Remoting modes & directions
+    href: OwlCore.Remoting/remoting-modes-and-directions.md
+  - name: Toggling remoting at runtime
+    href: OwlCore.Remoting/toggling-remoting-at-runtime.md
