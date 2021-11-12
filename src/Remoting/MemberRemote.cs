@@ -201,7 +201,7 @@ namespace OwlCore.Remoting
             if (!ReferenceEquals(e.Instance, Instance))
                 return;
 
-            if (!IsValidRemotingDirection(e.MethodBase, false))
+            if (!IsAllowedRemotingDirection(e.MethodBase, false))
                 return;
 
             var paramData = CreateMethodParameterData(e.MethodBase, e.Values);
@@ -229,7 +229,7 @@ namespace OwlCore.Remoting
 
             var propertyInfo = e.PropertyInterceptionInfo.ToPropertyInfo();
 
-            if (!IsValidRemotingDirection(propertyInfo, false))
+            if (!IsAllowedRemotingDirection(propertyInfo, false))
                 return;
 
             var memberSignature = CreateMemberSignature(propertyInfo, MemberSignatureScope);
@@ -319,6 +319,36 @@ namespace OwlCore.Remoting
             MessageSent?.Invoke(this, message);
         }
 
+        /// <summary>
+        /// Given the current <see cref="Mode"/>, checks if the given <paramref name="memberInfo"/> allows data to flow in a certain direction.
+        /// </summary>
+        /// <param name="memberInfo">The <see cref="MemberInfo"/> to check for <see cref="RemotingDirection"/>. If none is found, the declaring class will be checked instead.</param>
+        /// <param name="isReceiving">True to check if inbound is allowed, false to check outbound.</param>
+        /// <returns>A bool indicating if the <paramref name="memberInfo"/> can move data in the direction given.</returns>
+        public bool IsAllowedRemotingDirection(MemberInfo memberInfo, bool isReceiving)
+        {
+            var attribute = memberInfo.GetCustomAttribute<RemoteOptionsAttribute>();
+            if (attribute is null)
+            {
+                var declaringClassType = memberInfo.DeclaringType;
+                if (declaringClassType.MemberType != MemberTypes.TypeInfo)
+                    return false;
+
+                attribute = declaringClassType.GetCustomAttribute<RemoteOptionsAttribute>();
+
+                if (attribute is null)
+                    return false;
+            }
+
+            var isHost = Mode.HasFlag(RemotingMode.Host);
+            var isClient = Mode.HasFlag(RemotingMode.Client);
+
+            var targetOutbound = (attribute.Direction.HasFlag(RemotingDirection.OutboundClient) && isClient) || (attribute.Direction.HasFlag(RemotingDirection.OutboundHost) && isHost);
+            var targetInbound = (attribute.Direction.HasFlag(RemotingDirection.InboundClient) && isClient) || (attribute.Direction.HasFlag(RemotingDirection.InboundHost) && isHost);
+
+            return (isReceiving && targetInbound) || (!isReceiving && targetOutbound);
+        }
+
         private void HandleIncomingRemotePropertyChange(RemotePropertyChangeMessage propertyChangeMessage)
         {
             var propertyInfo = Properties.FirstOrDefault(x => CreateMemberSignature(x, MemberSignatureScope) == propertyChangeMessage.TargetMemberSignature);
@@ -329,7 +359,7 @@ namespace OwlCore.Remoting
             lock (MemberHandleExpectancyMap)
                 MemberHandleExpectancyMap.Add(Thread.CurrentThread.ManagedThreadId, Instance);
 
-            if (!IsValidRemotingDirection(propertyInfo, isReceiving: true))
+            if (!IsAllowedRemotingDirection(propertyInfo, isReceiving: true))
             {
                 lock (MemberHandleExpectancyMap)
                     MemberHandleExpectancyMap.Remove(Thread.CurrentThread.ManagedThreadId);
@@ -369,7 +399,7 @@ namespace OwlCore.Remoting
             lock (MemberHandleExpectancyMap)
                 MemberHandleExpectancyMap.Add(Thread.CurrentThread.ManagedThreadId, Instance);
 
-            if (!IsValidRemotingDirection(methodInfo, isReceiving: true))
+            if (!IsAllowedRemotingDirection(methodInfo, isReceiving: true))
             {
                 lock (MemberHandleExpectancyMap)
                     MemberHandleExpectancyMap.Remove(Thread.CurrentThread.ManagedThreadId);
@@ -428,30 +458,6 @@ namespace OwlCore.Remoting
             }
 
             return paramData;
-        }
-
-        private bool IsValidRemotingDirection(MemberInfo memberInfo, bool isReceiving)
-        {
-            var attribute = memberInfo.GetCustomAttribute<RemoteOptionsAttribute>();
-            if (attribute is null)
-            {
-                var declaringClassType = memberInfo.DeclaringType;
-                if (declaringClassType.MemberType != MemberTypes.TypeInfo)
-                    return false;
-
-                attribute = declaringClassType.GetCustomAttribute<RemoteOptionsAttribute>();
-
-                if (attribute is null)
-                    return false;
-            }
-
-            var isHost = Mode.HasFlag(RemotingMode.Host);
-            var isClient = Mode.HasFlag(RemotingMode.Client);
-
-            var targetOutbound = (attribute.Direction.HasFlag(RemotingDirection.OutboundClient) && isClient) || (attribute.Direction.HasFlag(RemotingDirection.OutboundHost) && isHost);
-            var targetInbound = (attribute.Direction.HasFlag(RemotingDirection.InboundClient) && isClient) || (attribute.Direction.HasFlag(RemotingDirection.InboundHost) && isHost);
-
-            return (isReceiving && targetInbound) || (!isReceiving && targetOutbound);
         }
 
         /// <summary>
