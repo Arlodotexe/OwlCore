@@ -15,7 +15,7 @@ namespace OwlCore.Remoting
         /// </summary>
         /// <typeparam name="TResult">The type of data being received.</typeparam>
         /// <param name="memberRemote">The member remote used to receive the message.</param>
-        /// <param name="token">A unique token used to identify the response sent from the server.</param>
+        /// <param name="token">A unique token used to identify which method call is receiving data.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the ongoing task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the received data.</returns>
         public static async Task<TResult?> ReceiveDataAsync<TResult>(this MemberRemote memberRemote, string token, CancellationToken? cancellationToken = null)
@@ -69,13 +69,13 @@ namespace OwlCore.Remoting
         /// </summary>
         /// <typeparam name="T">The type of data being sent.</typeparam>
         /// <param name="memberRemote">The member remote used to send the message.</param>
-        /// <param name="token">A unique token used to identify the data being sent.</param>
         /// <param name="data">The data to send outbound.</param>
+        /// <param name="token">A unique token used to identify which method call is publishing data.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the ongoing task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the exact data given to <paramref name="data"/>.</returns>
-        public static async Task<T?> PublishDataAsync<T>(this MemberRemote memberRemote, T? data, string token, CancellationToken? cancellationToken = null)
+        public static async Task<T?> PublishDataAsync<T>(this MemberRemote memberRemote, string token, T? data, CancellationToken? cancellationToken = null)
         {
-            var memberSignature = MemberRemote.CreateMemberSignature(typeof(T?), memberRemote.MemberSignatureScope);
+            var memberSignature = MemberRemote.CreateMemberSignature(typeof(T?), MemberSignatureScope.AssemblyQualifiedName);
 
             await memberRemote.SendRemotingMessageAsync(new RemoteDataMessage(memberRemote.Id, token, memberSignature, data), cancellationToken);
             return data;
