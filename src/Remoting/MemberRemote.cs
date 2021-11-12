@@ -539,6 +539,8 @@ namespace OwlCore.Remoting
         public void Dispose()
         {
             DetachEvents();
+            _messageHandlerInitSemaphore.Dispose();
+            _messageReceivedSemaphore.Dispose();
         }
     }
 }

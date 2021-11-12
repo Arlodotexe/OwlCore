@@ -42,6 +42,9 @@ Our favorite features:
 [Breaking changes]
 Removed dependency on Nito.AsyncEx.Coordination. If you were using this as a transitive dependency, install this package in your projects directly.
 
+[Fixes]
+Fixed an issue where MemberRemote wasn't fully disposed until the finalizer was called.
+
 --- 0.0.32 ---
 [New]
 Added Flow.EasySemaphore() and unit tests. Provides syntactic sugar for releasing a SemaphoreSlim when execution leaves a using statement.
