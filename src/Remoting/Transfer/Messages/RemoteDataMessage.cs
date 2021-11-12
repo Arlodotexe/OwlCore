@@ -40,7 +40,9 @@ namespace OwlCore.Remoting.Transfer
         /// <inheritdoc/>
         public string MemberRemoteId { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// The Assembly Qualified name of the data type being sent/received.
+        /// </summary>
         public string TargetMemberSignature { get; set; }
 
         /// <summary>
