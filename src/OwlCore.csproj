@@ -42,6 +42,7 @@ Our favorite features:
 [Improvement]
 Made MemberRemote.IsAllowedRemotingDirection public. Given the current mode, it checks if the given memberInfo allows data to flow in a certain direction.
 Fixed docs on RemoteDataMessage.TargetMemberSignature.
+Added Unit Tests to the DataProxy extension methods for MemberRemote.
 
 [Fixes]
 Fixed an issue where the MemberRemote.PublishDataAsync extension method used the signature scope of the MemberRemote for data, instead of AssemblyQualifiedName.
