@@ -40,7 +40,7 @@ Our favorite features:
 		<PackageReleaseNotes>
 --- 0.0.33 ---
 [Improvements]
-CompositeHttpClientHandler will be deprecated and removed in a future version.
+CompositeHttpClientHandler, CompositeHttpClientHandlerActionBase, RateLimitedHttpClientHandlerAction, and CachedHttpClientHandlerAction will be deprecated and removed in a future version.
 CachedHttpClientHandler now supports proper chaining as a System.Net.Http.DelegatingHandler.
 RateLimitedHttpClientHandler now supports proper chaining as a System.Net.Http.DelegatingHandler.
 
