@@ -385,7 +385,7 @@ namespace OwlCore.Tests.Remoting
             return ValidateMethodAsync(((Func<double, Task>)MethodCall_SingleParam_Double).Method, parameterData);
         }
 
-        [TestMethod, Timeout(200000)]
+        [TestMethod, Timeout(2000)]
         [TestCategory("Objects"), TestCategory("Enumerables"), TestCategory("RemoteMethodCall")]
         [DataRow((double)0, (double)1, (double)-1, double.MaxValue, double.MinValue, double.NaN, double.NegativeInfinity, double.PositiveInfinity, double.Epsilon)]
         public Task MethodCall_SingleParam_List_Double(params double[] doubles)
