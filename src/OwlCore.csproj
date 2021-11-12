@@ -13,7 +13,7 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.33</Version>
+		<Version>0.0.34</Version>
 		<Product>OwlCore</Product>
 		<Description>
 Have you ever seen an owl do a barrel roll? Me neither.
@@ -38,6 +38,17 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.34 ---
+[Improvement]
+Made MemberRemote.IsAllowedRemotingDirection public. Given the current mode, it checks if the given memberInfo allows data to flow in a certain direction.
+Fixed docs on RemoteDataMessage.TargetMemberSignature.
+
+[Fixes]
+Fixed an issue where the MemberRemote.PublishDataAsync extension method used the signature scope of the MemberRemote for data, instead of AssemblyQualifiedName.
+
+[Breaking changes]
+The PublishDataAsync extension method for MemberRemote now takes the call token as the first parameter instead of the second.
+
 --- 0.0.33 ---
 [Improvements]
 CompositeHttpClientHandler, CompositeHttpClientHandlerActionBase, RateLimitedHttpClientHandlerAction, and CachedHttpClientHandlerAction will be deprecated and removed in a future version.
