@@ -8,6 +8,7 @@ namespace OwlCore.Net.HttpClientHandlers
     /// <summary>
     /// Holds an action and associated data, to be used in a <see cref="CompositeHttpClientHandler"/>.
     /// </summary>
+    [Obsolete("This will be removed in a future version. Please derive System.Net.Http.HttpDelegatingHandler instead.", error: false)]
     public abstract class CompositeHttpClientHandlerActionBase
     {
         /// <summary>

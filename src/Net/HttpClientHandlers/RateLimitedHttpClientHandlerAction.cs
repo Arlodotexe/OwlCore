@@ -9,6 +9,7 @@ namespace OwlCore.Net.HttpClientHandlers
     /// <summary>
     /// A rate-limiting action holder for use in a <see cref="CompositeHttpClientHandler"/>.
     /// </summary>
+    [Obsolete("This will be removed in a future version. RateLimitedHttpClientHandler now supports proper chaining, please use that instead.", error: false)]
     public class RateLimitedHttpClientHandlerAction : CompositeHttpClientHandlerActionBase
     {
         private readonly TimeSpan _cooldownWindowTimeSpan;

@@ -11,6 +11,7 @@ namespace OwlCore.Net.HttpClientHandlers
     /// <summary>
     /// An <see cref="HttpClientHandler"/> that can perform multiple arbitrary actions on a single request.
     /// </summary>
+    [Obsolete("This will be removed in a future version. Please use a System.Net.Http.DelegatingHandler instead.", error: false)]
     public class CompositeHttpClientHandler : HttpClientHandler
     {
         private readonly List<CompositeHttpClientHandlerAction> _actions;

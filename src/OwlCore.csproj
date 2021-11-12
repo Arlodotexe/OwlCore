@@ -39,6 +39,11 @@ Our favorite features:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.33 ---
+[Improvements]
+CompositeHttpClientHandler will be deprecated and removed in a future version.
+CachedHttpClientHandler now supports proper chaining as a System.Net.Http.DelegatingHandler.
+RateLimitedHttpClientHandler now supports proper chaining as a System.Net.Http.DelegatingHandler.
+
 [Breaking changes]
 Removed dependency on Nito.AsyncEx.Coordination. If you were using this as a transitive dependency, install this package in your projects directly.
 
