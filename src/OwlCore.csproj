@@ -30,22 +30,24 @@ Our favorite features:
 - Flow.EasySemaphore - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
 - Threading.PrimaryContext -  Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
 - Threading.OnPrimaryThread - Easily invoke a callback on your primary thread.
-- CompositeHttpClientHandler - Chain multiple HttpClientHandlers together.
-- CachedHttpClientHandler - Cache http requests to disk and return them as needed.
-- RateLimitedHttpClientHandler - Limit the number of requests within a window of time.
+- CachedHttpClientHandler - Cache http requests to disk and return them as needed. Supports chaining.
+- RateLimitedHttpClientHandler - Limit the number of requests within a window of time. Supports chaining.
 - Countless extension methods. PruneNull, Shuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, and more.
 		</Description>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.34 ---
-[Improvement]
+[New]
+New logo!
+
+[Improvements]
 Made MemberRemote.IsAllowedRemotingDirection public. Given the current mode, it checks if the given memberInfo allows data to flow in a certain direction.
 Fixed docs on RemoteDataMessage.TargetMemberSignature.
 Added Unit Tests to the DataProxy extension methods for MemberRemote.
 
 [Fixes]
-Fixed an issue where the MemberRemote.PublishDataAsync extension method used the signature scope of the MemberRemote for data, instead of AssemblyQualifiedName.
+Fixed an issue where the MemberRemote.PublishDataAsync extension method used the signature scope from the MemberRemote for data, instead of AssemblyQualifiedName.
 
 [Breaking changes]
 The PublishDataAsync extension method for MemberRemote now takes the call token as the first parameter instead of the second.
@@ -243,12 +245,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="logo.png" />
 		<None Include="LICENSE.txt">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
