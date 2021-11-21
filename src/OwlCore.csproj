@@ -15,8 +15,7 @@
 		<Author>Arlo Godfrey</Author>
 		<Version>0.0.34</Version>
 		<Product>OwlCore</Product>
-		<Description>
-Have you ever seen an owl do a barrel roll? Me neither.
+		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
 OwlCore is in a rapid development cycle and is constantly being improved upon. Until a stable release, breaking changes can happen any time. Comprehensive changelogs included with every release.
 
@@ -268,6 +267,13 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="logo.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
