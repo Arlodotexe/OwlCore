@@ -73,9 +73,9 @@ namespace OwlCore.Remoting
         /// <param name="token">A unique token used to identify which method call is publishing data.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the ongoing task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the exact data given to <paramref name="data"/>.</returns>
-        public static async Task<T?> PublishDataAsync<T>(this MemberRemote memberRemote, string token, T? data, CancellationToken? cancellationToken = null)
+        public static async Task<T> PublishDataAsync<T>(this MemberRemote memberRemote, string token, T data, CancellationToken? cancellationToken = null)
         {
-            var memberSignature = MemberRemote.CreateMemberSignature(typeof(T?), MemberSignatureScope.AssemblyQualifiedName);
+            var memberSignature = MemberRemote.CreateMemberSignature(typeof(T), MemberSignatureScope.AssemblyQualifiedName);
 
             await memberRemote.SendRemotingMessageAsync(new RemoteDataMessage(memberRemote.Id, token, memberSignature, data), cancellationToken);
             return data;

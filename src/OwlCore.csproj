@@ -48,6 +48,7 @@ Added Unit Tests to the DataProxy extension methods for MemberRemote.
 
 [Fixes]
 Fixed an issue where the MemberRemote.PublishDataAsync extension method used the signature scope from the MemberRemote for data, instead of AssemblyQualifiedName.
+Fixed an issue where MemberRemote.PublishDataAsync returned always nullable.
 
 [Breaking changes]
 The PublishDataAsync extension method for MemberRemote now takes the call token as the first parameter instead of the second.
