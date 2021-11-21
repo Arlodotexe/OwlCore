@@ -109,7 +109,7 @@ namespace OwlCore.Tests.Remoting
         [DataRow(RemotingDirection.InboundHost, false, RemotingMode.Client, RemotingMode.Client)]
         [DataRow(RemotingDirection.InboundHost, false, RemotingMode.Client, RemotingMode.Host)]
         [DataRow(RemotingDirection.InboundHost, false, RemotingMode.Host, RemotingMode.Client)]
-        [TestMethod]
+        [TestMethod, Timeout(5000)]
         public Task RemoteMethod_InboundHost(RemotingDirection direction, bool allNonFirstNodesShouldReceive, RemotingMode senderMode, params RemotingMode[] listenerModes)
         {
             return RemoteMethodTest_Internal(direction, allNonFirstNodesShouldReceive, senderMode, listenerModes);
