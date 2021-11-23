@@ -44,20 +44,43 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [DataRow, DataRow, DataRow, DataRow, DataRow] // run it a few times
         [Timeout(1000)]
-        public async Task TestPublishAndReceiveAsync()
+        public async Task TestPublishReceiveAsync()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
             var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
 
             WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
 
-            var results = await Task.WhenAll(sender.DoSomething(), receiver.DoSomething());
+            var expectedResult = Guid.NewGuid();
+
+            // Tests by manually invoking both sender and listener 
+            var results = await Task.WhenAll(sender.DoSomething(expectedResult), receiver.DoSomething());
 
             Assert.IsNotNull(results);
-            Assert.AreEqual(results[0], results[1]);
+            Assert.AreEqual(expectedResult, results[0]);
+            Assert.AreEqual(expectedResult, results[1]);
         }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public async Task TestPublishReceiveWithRemoteMethodAsync()
+        {
+            var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
+            var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
+
+            WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
+
+            var expectedResult = Guid.NewGuid();
+
+            // Tests by manually invoking listener, and expecting RemoteMethod to call the sender, making it publish return data.
+            var result = await receiver.DoSomethingRemote(expectedResult);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedResult, result);
+        }
+
+
         private void WeaveLoopbackHandlers(params MemberRemote[] memberRemotes)
         {
             var handlers = new List<LoopbackMockMessageHandler>();
@@ -82,13 +105,16 @@ namespace OwlCore.Tests.Remoting
             MemberRemote = new MemberRemote(this, "testId", new LoopbackMockMessageHandler(mode));
         }
 
-        public Task<Guid> DoSomething()
+        [RemoteMethod]
+        public Task<Guid?> DoSomethingRemote(Guid? guid = null) => DoSomething(guid);
+
+        public Task<Guid?> DoSomething(Guid? guid = null)
         {
             if (MemberRemote.Mode == RemotingMode.Client)
-                return MemberRemote.ReceiveDataAsync<Guid>(nameof(DoSomething));
+                return MemberRemote.ReceiveDataAsync<Guid?>(nameof(DoSomething));
 
             if (MemberRemote.Mode == RemotingMode.Host)
-                return MemberRemote.PublishDataAsync(nameof(DoSomething), Guid.NewGuid());
+                return MemberRemote.PublishDataAsync(nameof(DoSomething), guid);
 
             throw new ArgumentOutOfRangeException();
         }
