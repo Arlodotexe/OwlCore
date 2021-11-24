@@ -15,7 +15,7 @@ namespace OwlCore.Tests.Remoting
     {
         [TestMethod]
         [Timeout(1000)]
-        public async Task TestLockAsync()
+        public async Task TestReleaseAsync()
         {
             var instance = new RemoteLockTestClass(RemotingMode.Host);
             var taskCompletionSource = new TaskCompletionSource<object?>();
@@ -24,7 +24,7 @@ namespace OwlCore.Tests.Remoting
 
             instance.MemberRemote.MessageSending += MemberRemote_MessageSending;
 
-            await instance.DoSomething();
+            _ = instance.DoSomething();
 
             // If data is never sent, test method will time out.
             await taskCompletionSource.Task;
@@ -35,7 +35,7 @@ namespace OwlCore.Tests.Remoting
             {
                 if (e.Message is RemoteDataMessage dataMessage)
                 {
-                    var scopedToken = $"{instance.MemberRemote.Id}.{nameof(RemoteLockTestClass.DoSomething)}.{nameof(RemoteLock)}";
+                    var scopedToken = OwlCore.Remoting.RemoteLock.CreateScopedToken(nameof(instance.DoSomething));
 
                     Assert.AreEqual(scopedToken, dataMessage.Token);
                     Assert.AreEqual(instance.MemberRemote.Id, dataMessage.MemberRemoteId);
@@ -55,8 +55,10 @@ namespace OwlCore.Tests.Remoting
             WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
 
             // Tests by manually invoking both sender and listener 
-            _ = receiver.DoSomething();
+            var receiverTask = receiver.DoSomething();
+            
             await sender.DoSomething();
+            await receiverTask;
         }
 
         [TestMethod]
@@ -69,7 +71,7 @@ namespace OwlCore.Tests.Remoting
             WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
 
             // Tests by manually invoking listener, and expecting RemoteMethod to call the sender, making it unlock remotely.
-            await sender.DoSomethingRemote();
+            await receiver.DoSomethingRemote();
         }
 
 
@@ -78,9 +80,7 @@ namespace OwlCore.Tests.Remoting
             var handlers = new List<LoopbackMockMessageHandler>();
 
             foreach (var item in memberRemotes)
-            {
                 handlers.Add(item.MessageHandler.Cast<LoopbackMockMessageHandler>());
-            }
 
             foreach (var handler in handlers)
                 handler.LoopbackListeners.AddRange(handlers);
@@ -110,6 +110,7 @@ namespace OwlCore.Tests.Remoting
 
             if (MemberRemote.Mode == RemotingMode.Host)
             {
+                await Task.Delay(100);
                 await MemberRemote.RemoteReleaseAsync(nameof(DoSomething));
                 return;
             }

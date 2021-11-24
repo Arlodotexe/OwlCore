@@ -20,32 +20,9 @@ namespace OwlCore.Remoting
         /// <param name="token">A unique token used to identify this lock between remoting nodes.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the ongoing task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the received data.</returns>
-        public static async Task RemoteWaitAsync(this MemberRemote memberRemote, string token, CancellationToken? cancellationToken = null)
+        public static Task RemoteWaitAsync(this MemberRemote memberRemote, string token, CancellationToken? cancellationToken = null)
         {
-            var scopedToken = $"{memberRemote.Id}.{token}.{nameof(RemoteLock)}";
-
-            if (_remoteLockHandles.TryGetValue(scopedToken, out var completionTask))
-                await completionTask;
-
-            var taskCompletionSource = new TaskCompletionSource<object?>(cancellationToken);
-            memberRemote.MessageReceived += MemberRemote_MessageReceived;
-
-            _remoteLockHandles.TryAdd(scopedToken, taskCompletionSource.Task);
-
-            void MemberRemote_MessageReceived(object sender, IRemoteMessage e)
-            {
-                if (e is not RemoteDataMessage remoteDataMessage)
-                    return;
-
-                if (remoteDataMessage.Token != token)
-                    return;
-
-                _remoteLockHandles.TryRemove(scopedToken, out var _);
-                taskCompletionSource.SetResult(null);
-            }
-
-            var resultData = await taskCompletionSource.Task;
-            memberRemote.MessageReceived -= MemberRemote_MessageReceived;
+            return DataProxy.ReceiveDataAsync<object?>(memberRemote, CreateScopedToken(token), cancellationToken);
         }
 
         /// <summary>
@@ -57,9 +34,17 @@ namespace OwlCore.Remoting
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static Task RemoteReleaseAsync(this MemberRemote memberRemote, string token, CancellationToken? cancellationToken = null)
         {
-            var scopedToken = $"{memberRemote.Id}.{token}.{nameof(RemoteLock)}";
+            return DataProxy.PublishDataAsync<object?>(memberRemote, CreateScopedToken(token), null, cancellationToken);
+        }
 
-            return memberRemote.SendRemotingMessageAsync(new RemoteDataMessage(memberRemote.Id, scopedToken, string.Empty, null), cancellationToken);
+        /// <summary>
+        /// Wraps around a given token and scopes it to the remote lock functionality and a specific member remote.
+        /// </summary>
+        /// <param name="token">The user-provided, local scoped token</param>
+        /// <returns></returns>
+        public static string CreateScopedToken(string token)
+        {
+            return $"{nameof(RemoteLock)}.{token}";
         }
     }
 }

@@ -10,10 +10,12 @@
 
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<!-- Include symbol files (*.pdb) in the built .nupkg -->
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.35</Version>
+		<Version>0.0.36</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -36,6 +38,12 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.36 ---
+[Fixes]
+Fixed issues with the RemoteLock extension methods for MemberRemote. Added Unit Tests.
+Fixed an issue where DataProxy extension methods would not scope to the given member remote. Added Unit Tests.
+Fixed an issue where DataProxy was unable to send null values. Added Unit Tests for null, primitives, structs and objects.
+			
 --- 0.0.35 ---
 [Fixes]
 Fixed several issues with EnumerableExtensions.ChangeCollection, and added unit tests around it.
@@ -246,6 +254,8 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>true</Optimize>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	</PropertyGroup>
 
 	<ItemGroup>

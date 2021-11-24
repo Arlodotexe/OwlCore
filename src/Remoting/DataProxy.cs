@@ -30,28 +30,31 @@ namespace OwlCore.Remoting
                     if (remoteDataMessage.Token != token)
                         return;
 
-                    var type = Type.GetType(remoteDataMessage.TargetMemberSignature);
+                    if (remoteDataMessage.MemberRemoteId != memberRemote.Id)
+                        return;
+
+                    var originalType = Type.GetType(remoteDataMessage.TargetMemberSignature);
                     var mostDerivedType = remoteDataMessage.Result?.GetType();
 
-                    if (typeof(TResult?) != type)
+                    if (typeof(TResult?) != originalType)
                     {
                         throw new ArgumentException($"Generic type argument does not match the received member signature. " +
                                                     $"Expected {typeof(TResult?).AssemblyQualifiedName}, " +
                                                     $"received ({remoteDataMessage.TargetMemberSignature}).");
                     }
 
-                    if (!type?.IsAssignableFrom(mostDerivedType) ?? false)
+                    if (!(remoteDataMessage.Result == null && !originalType.IsPrimitive) && !(originalType?.IsAssignableFrom(mostDerivedType) ?? false))
                     {
-                        if (!type?.IsSubclassOf(typeof(IConvertible)) ?? false)
+                        if (!originalType?.IsSubclassOf(typeof(IConvertible)) ?? false)
                         {
-                            throw new NotSupportedException($"Received data {mostDerivedType?.FullName ?? "null"} is not assignable from received type {type?.FullName ?? "null"} " +
+                            throw new NotSupportedException($"Received data {mostDerivedType?.FullName ?? "null"} is not assignable from received type {originalType?.FullName ?? "null"} " +
                                                             $"and must implement {nameof(IConvertible)} for automatic type conversion. " +
                                                             $"Either handle conversion of {nameof(RemoteDataMessage)}.{nameof(RemoteDataMessage.Result)} " +
                                                             $"to this type in your {nameof(IRemoteMessageHandler.MessageConverter)} " +
                                                             $"or use a primitive type that implements {nameof(IConvertible)}.");
                         }
 
-                        remoteDataMessage.Result = Convert.ChangeType(remoteDataMessage.Result, type);
+                        remoteDataMessage.Result = Convert.ChangeType(remoteDataMessage.Result, originalType);
                     }
 
                     taskCompletionSource.SetResult((TResult?)remoteDataMessage.Result);
