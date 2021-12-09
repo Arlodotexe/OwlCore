@@ -6,7 +6,7 @@ namespace OwlCore.Validation
     /// A helper class for ensuring parameter conditions.
     /// </summary>
     /// <remarks>This class comes from <see href="https://github.com/CoryCharlton/CCSWE.Core/blob/2cea0791bfba39d832e000d5bdddc3939e85e3ed/src/Core/Ensure.cs">CCSWE.Core</see> and is licensed under Apache 2.0</remarks>
-    public static class Ensure
+    internal static class Ensure
     {
         private static Exception GetException<TException>(string name, string message) where TException : Exception, new()
         {
@@ -37,7 +37,7 @@ namespace OwlCore.Validation
         /// <param name="expression">The expression that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the expression evaluates to <c>false</c></exception>.
-        public static void IsInRange(string name, bool expression, string? message = null)
+        internal static void IsInRange(string name, bool expression, string? message = null)
         {
             IsValid<ArgumentOutOfRangeException>(name, expression, string.IsNullOrWhiteSpace(message) || message is null ? $"The value passed for '{name}' is out of range." : message);
         }
@@ -49,7 +49,7 @@ namespace OwlCore.Validation
         /// <param name="value">The value that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentNullException">Thrown when the value is <c>null</c></exception>.
-        public static void IsNotNull<T>(string name, T value, string? message = null)
+        internal static void IsNotNull<T>(string name, T value, string? message = null)
         {
             IsValid<ArgumentNullException>(name, value != null, string.IsNullOrWhiteSpace(message) || message is null ? $"The value passed for '{name}' is null." : message);
         }
@@ -61,7 +61,7 @@ namespace OwlCore.Validation
         /// <param name="value">The value that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentException">Thrown when the value is <c>null</c> or <c>whitespace</c>.</exception>.
-        public static void IsNotNullOrWhitespace(string name, string value, string? message = null)
+        internal static void IsNotNullOrWhitespace(string name, string value, string? message = null)
         {
             IsValid<ArgumentException>(name, !string.IsNullOrWhiteSpace(value), string.IsNullOrWhiteSpace(message) || message is null ? $"The value passed for '{name}' is empty, null, or whitespace." : message);
         }
@@ -73,7 +73,7 @@ namespace OwlCore.Validation
         /// <param name="expression">The expression that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentException">Thrown when the expression evaluates to <c>false</c></exception>.
-        public static void IsValid(string name, bool expression, string? message = null)
+        internal static void IsValid(string name, bool expression, string? message = null)
         {
             IsValid<ArgumentException>(name, expression, string.IsNullOrWhiteSpace(message) || message is null ? $"The value passed for '{name}' is not valid." : message);
         }
@@ -85,7 +85,7 @@ namespace OwlCore.Validation
         /// <param name="name">The name of the parameter we are validating.</param>
         /// <param name="expression">The expression that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
-        public static void IsValid<TException>(string name, bool expression, string? message = null) where TException : Exception, new()
+        internal static void IsValid<TException>(string name, bool expression, string? message = null) where TException : Exception, new()
         {
             if (expression)
             {
