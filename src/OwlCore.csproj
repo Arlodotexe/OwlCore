@@ -44,7 +44,9 @@ Added Flow.WhenCancelled(cancellationToken) and unit tests. Returns a Task that 
 Added CancellationToken.WhenCancelled() extension method to OwlCore.Extensions and unit tests. Same behavior as Flow.WhenCancelled, but as an extension method. 
 
 [Breaking changes]
-OwlCore.Extensions was removed.
+OwlCore.Validation.Ensure was made internal. This is only used by SynchronizedObservableCollection, which may be removed in a future release.
+InvokeOnUI from OwlCore.Extensions was removed.
+OwlCore.Exceptions was removed.
 UIElementNotFoundException was removed.
 			
 --- 0.0.37 ---
