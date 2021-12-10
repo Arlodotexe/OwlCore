@@ -12,7 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace OwlCore.Collections
+namespace OwlCore.Collections.ObjectModel
 {
     /// <summary>Represents a thread-safe dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed.</summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
