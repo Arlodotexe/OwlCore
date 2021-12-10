@@ -7,9 +7,9 @@ namespace OwlCore.Extensions
     public static partial class AsyncExtensions
     {
         /// <inheritdoc cref="Flow.WhenCancelled(CancellationToken, CancellationToken)"/>
-        public static Task WhenCancelled(this CancellationToken cancellationToken, CancellationToken selfCancellationToken)
+        public static Task WhenCancelled(this CancellationToken cancellationToken, CancellationToken? selfCancellationToken = null)
         {
-            return Flow.WhenCancelled(cancellationToken, selfCancellationToken);
+            return Flow.WhenCancelled(cancellationToken, selfCancellationToken ?? CancellationToken.None);
         }
     }
 }
