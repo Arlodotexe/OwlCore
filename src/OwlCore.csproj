@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.38</Version>
+		<Version>0.0.39</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,13 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.39 ---
+[Fixes]
+Fixed a potential memory leak in Flow.WhenCancelled.
+
+[Improvements]
+Made selfCancellationToken parameter optional on CancellationToken.WhenCancelled() extension method.
+
 --- 0.0.38 ---
 [New]
 Added Flow.WhenCancelled(cancellationToken) and unit tests. Returns a Task that completes when the given cancellation token is cancelled.
