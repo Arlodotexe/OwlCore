@@ -12,7 +12,7 @@ namespace OwlCore
         /// <param name="selfCancellationToken">When this token is cancelled, internal data is disposed and this task throw <see cref="TaskCanceledException"/>.</param>
         /// <returns>A <see cref="Task"/> that completes if the provided <paramref name="cancellationToken"/> is cancelled.</returns>
         /// <exception cref="TaskCanceledException"/>
-        public static Task WhenCancelled(CancellationToken cancellationToken, CancellationToken selfCancellationToken)
+        public static async Task WhenCancelled(CancellationToken cancellationToken, CancellationToken selfCancellationToken)
         {
             var taskCompletionSource = new TaskCompletionSource<object?>();
 
@@ -24,10 +24,10 @@ namespace OwlCore
             selfCancellationToken.Register(() =>
             {
                 taskCompletionSource.SetCanceled();
-                cancellationRegistration.Dispose();
             });
 
-            return taskCompletionSource.Task;
+            await taskCompletionSource.Task;
+            cancellationRegistration.Dispose();
         }
     }
 }
