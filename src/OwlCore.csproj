@@ -39,11 +39,19 @@ Our favorite features:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.39 ---
+[New]
+Added NavigationFailed event to AbstractFolderExplorer.
+Flow.Catch now has an overload that catches all exception with no return value.
+
 [Fixes]
 Fixed a potential memory leak in Flow.WhenCancelled.
 
 [Improvements]
 Made selfCancellationToken parameter optional on CancellationToken.WhenCancelled() extension method.
+Flow.Catch now properly returns default values when an exception is caught.
+
+[Breaking changes]
+Flow.TryOrSkip was renamed to Flow.Catch
 
 --- 0.0.38 ---
 [New]
