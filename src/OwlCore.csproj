@@ -41,13 +41,15 @@ Our favorite features:
 --- 0.0.38 ---
 [New]
 Added Flow.WhenCancelled(cancellationToken) and unit tests. Returns a Task that completes when the given cancellation token is cancelled.
-Added CancellationToken.WhenCancelled() extension method to OwlCore.Extensions and unit tests. Same behavior as Flow.WhenCancelled, but as an extension method. 
+Added CancellationToken.WhenCancelled() extension method to OwlCore.Extensions and unit tests. Same behavior as Flow.WhenCancelled, but as an extension method.
 
 [Breaking changes]
+Deque was removed from OwlCore.Collections.Generic. For a maintained version, see https://github.com/Avid29/MoreCollections/blob/main/src/Generic/Deque.cs
+SynchronizedObservableCollection was moved to OwlCore.Collections.ObjectModel.
 OwlCore.Validation.Ensure was made internal. This is only used by SynchronizedObservableCollection, which may be removed in a future release.
-InvokeOnUI from OwlCore.Extensions was removed.
+InvokeOnUI from OwlCore.Extensions has a fatal flaw and was removed.
+OwlCore.Exceptions.UIElementNotFoundException was removed.
 OwlCore.Exceptions was removed.
-UIElementNotFoundException was removed.
 			
 --- 0.0.37 ---
 [Fixes]
