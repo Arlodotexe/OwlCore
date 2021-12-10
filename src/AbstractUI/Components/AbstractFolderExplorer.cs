@@ -108,22 +108,34 @@ namespace OwlCore.AbstractUI.Components
         public event EventHandler<IFolderData>? DirectoryChanged;
 
         /// <summary>
+        /// Raised when navigating to a folder has failed.
+        /// </summary>
+        public event EventHandler<AbstractFolderExplorerNavigationFailedEventArgs>? NavigationFailed;
+
+        /// <summary>
         /// Setups the <see cref="AbstractFolderExplorer"/>.
         /// </summary>
         /// <param name="folder">The current directory to open.</param>
         /// <returns>Created datalist for the UI to display.</returns>
         private async Task SetupFolderAsync(IFolderData folder)
         {
-            CurrentFolder = folder;
-            _isRootFolder = ReferenceEquals(folder, _rootFolder);
+            try
+            {
+                CurrentFolder = folder;
+                _isRootFolder = ReferenceEquals(folder, _rootFolder);
 
-            var folders = await folder.GetFoldersAsync();
-            var folderData = folders.ToArray();
+                var folders = await folder.GetFoldersAsync();
+                var folderData = folders.ToArray();
 
-            _currentDisplayedFolders = folderData;
+                _currentDisplayedFolders = folderData;
 
-            CreateAndSetupAbstractUIForFolders(folderData);
-            DirectoryChanged?.Invoke(this, folder);
+                CreateAndSetupAbstractUIForFolders(folderData);
+                DirectoryChanged?.Invoke(this, folder);
+            }
+            catch (Exception ex)
+            {
+                NavigationFailed?.Invoke(this, new AbstractFolderExplorerNavigationFailedEventArgs(folder, ex));
+            }
         }
 
         private void CreateAndSetupAbstractUIForFolders(IFolderData[] folderData)
@@ -195,4 +207,28 @@ namespace OwlCore.AbstractUI.Components
         }
     }
 
+    /// <summary>
+    /// Event arguments containing data about a failed folder navigation in <see cref="AbstractFolderExplorer"/>.
+    /// </summary>
+    public class AbstractFolderExplorerNavigationFailedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Creates a new instance of <see cref="AbstractFolderExplorerNavigationFailedEventArgs"/>.
+        /// </summary>
+        public AbstractFolderExplorerNavigationFailedEventArgs(IFolderData folder, Exception? exception = null)
+        {
+            Folder = folder;
+            Exception = exception;
+        }
+
+        /// <summary>
+        /// The exception that was raised when attempting to navigate, if any.
+        /// </summary>
+        public Exception? Exception { get; }
+
+        /// <summary>
+        /// The folder that couldn't be navigated to.
+        /// </summary>
+        public IFolderData Folder { get; }
+    }
 }
