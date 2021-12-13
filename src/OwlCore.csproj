@@ -40,8 +40,10 @@ Our favorite features:
 		<PackageReleaseNotes>
 --- 0.0.40 ---
 [Improvements]
-Shuffle extension method is now O(n) using fisher-yates, and now returns a "shuffle map" that can be used to map items to their original positions and unshuffle your collection.
+Shuffle extension method is now O(n) using fisher-yates.
+Shuffle extension method now returns a "shuffle map" that can be used to map items to their original positions and unshuffle the collection.
 Added IList{T} overload to Shuffle extension method.
+Added unit tests to Shuffle extension methods.
 
 [New]
 Added Unshuffle extension method for T[] and List{T}. Pass a "shuffle map" returned by the Shuffle extension method to return a list to its' original order using a (probably) original algorithm inspired by fisher-yates with O(n) time and space complexity.
