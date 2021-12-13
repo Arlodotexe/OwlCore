@@ -9,10 +9,134 @@ namespace OwlCore.Tests.Extensions
     [TestClass]
     public class EnumerableExtensions
     {
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void Shuffle_Array(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToArray();
+
+            shuffledItems.Shuffle();
+
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void Shuffle_List(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToList();
+
+            shuffledItems.Shuffle();
+
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void Shuffle_Array_CheckShuffleMap(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToArray();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+            CollectionAssert.AreEqual(shuffleMap, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void Shuffle_List_CheckShuffleMap(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToList();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+            CollectionAssert.AreEqual(shuffleMap, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void ShuffleUnshuffle_Array(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToArray();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+
+            shuffledItems.Unshuffle(shuffleMap);
+
+            CollectionAssert.AreEqual(originalItems, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void ShuffleUnshuffle_List(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToList();
+            var shuffledItems = originalItems.ToList();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+
+            shuffledItems.Unshuffle(shuffleMap);
+
+            CollectionAssert.AreEqual(originalItems, shuffledItems);
+        }
+
         [DataRow(1, 0, 1)]
         [DataRow(7, 5, 6, 7)]
         [DataRow(9999, 100, 500, 1000, 9999)]
-        [TestMethod]
+        [TestMethod, Timeout(5000)]
         public void Pop(int expectedReturn, params int[] items)
         {
             var list = items.ToList();
@@ -27,7 +151,7 @@ namespace OwlCore.Tests.Extensions
         [DataRow(1, 10, 5, 6, 7)]
         [DataRow(3, 0, 100, 500, 1000, 9999)]
         [DataRow(10, 0, 100, 500, 1000, 9999)]
-        [TestMethod]
+        [TestMethod, Timeout(5000)]
         public void ReplaceOrAdd(int indexToReplace, int newValue, params int[] items)
         {
             var list = items.ToList();
@@ -47,7 +171,7 @@ namespace OwlCore.Tests.Extensions
             Assert.IsTrue(list[indexToReplace] == newValue);
         }
 
-        [TestMethod]
+        [TestMethod, Timeout(5000)]
         [DataRow(100, new int[] { 0 }, new int[] { })]
         [DataRow(100, new int[] { 0, 50 }, new int[] { })]
         [DataRow(100, new int[] { }, new int[] { 0, 50 })]

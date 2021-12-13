@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.39</Version>
+		<Version>0.0.40</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -33,11 +33,19 @@ Our favorite features:
 - Threading.OnPrimaryThread - Easily invoke a callback on your primary thread.
 - CachedHttpClientHandler - Cache http requests to disk and return them as needed. Supports chaining.
 - RateLimitedHttpClientHandler - Limit the number of requests within a window of time. Supports chaining.
-- Countless extension methods. PruneNull, Shuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, and more.
+- Countless extension methods. PruneNull, Shuffle and Unshuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, InsertOrReplace, and MUCH more.
 		</Description>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.40 ---
+[Improvements]
+Shuffle extension method is now O(n) using fisher-yates, and now returns a "shuffle map" that can be used to map items to their original positions and unshuffle your collection.
+Added IList{T} overload to Shuffle extension method.
+
+[New]
+Added Unshuffle extension method for T[] and List{T}. Pass a "shuffle map" returned by the Shuffle extension method to return a list to its' original order using a (probably) original algorithm inspired by fisher-yates with O(n) time and space complexity.
+
 --- 0.0.39 ---
 [New]
 Added NavigationFailed event to AbstractFolderExplorer.
