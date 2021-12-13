@@ -14,9 +14,9 @@ namespace OwlCore.Extensions
         /// <typeparam name="T">The type of elements in the array.</typeparam>
         /// <param name="array">The array to shuffle.</param>
         /// <returns>
-        /// A 1:1 "shuffle map" containing the original indexes for the shuffled items in the passed <paramref name="array"/>. Can be used to unshuffle the array in O(n) time.
+        /// A "shuffle map" that can be used to map items to their original positions and unshuffle the collection.
         /// <para/>
-        /// For example, if <c>shuffleMap[0] == 5</c>, then the item at <c>array[0]</c> was originally at index 5.
+        /// Example, if <c>shuffleMap[0] == 5</c>, then the item found at <c>array[0]</c> was originally at index 5.
         /// </returns>
         public static int[] Shuffle<T>(this T[] array)
         {
@@ -58,9 +58,9 @@ namespace OwlCore.Extensions
         /// <typeparam name="T">The type of elements in the list.</typeparam>
         /// <param name="list">The list to shuffle.</param>
         /// <returns>
-        /// A 1:1 "shuffle map" containing the original indexes for the shuffled items in the passed <paramref name="list"/>. Can be used to unshuffle the array in O(n) time.
+        /// A "shuffle map" that can be used to map items to their original positions and unshuffle the collection.
         /// <para/>
-        /// For example, if <c>shuffleMap[0] == 5</c>, then the item at <c>array[0]</c> was originally at index 5.
+        /// Example, if <c>shuffleMap[0] == 5</c>, then the item found at <c>array[0]</c> was originally at index 5.
         /// </returns>
         public static int[] Shuffle<T>(this IList<T> list)
         {

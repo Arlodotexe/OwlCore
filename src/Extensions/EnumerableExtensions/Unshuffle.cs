@@ -13,7 +13,7 @@ namespace OwlCore.Extensions
         /// </summary>
         /// <typeparam name="T">The type of elements in the array.</typeparam>
         /// <param name="array">The array to shuffle.</param>
-        /// <param name="shuffleMap">The shuffle map returned from <see cref="Shuffle{T}(T[])"/>.</param>
+        /// <param name="shuffleMap">An array that maps indices to their original unshuffled positions. Returned from <see cref="Shuffle{T}(T[])"/>.</param>
         public static void Unshuffle<T>(this T[] array, int[] shuffleMap)
         {
             // The index to operate at for swapping. Can be anything in range.
@@ -43,7 +43,7 @@ namespace OwlCore.Extensions
         /// </summary>
         /// <typeparam name="T">The type of elements in the list.</typeparam>
         /// <param name="list">The list to shuffle.</param>
-        /// <param name="shuffleMap">The shuffle map returned from <see cref="Shuffle{T}(IList{T})"/>.</param>
+        /// <param name="shuffleMap">An array that maps indices to their original unshuffled positions. Returned from <see cref="Shuffle{T}(IList{T})"/>.</param>
         public static void Unshuffle<T>(this IList<T> list, int[] shuffleMap)
         {
             // The index to operate at for swapping. Can be anything in range.
