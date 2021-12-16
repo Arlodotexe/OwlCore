@@ -43,7 +43,7 @@ Our favorite features:
 Flow.Catch now has overloads to catch up to 4 exceptions.
 
 [Breaking changes]
-The type parameter order on Catch{TException, TResult}(Func{TResult}) has been swapped to Catch{TException, TResult}(Func{TResult}). This allows for more natural usage when catching more than 1 exception.
+The type parameter order on Flow.Catch{TException, TResult}(Func{TResult}) has been swapped to {TException, TResult}. This allows for more natural usage when catching more than 1 exception.
 			
 --- 0.0.40 ---
 [Improvements]
