@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.40</Version>
+		<Version>0.0.41</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,13 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.41 ---
+[Improvements]
+Flow.Catch now has overloads to catch up to 4 exceptions.
+
+[Breaking changes]
+The type parameter order on Catch{TException, TResult}(Func{TResult}) has been swapped to Catch{TException, TResult}(Func{TResult}). This allows for more natural usage when catching more than 1 exception.
+			
 --- 0.0.40 ---
 [Improvements]
 Shuffle extension method is now O(n) using fisher-yates.
