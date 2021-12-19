@@ -16,25 +16,26 @@ namespace OwlCore.Extensions
         /// <param name="shuffleMap">An array that maps indices to their original unshuffled positions. Returned from <see cref="Shuffle{T}(T[])"/>.</param>
         public static void Unshuffle<T>(this T[] array, int[] shuffleMap)
         {
-            // The index to operate at for swapping. Can be anything in range.
-            int operand = array.Length - 1;
+            int index = array.Length - 1;
 
-            // Don't know if this algorithm has a name.
-            // Was try to do something like Fisher-yates (Sattolo) but created this instead after a bit of whiteboarding.
-
-            // Continue until swapping would swap with yourself.
-            while (shuffleMap[operand] != operand)
+            while (index >= 0)
             {
-                var indexToSwap = shuffleMap[operand];
+                if (shuffleMap[index] == index)
+                {
+                    index--;
+                    continue;
+                }
+
+                var indexToSwap = shuffleMap[index];
 
                 var valueFromIndexToSwap = array[indexToSwap];
                 var indexOfValueFromIndexToSwap = shuffleMap[indexToSwap];
 
-                array[indexToSwap] = array[operand];
-                shuffleMap[indexToSwap] = shuffleMap[operand];
+                array[indexToSwap] = array[index];
+                shuffleMap[indexToSwap] = shuffleMap[index];
 
-                array[operand] = valueFromIndexToSwap;
-                shuffleMap[operand] = indexOfValueFromIndexToSwap;
+                array[index] = valueFromIndexToSwap;
+                shuffleMap[index] = indexOfValueFromIndexToSwap;
             }
         }
 
@@ -46,25 +47,26 @@ namespace OwlCore.Extensions
         /// <param name="shuffleMap">An array that maps indices to their original unshuffled positions. Returned from <see cref="Shuffle{T}(IList{T})"/>.</param>
         public static void Unshuffle<T>(this IList<T> list, int[] shuffleMap)
         {
-            // The index to operate at for swapping. Can be anything in range.
-            int operand = list.Count - 1;
+            int index = list.Count - 1;
 
-            // Don't know if this algorithm has a name.
-            // Was try to do something like Fisher-yates (Sattolo) but created this instead after a bit of whiteboarding.
-
-            // Continue until swapping would swap with yourself
-            while (shuffleMap[operand] != operand)
+            while (index >= 0)
             {
-                var indexToSwap = shuffleMap[operand];
+                if (shuffleMap[index] == index)
+                {
+                    index--;
+                    continue;
+                }
+
+                var indexToSwap = shuffleMap[index];
 
                 var valueFromIndexToSwap = list[indexToSwap];
                 var indexOfValueFromIndexToSwap = shuffleMap[indexToSwap];
 
-                list[indexToSwap] = list[operand];
-                shuffleMap[indexToSwap] = shuffleMap[operand];
+                list[indexToSwap] = list[index];
+                shuffleMap[indexToSwap] = shuffleMap[index];
 
-                list[operand] = valueFromIndexToSwap;
-                shuffleMap[operand] = indexOfValueFromIndexToSwap;
+                list[index] = valueFromIndexToSwap;
+                shuffleMap[index] = indexOfValueFromIndexToSwap;
             }
         }
     }

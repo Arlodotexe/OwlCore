@@ -38,7 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
---- 0.0.41 ---
+--- 0.0.42 ---
+[Fixes]
+Fixed an issue where modified shuffle maps kept in sync with the original list might not unshuffle properly. Added tests.
+
 [Breaking changes]
 Remove problematic Flow.Catch overloads, and added tests.
 			

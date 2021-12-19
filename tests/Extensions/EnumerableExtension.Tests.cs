@@ -63,6 +63,7 @@ namespace OwlCore.Tests.Extensions
 
             var shuffleMap = shuffledItems.Shuffle();
             CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
 
             CollectionAssert.AreNotEqual(originalItems, shuffledItems);
             CollectionAssert.AreEqual(shuffleMap, shuffledItems);
@@ -84,6 +85,7 @@ namespace OwlCore.Tests.Extensions
 
             var shuffleMap = shuffledItems.Shuffle();
             CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
 
             CollectionAssert.AreNotEqual(originalItems, shuffledItems);
             CollectionAssert.AreEqual(shuffleMap, shuffledItems);
@@ -105,6 +107,7 @@ namespace OwlCore.Tests.Extensions
 
             var shuffleMap = shuffledItems.Shuffle();
             CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
 
             shuffledItems.Unshuffle(shuffleMap);
 
@@ -127,6 +130,69 @@ namespace OwlCore.Tests.Extensions
 
             var shuffleMap = shuffledItems.Shuffle();
             CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+
+            shuffledItems.Unshuffle(shuffleMap);
+
+            CollectionAssert.AreEqual(originalItems, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void ShuffleUnshuffle_List_WithChanges(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToList();
+            var shuffledItems = originalItems.ToList();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+
+            int shuffleMapSwapVar = shuffleMap[0];
+            shuffleMap[0] = shuffleMap[1];
+            shuffleMap[1] = shuffleMapSwapVar;
+
+            int shuffledItemsSwapVar = shuffledItems[0];
+            shuffledItems[0] = shuffledItems[1];
+            shuffledItems[1] = shuffledItemsSwapVar;
+
+            shuffledItems.Unshuffle(shuffleMap);
+
+            CollectionAssert.AreEqual(originalItems, shuffledItems);
+        }
+
+        [TestMethod, Timeout(5000)]
+        [DataRow(2)]
+        [DataRow(10)]
+        [DataRow(100)]
+        [DataRow(1000)]
+        [DataRow(10000)]
+        [DataRow(100000)]
+        [DataRow(1000000)]
+        [DataRow(2000000)]
+        public void ShuffleUnshuffle_Array_WithChanges(int max)
+        {
+            var originalItems = Enumerable.Range(0, max).ToArray();
+            var shuffledItems = originalItems.ToList();
+
+            var shuffleMap = shuffledItems.Shuffle();
+            CollectionAssert.AllItemsAreUnique(shuffleMap);
+            CollectionAssert.AreNotEqual(originalItems, shuffledItems);
+
+            int shuffleMapSwapVar = shuffleMap[0];
+            shuffleMap[0] = shuffleMap[1];
+            shuffleMap[1] = shuffleMapSwapVar;
+
+            int shuffledItemsSwapVar = shuffledItems[0];
+            shuffledItems[0] = shuffledItems[1];
+            shuffledItems[1] = shuffledItemsSwapVar;
 
             shuffledItems.Unshuffle(shuffleMap);
 
