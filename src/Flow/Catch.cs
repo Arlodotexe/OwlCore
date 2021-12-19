@@ -25,22 +25,6 @@ namespace OwlCore
         }
 
         /// <summary>
-        /// Syntactic sugar for catching any exception in a callback with a return value.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation. Default (nullable) if the task fails.</returns>
-        public static TResult? Catch<TResult>(Func<TResult> func)
-        {
-            try
-            {
-                return func();
-            }
-            catch
-            {
-                return default;
-            }
-        }
-
-        /// <summary>
         /// Syntactic sugar for catching a specific exception in a callback.
         /// </summary>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
@@ -57,74 +41,35 @@ namespace OwlCore
         }
 
         /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback.
+        /// Syntactic sugar for catching any exception in a callback with a return value.
         /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public static void Catch<TException, TException2>(Action action)
-            where TException : Exception
-            where TException2 : Exception
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation. Default (nullable) if the task fails.</returns>
+        public static TResult? Catch<TResult>(Func<TResult> func)
         {
-            try
+            // There's no "where TResult : not Exception"
+            // so this overload picks up Catch{TException}(Action), so if you write:
+            // Flow.Catch<NotImplementedException>(() => throw new InvalidOperationException());
+            // It uses this overload and doesn't catch without this manual check.
+            if (typeof(Exception).IsAssignableFrom(typeof(TResult)))
             {
-                action();
-            }
-            catch (TException)
-            {
-            }
-            catch (TException2)
-            {
-            }
-        }
+                try
+                {
+                    return func();
+                }
+                catch (Exception exc) when (exc is TResult)
+                {
 
-        /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public static void Catch<TException, TException2, TException3>(Action action)
-            where TException : Exception
-            where TException2 : Exception
-            where TException3 : Exception
-        {
-            try
-            {
-                action();
+                return default;
+                }
             }
-            catch (TException)
-            {
-            }
-            catch (TException2)
-            {
-            }
-            catch (TException3)
-            {
-            }
-        }
 
-        /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public static void Catch<TException, TException2, TException3, TException4>(Action action)
-            where TException : Exception
-            where TException2 : Exception
-            where TException3 : Exception
-            where TException4 : Exception
-        {
             try
             {
-                action();
+                return func();
             }
-            catch (TException)
+            catch
             {
-            }
-            catch (TException2)
-            {
-            }
-            catch (TException3)
-            {
-            }
-            catch (TException4)
-            {
+                return default;
             }
         }
 
@@ -140,87 +85,6 @@ namespace OwlCore
                 return func();
             }
             catch (TException)
-            {
-                return default;
-            }
-        }
-
-        /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback with a return value.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation. Default (nullable) if the task fails.</returns>
-        public static TResult? Catch<TResult, TException, TException2>(Func<TResult> func)
-            where TException : Exception
-            where TException2 : Exception
-        {
-            try
-            {
-                return func();
-            }
-            catch (TException)
-            {
-                return default;
-            }
-            catch (TException2)
-            {
-                return default;
-            }
-        }
-
-        /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback with a return value.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation. Default (nullable) if the task fails.</returns>
-        public static TResult? Catch<TResult, TException, TException2, TException3>(Func<TResult> func)
-            where TException : Exception
-            where TException2 : Exception
-            where TException3 : Exception
-        {
-            try
-            {
-                return func();
-            }
-            catch (TException)
-            {
-                return default;
-            }
-            catch (TException2)
-            {
-                return default;
-            }
-            catch (TException3)
-            {
-                return default;
-            }
-        }
-
-        /// <summary>
-        /// Syntactic sugar for catching a specific exception in a callback with a return value.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation. Default (nullable) if the task fails.</returns>
-        public static TResult? Catch<TResult, TException, TException2, TException3, TException4>(Func<TResult> func)
-            where TException : Exception
-            where TException2 : Exception
-            where TException3 : Exception
-            where TException4 : Exception
-        {
-            try
-            {
-                return func();
-            }
-            catch (TException)
-            {
-                return default;
-            }
-            catch (TException2)
-            {
-                return default;
-            }
-            catch (TException3)
-            {
-                return default;
-            }
-            catch (TException4)
             {
                 return default;
             }
