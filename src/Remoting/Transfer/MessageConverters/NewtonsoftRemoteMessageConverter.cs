@@ -24,7 +24,7 @@ namespace OwlCore.Remoting.Transfer.MessageConverters
         {
             _jsonSerializerSettings = new JsonSerializerSettings()
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.All,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full,
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
@@ -82,8 +82,8 @@ namespace OwlCore.Remoting.Transfer.MessageConverters
 
             if (result is RemotePropertyChangeMessage remoteProp)
             {
-                remoteProp.NewValue = TrySmartTypeConversion(remoteProp.NewValue, remoteProp.TargetMemberSignature);
-                remoteProp.OldValue = TrySmartTypeConversion(remoteProp.OldValue, remoteProp.TargetMemberSignature);
+                remoteProp.NewValue = TrySmartTypeConversion(remoteProp.NewValue, remoteProp.AssemblyQualifiedName);
+                remoteProp.OldValue = TrySmartTypeConversion(remoteProp.OldValue, remoteProp.AssemblyQualifiedName);
             }
 
             Guard.IsNotNull(result, nameof(result));
@@ -123,13 +123,20 @@ namespace OwlCore.Remoting.Transfer.MessageConverters
         {
             value = TrySmartTypeConversion_Primitives(value, assemblyQualifiedName);
             value = TrySmartTypeConversion_Structs(value, assemblyQualifiedName);
-            value = TrySmartTypeConversion_EnumerableItems(value);
+            value = TrySmartTypeConversion_Enum(value, assemblyQualifiedName);
+            value = TrySmartTypeConversion_EnumerableItems(value, assemblyQualifiedName);
 
             return value;
         }
 
-        private object? TrySmartTypeConversion_EnumerableItems(object? value)
+        private object? TrySmartTypeConversion_EnumerableItems(object? value, string assemblyQualifiedName)
         {
+            var type = value?.GetType();
+            var targetType = Type.GetType(assemblyQualifiedName, throwOnError: true);
+
+            if (targetType.IsAssignableFrom(type))
+                return value;
+
             if (!(value is string) && value is IEnumerable collection)
                 return TrySmartTypeConversion_EnumerableItems_Internal(collection);
 
@@ -141,6 +148,28 @@ namespace OwlCore.Remoting.Transfer.MessageConverters
                 foreach (var item in enumerable)
                     yield return TrySmartTypeConversion(item, item?.GetType().AssemblyQualifiedName ?? string.Empty);
             }
+        }
+
+        private object? TrySmartTypeConversion_Enum(object? value, string assemblyQualifiedName)
+        {
+            var type = Type.GetType(assemblyQualifiedName, throwOnError: true);
+
+            if (!type.IsEnum)
+                return value;
+
+            if (value is null || value.GetType().IsAssignableFrom(typeof(IConvertible)))
+                return ThrowHelper.ThrowInvalidDataException<object?>("Attempted to deserialize an enum but provided backing value is not IConvertible.");
+
+            var i = 0;
+            foreach (var val in Enum.GetValues(type))
+            {
+                if (i == Convert.ToInt32(value))
+                    return val;
+
+                i++;
+            }
+
+            return ThrowHelper.ThrowArgumentOutOfRangeException<object?>($"Execution out of bounds. Value \"{value}\" does not exist in enum.");
         }
 
         private object? TrySmartTypeConversion_Structs(object? value, string assemblyQualifiedName)
