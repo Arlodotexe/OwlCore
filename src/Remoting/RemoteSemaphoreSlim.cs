@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Diagnostics;
 using OwlCore.Remoting.Transfer;
 
 namespace OwlCore.Remoting
@@ -13,7 +10,7 @@ namespace OwlCore.Remoting
     /// </summary>
     /// <remarks>
     /// Due to the pubsub nature of OwlCore.Remoting, calling <see cref="Release"/> releases the semaphore on ALL listening nodes.
-    /// Using with more than 2 nodes may produce undesired behavior.
+    /// Not taking this into account may cause undesired behavior.
     /// </remarks>
     [RemoteOptions(RemotingDirection.Bidirectional)]
     public class RemoteSemaphoreSlim : IDisposable
@@ -79,7 +76,8 @@ namespace OwlCore.Remoting
         /// Releases the semaphore locally and remotely in a fire-and-forget manner.
         /// </summary>
         /// <remarks>
-        /// Calling this method will release on ALL machines. Using with more than 2 nodes may produce undesired behavior.
+        /// Due to the pubsub nature of OwlCore.Remoting, calling <see cref="Release"/> releases the semaphore on ALL listening nodes.
+        /// Not taking this into account may cause undesired behavior.
         /// </remarks>
         [RemoteMethod]
         public void Release()
