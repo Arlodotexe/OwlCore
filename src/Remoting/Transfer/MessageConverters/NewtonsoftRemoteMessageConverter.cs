@@ -24,6 +24,7 @@ namespace OwlCore.Remoting.Transfer.MessageConverters
         {
             _jsonSerializerSettings = new JsonSerializerSettings()
             {
+                NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.All,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full,

@@ -8,7 +8,7 @@ namespace OwlCore.Remoting
     public class PropertySetEnteredEventArgs : System.EventArgs
     {
         /// <summary>
-        /// Creates a new instance of <see cref="MethodEnteredEventArgs"/>.
+        /// Creates a new instance of <see cref="PropertySetEnteredEventArgs"/>.
         /// </summary>
         public PropertySetEnteredEventArgs(PropertyInterceptionInfo propertyInterceptionInfo, object oldValue, object newValue)
         {

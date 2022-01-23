@@ -11,14 +11,14 @@ namespace OwlCore.Tests.Remoting.Mock
     /// </summary>
     public partial class MemberRemoteTestClass : IDisposable
     {
-        [RemoteOptions(RemotingDirection.None)]
-        private readonly OwlCore.Remoting.MemberRemote _memberRemote;
-
         public MemberRemoteTestClass(string id, LoopbackMockMessageHandler messageHandler)
         {
-            _memberRemote = new OwlCore.Remoting.MemberRemote(this, id, messageHandler);
+            MemberRemote = new MemberRemote(this, id, messageHandler);
             MessageHandler = messageHandler;
         }
+        
+        [RemoteOptions(RemotingDirection.None)]
+        public MemberRemote MemberRemote { get; }
 
         public LoopbackMockMessageHandler MessageHandler { get; }
 
@@ -129,7 +129,7 @@ namespace OwlCore.Tests.Remoting.Mock
         [RemoteOptions(RemotingDirection.None)]
         public void Dispose()
         {
-            ((IDisposable)_memberRemote).Dispose();
+            ((IDisposable)MemberRemote).Dispose();
         }
     }
 }

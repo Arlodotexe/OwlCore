@@ -11,6 +11,8 @@ namespace OwlCore.Tests
 {
     internal static class Helpers
     {
+        public static bool SmartEquals(object? originalValue, object? deserValue) => SmartEquals(originalValue, originalValue?.GetType(), deserValue, deserValue?.GetType());
+
         public static bool SmartEquals(object? originalValue, Type? originalType, object? deserValue, Type? deserType)
         {
             if (originalValue is IEnumerable)
@@ -51,6 +53,8 @@ namespace OwlCore.Tests
                 return Equals(originalValue, deserValue);
             }
         }
+
+        public static void SmartAssertEqual(object? originalValue, object? deserValue) => SmartAssertEqual(originalValue, originalValue?.GetType(), deserValue, deserValue?.GetType());
 
         public static void SmartAssertEqual(object? originalValue, Type? originalType, object? deserValue, Type? deserType)
         {

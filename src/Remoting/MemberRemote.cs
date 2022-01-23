@@ -24,8 +24,7 @@ namespace OwlCore.Remoting
     public class MemberRemote : IDisposable
     {
         private static IRemoteMessageHandler? _defaultRemoteMessageHandler;
-        private SemaphoreSlim? _messageReceivedSemaphore = new SemaphoreSlim(1, 1);
-        private SemaphoreSlim? _messageHandlerInitSemaphore = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim _messageInitSemaphore = new(1, 1);
 
         /// <summary>
         /// Used to internally indicated when a member operation is performed by a <see cref="MemberRemote"/> on a given thread.
@@ -71,6 +70,7 @@ namespace OwlCore.Remoting
 
             RemoteMethodAttribute.Entered += OnMethodEntered;
             RemoteMethodAttribute.ExceptionRaised += OnInterceptExceptionRaised;
+            RemoteMethodAttribute.Exited += OnMethodExited;
 
             RemotePropertyAttribute.SetEntered += OnPropertySetEntered;
             RemotePropertyAttribute.ExceptionRaised += OnInterceptExceptionRaised;
@@ -82,6 +82,7 @@ namespace OwlCore.Remoting
 
             RemoteMethodAttribute.Entered -= OnMethodEntered;
             RemoteMethodAttribute.ExceptionRaised -= OnInterceptExceptionRaised;
+            RemoteMethodAttribute.Exited -= OnMethodExited;
 
             RemotePropertyAttribute.SetEntered -= OnPropertySetEntered;
             RemotePropertyAttribute.ExceptionRaised -= OnInterceptExceptionRaised;
@@ -169,34 +170,27 @@ namespace OwlCore.Remoting
 
         internal void MessageHandler_DataReceived(object sender, IRemoteMessage message)
         {
-            _messageReceivedSemaphore?.Wait();
-
             if (message is IRemoteMemberMessage memberMsg && memberMsg.MemberRemoteId != Id)
-            {
-                _messageReceivedSemaphore?.Release();
                 return;
-            }
 
             var receivedArgs = new RemoteMessageReceivingEventArgs(message);
             MessageReceiving?.Invoke(this, receivedArgs);
 
             if (receivedArgs.Handled)
             {
-                _messageReceivedSemaphore?.Release();
                 return;
             }
 
-            if (message is RemoteMethodCallMessage methodCallMsg)
+            if (message is RemoteMethodCallMessage { InterceptType: MethodCallInterceptionType.Entry } methodCallMsg)
                 HandleIncomingRemoteMethodCall(methodCallMsg);
 
             if (message is RemotePropertyChangeMessage propertyChangeMsg)
                 HandleIncomingRemotePropertyChange(propertyChangeMsg);
 
             MessageReceived?.Invoke(this, message);
-            _messageReceivedSemaphore?.Release();
         }
 
-        private async void OnMethodEntered(object sender, MethodEnteredEventArgs e)
+        private async void OnMethodEntered(object sender, MethodInterceptEventArgs e)
         {
             if (!ReferenceEquals(e.Instance, Instance))
                 return;
@@ -207,7 +201,26 @@ namespace OwlCore.Remoting
             var paramData = CreateMethodParameterData(e.MethodBase, e.Values);
             var memberSignature = CreateMemberSignature(e.MethodBase, MemberSignatureScope);
 
-            var remoteMessage = new RemoteMethodCallMessage(Id, memberSignature, paramData);
+            var remoteMessage = new RemoteMethodCallMessage(Id, e.MethodCallId, memberSignature, paramData);
+
+            await SendRemotingMessageAsync(remoteMessage);
+        }
+
+        private async void OnMethodExited(object sender, MethodInterceptEventArgs e)
+        {
+            if (!ReferenceEquals(e.Instance, Instance))
+                return;
+
+            if (!IsAllowedRemotingDirection(e.MethodBase, false))
+                return;
+
+            var paramData = CreateMethodParameterData(e.MethodBase, e.Values);
+            var memberSignature = CreateMemberSignature(e.MethodBase, MemberSignatureScope);
+
+            var remoteMessage = new RemoteMethodCallMessage(Id, e.MethodCallId, memberSignature, paramData)
+            {
+                InterceptType = MethodCallInterceptionType.Exit,
+            };
 
             await SendRemotingMessageAsync(remoteMessage);
         }
@@ -297,8 +310,6 @@ namespace OwlCore.Remoting
         /// <returns>This should be used in scenarios where you need to send a custom <see cref="IRemoteMessage"/>, or where you need to force emit a member change remotely without executing the change on the current node.</returns>
         public async Task SendRemotingMessageAsync(IRemoteMessage message, CancellationToken? cancellationToken = null)
         {
-            Guard.IsNotNull(_messageHandlerInitSemaphore, nameof(_messageHandlerInitSemaphore));
-
             var eventArgs = new RemoteMessageSendingEventArgs(message);
             MessageSending?.Invoke(this, eventArgs);
 
@@ -308,7 +319,7 @@ namespace OwlCore.Remoting
             // To avoid breaking concurrency, don't await unless handler needs init. 
             if (!MessageHandler.IsInitialized)
             {
-                using (await Flow.EasySemaphore(_messageHandlerInitSemaphore))
+                using (await Flow.EasySemaphore(_messageInitSemaphore))
                 {
                     // Check IsInitialized again, in case init happened while waiting for entry.
                     if (!MessageHandler.IsInitialized)
@@ -547,11 +558,8 @@ namespace OwlCore.Remoting
         public void Dispose()
         {
             DetachEvents();
-            _messageHandlerInitSemaphore?.Dispose();
-            _messageReceivedSemaphore?.Dispose();
 
-            _messageHandlerInitSemaphore = null;
-            _messageReceivedSemaphore = null;
+            _messageInitSemaphore.Dispose();
         }
     }
 }

@@ -13,6 +13,8 @@ namespace OwlCore.Tests.Remoting.Transfer
     /// </summary>
     public class LoopbackMockMessageHandler : IRemoteMessageHandler
     {
+        private SemaphoreSlim _sendMessageSemaphore = new SemaphoreSlim(1, 1);
+
         public LoopbackMockMessageHandler(RemotingMode mode)
         {
             Mode = mode;
@@ -27,7 +29,7 @@ namespace OwlCore.Tests.Remoting.Transfer
         public RemotingMode Mode { get; set; }
 
         /// <inheritdoc/>
-        public IRemoteMessageConverter MessageConverter => null;
+        public IRemoteMessageConverter? MessageConverter => null;
 
         /// <inheritdoc/>
         public bool IsInitialized { get; set; }
@@ -36,7 +38,7 @@ namespace OwlCore.Tests.Remoting.Transfer
         public MemberSignatureScope MemberSignatureScope { get; set; } = MemberSignatureScope.AssemblyQualifiedName;
 
         /// <inheritdoc/>
-        public event EventHandler<IRemoteMessage> MessageReceived;
+        public event EventHandler<IRemoteMessage>? MessageReceived;
 
         public void ReceiveMessage(IRemoteMessage memberMessage)
         {
@@ -53,17 +55,19 @@ namespace OwlCore.Tests.Remoting.Transfer
         /// <inheritdoc/>
         public async Task SendMessageAsync(IRemoteMessage memberMessage, CancellationToken? cancellationToken = null)
         {
-            Guard.IsNotNull(LoopbackListeners, nameof(LoopbackListeners));
-            Guard.HasSizeGreaterThan(LoopbackListeners, 0, nameof(LoopbackListeners));
-
-            // whoops, this will loop infinitely but also crash before that b/c concurrency issues with MemberRemote
-            foreach (var listener in LoopbackListeners)
+            using (await OwlCore.Flow.EasySemaphore(_sendMessageSemaphore))
             {
-                await Task.Run(async () =>
+                Guard.IsNotNull(LoopbackListeners, nameof(LoopbackListeners));
+                Guard.HasSizeGreaterThan(LoopbackListeners, 0, nameof(LoopbackListeners));
+
+                foreach (var listener in LoopbackListeners)
                 {
-                    await Task.Delay(50); // Simulated network latency.
-                    listener.ReceiveMessage(memberMessage);
-                });
+                    await Task.Run(async () =>
+                    {
+                        await Task.Delay(50); // Simulated network latency.
+                        listener.ReceiveMessage(memberMessage);
+                    });
+                }
             }
         }
     }

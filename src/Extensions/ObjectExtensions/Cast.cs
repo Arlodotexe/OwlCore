@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 // ReSharper disable once CheckNamespace
 namespace OwlCore.Extensions
@@ -13,6 +14,7 @@ namespace OwlCore.Extensions
         /// </summary>
         /// <typeparam name="TTarget">The target type.</typeparam>
         /// <returns>The same object, cast to the requested type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TTarget Cast<TTarget>(this object obj)
          where TTarget : class
         {

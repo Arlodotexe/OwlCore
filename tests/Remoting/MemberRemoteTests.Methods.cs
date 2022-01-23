@@ -15,7 +15,7 @@ namespace OwlCore.Tests.Remoting
     {
         private static Dictionary<MemberType, object> _defaultTestValues = new Dictionary<MemberType, object>
         {
-            { MemberType.Object, new AbstractUI.Models.AbstractButton("testid", "test button") },
+            { MemberType.Object, new OwlCore.AbstractUI.Models.AbstractButton("testid", "test button") },
             { MemberType.Enum, RemotingDirection.Bidirectional },
             { MemberType.Struct, DateTime.Today },
             { MemberType.Primitive, 5 },
@@ -222,6 +222,13 @@ namespace OwlCore.Tests.Remoting
             foreach (var item in remotelyCalledMethodCompletionSources)
                 NotifyCompletionOnRemoteMethodInvocation(item.instance, returnType, paramType, item.Item2);
 
+            // Track which methods have emitted method intercept events.
+            var enteredMap = new Dictionary<string, OwlCore.Remoting.Transfer.RemoteMethodCallMessage>();
+
+            // Setup listeners for method intercept messages
+            var allListenersReceivedEntryInterceptTask = listenerClasses.InParallel(x => WaitForMethodIntercept(x.MemberRemote, OwlCore.Remoting.Transfer.MethodCallInterceptionType.Entry));
+            var allListenersReceivedExitInterceptTask = listenerClasses.InParallel(x => WaitForMethodIntercept(x.MemberRemote, OwlCore.Remoting.Transfer.MethodCallInterceptionType.Exit));
+
             // Setup "local" method invocation
             object? expectedReturnValue = null;
             object? expectedParamValue = null;
@@ -237,7 +244,7 @@ namespace OwlCore.Tests.Remoting
             // Internal remoting system is not synchronous, even when code is local.
             // Wait until either all methods are remotely invoked by listener classes
             // or until the test method times out.
-            await Task.WhenAny(Task.Delay(200), remotelyCalledMethodCompletionSources.InParallel(x => x.Item2.Task));
+            await Task.WhenAny(Task.Delay(1000), remotelyCalledMethodCompletionSources.InParallel(x => x.Item2.Task));
 
             var allReceived = remotelyCalledMethodCompletionSources.All(x => x.Item2.Task.Status == TaskStatus.RanToCompletion);
 
@@ -250,6 +257,13 @@ namespace OwlCore.Tests.Remoting
 
                 foreach (var item in remotelyCalledMethodCompletionSources)
                     AssertMatchingReceivedListenerValue(expectedParamValue ?? expectedReturnValue, item.instance, returnType, paramType, item.Item2);
+
+                await allListenersReceivedEntryInterceptTask;
+                await allListenersReceivedExitInterceptTask;
+
+                // Ensure all listeners received an entry and exit message.
+                Assert.IsTrue(allListenersReceivedEntryInterceptTask.IsCompleted);
+                Assert.IsTrue(allListenersReceivedExitInterceptTask.IsCompleted);
             }
             else
             {
@@ -258,6 +272,51 @@ namespace OwlCore.Tests.Remoting
 
             foreach (var listener in classes)
                 listener.Dispose();
+
+            Task WaitForMethodIntercept(MemberRemote memberRemote, OwlCore.Remoting.Transfer.MethodCallInterceptionType interceptionType)
+            {
+                var taskCompletionSource = new TaskCompletionSource();
+                memberRemote.MessageReceived += OnMessageReceived;
+
+                return taskCompletionSource.Task;
+
+                void OnMessageReceived(object? sender, OwlCore.Remoting.Transfer.IRemoteMessage msg)
+                {
+                    if (msg is OwlCore.Remoting.Transfer.RemoteMethodCallMessage remoteMethodMsg && remoteMethodMsg.InterceptType == interceptionType)
+                    {
+                        if (interceptionType == OwlCore.Remoting.Transfer.MethodCallInterceptionType.Entry)
+                        {
+                            // Ensure entry is not emitted more than once.
+                            Assert.IsFalse(enteredMap.ContainsKey(remoteMethodMsg.MethodCallId), $"Entry was emitted more than once for the same {nameof(remoteMethodMsg.MethodCallId)}.");
+
+                            enteredMap.Add(remoteMethodMsg.MethodCallId, remoteMethodMsg);
+                        }
+                        else if (interceptionType == OwlCore.Remoting.Transfer.MethodCallInterceptionType.Exit)
+                        {
+                            // Ensure entry happens before exit.
+                            Assert.IsTrue(enteredMap.ContainsKey(remoteMethodMsg.MethodCallId), "Exit was emitted before entry.");
+
+                            var receivedMethodMsg = enteredMap[remoteMethodMsg.MethodCallId];
+
+                            Assert.AreEqual(receivedMethodMsg.TargetMemberSignature, remoteMethodMsg.TargetMemberSignature);
+                            Assert.AreEqual(receivedMethodMsg.Action, remoteMethodMsg.Action);
+                            Assert.AreEqual(receivedMethodMsg.MethodCallId, remoteMethodMsg.MethodCallId);
+                            Assert.AreEqual(receivedMethodMsg.MemberRemoteId, remoteMethodMsg.MemberRemoteId);
+
+                            var expectedParams = remoteMethodMsg.Parameters.ToArray();
+                            var receivedParams = receivedMethodMsg.Parameters.ToArray();
+
+                            for (int i = 0; i < receivedParams.Length; i++)
+                            {
+                                Helpers.SmartAssertEqual(expectedParams[i], receivedParams[i]);
+                            }
+                        }
+
+                        taskCompletionSource.SetResult();
+                        memberRemote.MessageReceived -= OnMessageReceived;
+                    }
+                }
+            }
         }
 
         private void AssertMatchingReceivedListenerValue(object? expectedReturnOrParamValue, MemberRemoteTestClass instance, MethodReturnType returnType, MemberType paramType, TaskCompletionSource<object?> taskCompletionSource)

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Cauldron.Interception;
+using Microsoft.Toolkit.Diagnostics;
 
 namespace OwlCore.Remoting
 {
@@ -12,13 +15,25 @@ namespace OwlCore.Remoting
     /// For IL weaving to take effect, you must install and add a reference to <see href="https://www.nuget.org/packages/Cauldron.BasicInterceptors/3.2.3">Cauldron.BasicInterceptors</see> directly in the project that uses this attribute.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    [InterceptorOptions(AlwaysCreateNewInstance = true)]
     public class RemoteMethodAttribute : Attribute, IMethodInterceptor
     {
+        private MethodInterceptEventArgs? _methodEnteredData;
+
+        // Semaphore used to ensure the Entered event finishes execution before the Exited event is raised.
+        private SemaphoreSlim _interceptSemaphore = new SemaphoreSlim(1, 1);
+        private bool _isInvokedInternally;
+
         /// <inheritdoc/>
         public void OnEnter(Type declaringType, object instance, MethodBase methodbase, object[] values)
         {
+            _interceptSemaphore.Wait();
+
             if (MethodIsEventHandlerAdd(methodbase) || MethodIsEventHandlerRemove(methodbase))
+            {
+                _interceptSemaphore.Release();
                 return;
+            }
 
             // Check if the invoker was the OwlCore.Remoting library.
             // Don't re-emit "entered" to the library if so.
@@ -27,23 +42,45 @@ namespace OwlCore.Remoting
                 if (MemberRemote.MemberHandleExpectancyMap.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var expectedInstance) && ReferenceEquals(expectedInstance, instance))
                 {
                     MemberRemote.MemberHandleExpectancyMap.Remove(Thread.CurrentThread.ManagedThreadId);
+
+                    _isInvokedInternally = true;
+                    _interceptSemaphore.Release();
                     return;
                 }
             }
 
-            var args = new MethodEnteredEventArgs(declaringType, instance, methodbase, values);
-            Entered?.Invoke(this, args);
+            _methodEnteredData = new MethodInterceptEventArgs(Guid.NewGuid().ToString(), declaringType, instance, methodbase, values);
+            Entered?.Invoke(this, _methodEnteredData);
+
+            _interceptSemaphore.Release();
         }
 
         /// <inheritdoc/>
         public bool OnException(Exception e)
         {
+            _interceptSemaphore.Wait();
+
             ExceptionRaised?.Invoke(this, e);
+
+            _interceptSemaphore.Release();
             return true;
         }
 
         /// <inheritdoc/>
-        public void OnExit() => Exited?.Invoke(this, System.EventArgs.Empty);
+        public void OnExit()
+        {
+            if (_isInvokedInternally)
+                return;
+
+            _interceptSemaphore.Wait();
+
+            // This data should exist if not invoked internally.
+            Guard.IsNotNull(_methodEnteredData, nameof(_methodEnteredData));
+
+            Exited?.Invoke(this, _methodEnteredData);
+
+            _interceptSemaphore.Release();
+        }
 
         /// <summary>
         /// Raised when the attached method is fired.
@@ -52,7 +89,7 @@ namespace OwlCore.Remoting
         /// This static needed because the <see cref="IMethodInterceptor"/> weaver removes the attribute from the method in IL, making it innaccessible through normal means.
         /// Since this event emits the same instance we pass to <see cref="MemberRemote"/>, we can still use this.
         /// </remarks>
-        public static event EventHandler<MethodEnteredEventArgs>? Entered;
+        public static event EventHandler<MethodInterceptEventArgs>? Entered;
 
         /// <summary>
         /// Raised when the event is finished executing and is about to exit.
@@ -61,7 +98,7 @@ namespace OwlCore.Remoting
         /// This static needed because the <see cref="IMethodInterceptor"/> weaver removes the attribute from the method in IL, making it innaccessible through normal means.
         /// Since this event emits the same instance we pass to <see cref="MemberRemote"/>, we can still use this.
         /// </remarks>
-        public static event EventHandler? Exited;
+        public static event EventHandler<MethodInterceptEventArgs>? Exited;
 
         /// <summary>
         /// Raised when an exception occurs in the method.

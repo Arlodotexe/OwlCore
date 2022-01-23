@@ -39,10 +39,32 @@ Our favorite features:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.44 ---
+[New]
+New class: RemoteSemaphoreSlim. A remote-capable SemaphoreSlim implementation. Unit tests included.
+Added a new overload to DataProxy: ReceiveDataAsync{TResult}(MemberRemote, string, TimeSpan, CancellationToken?). This overloads waits the given timespan for multiple published messages, then returns all received data. Unit tests included.
+MemberRemote will now emit a RemoteMethodCallMessage when a method is exited.
+MethodCallId has been added to MethodInterceptEventArgs and RemoteMethodCallMessage. This value is unique for every method call.
+InterceptType (entry, exit) has been added to MethodInterceptEventArgs.
+
+[Improvements]
+NewtonsoftRemoteMessageConverter will now exclude null values during serialization.
+OwlCore.Extensions.Cast{T} now uses aggressive inlining.
+Added unit tests for the emitting of RemoteMethodCallMessage for both Entry and Exit.
+AbstractUICollectionViewModel now inherits from ICollection{T} instead of IEnumerable{T}.
+AbstractUICollectionViewModel now implements INotifyCollectionChanged.
+AbstractUICollectionViewModel now inherits from ICollection{T} instead of IEnumerable{T}.
+AbstractUICollection now implements INotifyCollectionChanged.
+AbstractUICollection.Items and AbstractUICollectionViewModel.Items have been marked as obsolete and will be removed in a future version. Enumerate the collections directly instead.
+
 [Fixes]
 Fixed an issue in NewtonsoftRemoteMessageConverter where property changes were not using assembly qualified name for type conversion.
 Fixed an issue in NewtonsoftRemoteMessageConverter where Enums were not being deserialized properly.
 Fixed an issue in NewtonsoftRemoteMessageConverter where a concrete class value passed for an interface target type was cast to the wrong enumerable type.
+
+[Breaking changes]
+MethodEnteredEventArgs has been renamed to MethodInterceptEventArgs.
+A param has been inserted at index 0 in the ctor for MethodInterceptEventArgs (string methodCallId)
+A param has been inserted at index 1 in the ctor for RemoteMethodCallMessage (string methodCallId).
 
 --- 0.0.43 ---
 [Fixes]
@@ -335,10 +357,6 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	<ItemGroup>
 		<PackageReference Include="Cauldron.BasicInterceptors" Version="3.2.3" />
 		<PackageReference Include="Cauldron.Interception.Fody" Version="3.2.3" />
-		<PackageReference Include="docfx.console" Version="2.58.9">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
-		</PackageReference>
 		<PackageReference Include="MessagePack" Version="2.3.85" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />

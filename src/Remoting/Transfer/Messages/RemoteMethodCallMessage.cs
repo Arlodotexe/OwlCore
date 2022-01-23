@@ -12,15 +12,17 @@ namespace OwlCore.Remoting.Transfer
         /// Creates a new instance of <see cref="RemoteMethodCallMessage"/>.
         /// </summary>
         /// <param name="memberInstanceId">A unique identifier for this instance, consistent between hosts and clients.</param>
+        /// <param name="methodCallId">A unique identifier for this method call.</param>
         /// <param name="targetMemberSignature">The signature of the method being invoked.</param>
         /// <param name="parameters">The parameters to pass to the remote method, if any.</param>
-        public RemoteMethodCallMessage(string memberInstanceId, string targetMemberSignature, IEnumerable<ParameterData> parameters)
+        public RemoteMethodCallMessage(string memberInstanceId, string methodCallId, string targetMemberSignature, IEnumerable<ParameterData> parameters)
         {
             MemberRemoteId = memberInstanceId;
             TargetMemberSignature = targetMemberSignature;
             Parameters = parameters;
 
             Action = RemotingAction.MethodCall;
+            MethodCallId = methodCallId;
         }
 
         /// <summary>
@@ -31,6 +33,7 @@ namespace OwlCore.Remoting.Transfer
         {
             MemberRemoteId = string.Empty;
             TargetMemberSignature = string.Empty;
+            MethodCallId = string.Empty;
             Parameters = new List<ParameterData>();
 
             Action = RemotingAction.MethodCall;
@@ -46,6 +49,16 @@ namespace OwlCore.Remoting.Transfer
         /// The arguments being passed to the remotely called method. Key is the <see cref="Type.AssemblyQualifiedName"/>, value is the data.
         /// </summary>
         public IEnumerable<ParameterData> Parameters { get; set; }
+
+        /// <summary>
+        /// A unique identifier for this method call.
+        /// </summary>
+        public string MethodCallId { get; set; }
+
+        /// <summary>
+        /// Indicates the interception type for this method call.
+        /// </summary>
+        public MethodCallInterceptionType InterceptType { get; set; }
     }
 
     /// <summary>

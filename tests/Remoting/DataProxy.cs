@@ -14,7 +14,7 @@ namespace OwlCore.Tests.Remoting
     public class DataProxy
     {
         [TestMethod]
-        [Timeout(1000)]
+        [Timeout(5000)]
         public async Task TestPublishAsync()
         {
             var instance = new DataProxyRemotingTestClass(RemotingMode.Host);
@@ -44,7 +44,7 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [Timeout(1000)]
+        [Timeout(5000)]
         public async Task TestPublishReceiveAsync()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
@@ -53,7 +53,7 @@ namespace OwlCore.Tests.Remoting
             // Receiver with different member remote ID should not receive changes.
             var receiver2 = new DataProxyRemotingTestClass(RemotingMode.Client, "instance2");
 
-            WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
+            WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote, receiver2.MemberRemote);
 
             var expectedResult = Guid.NewGuid();
 
@@ -71,8 +71,36 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
+        [Timeout(5000)]
+        public async Task TestMultiPublishMultiReceiveAsync()
+        {
+            var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
+            var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
+
+            // Receiver with different member remote ID should not receive changes.
+            var receiver2 = new DataProxyRemotingTestClass(RemotingMode.Client, "instance2");
+
+            WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote, receiver2.MemberRemote);
+
+            var expectedResults = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() }.ToList();
+
+            // Tests by manually invoking both sender and listener 
+            var receiverTask = receiver.MultiSendOrReceive(TimeSpan.FromMilliseconds(1000), expectedResults);
+            var receiver2Task = receiver2.MultiSendOrReceive(TimeSpan.FromMilliseconds(1000), expectedResults);
+            var senderTask = sender.MultiSendOrReceive(TimeSpan.FromMilliseconds(1000), expectedResults);
+
+            var results = await Task.WhenAll(receiverTask, senderTask, receiver2Task);
+
+            Assert.IsNotNull(results);
+            Assert.AreNotEqual(0, expectedResults.Count);
+            CollectionAssert.AreEqual(expectedResults, results[0]);
+            CollectionAssert.AreEqual(expectedResults, results[1]);
+            Assert.AreEqual(0, results[2].Count, "Receiver with different member remote ID should not receive changes.");
+        }
+
+        [TestMethod]
         [Timeout(1000)]
-        public async Task TestPublicReceiveRemoteMethod()
+        public async Task TestPublishReceiveRemoteMethod()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
             var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
@@ -89,8 +117,26 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [Timeout(1000)]
-        public async Task TestPublicReceiveRemoteMethod_Null()
+        [Timeout(5000)]
+        public async Task TestMultiPublishReceiveRemoteMethod()
+        {
+            var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
+            var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
+
+            WeaveLoopbackHandlers(sender.MemberRemote, receiver.MemberRemote);
+
+            var expectedResults = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() }.ToList();
+
+            // Tests by manually invoking listener, and expecting RemoteMethod to call the sender, making it publish return data.
+            var result = await receiver.RemoteMultiSendOrReceive(TimeSpan.FromMilliseconds(1000), expectedResults);
+
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEqual(expectedResults, result);
+        }
+
+        [TestMethod]
+        [Timeout(5000)]
+        public async Task TestPublishReceiveRemoteMethod_Null()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
             var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
@@ -104,8 +150,8 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [Timeout(1000)]
-        public async Task TestPublicReceiveRemoteMethod_Int()
+        [Timeout(5000)]
+        public async Task TestPublishReceiveRemoteMethod_Int()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
             var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
@@ -120,8 +166,8 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [Timeout(1000)]
-        public async Task TestPublicReceiveRemoteMethod_Object()
+        [Timeout(5000)]
+        public async Task TestPublishReceiveRemoteMethod_Object()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
             var receiver = new DataProxyRemotingTestClass(RemotingMode.Client);
@@ -177,6 +223,28 @@ namespace OwlCore.Tests.Remoting
 
             if (MemberRemote.Mode == RemotingMode.Host)
                 return MemberRemote.PublishDataAsync(nameof(BasicSendOrReceive), guid);
+
+            throw new ArgumentOutOfRangeException();
+        }
+
+        [RemoteMethod]
+        public Task<List<Guid>> RemoteMultiSendOrReceive(TimeSpan timespan, List<Guid> guid) => MultiSendOrReceive(timespan, guid);
+
+        public async Task<List<Guid>> MultiSendOrReceive(TimeSpan timespan, List<Guid> guid)
+        {
+            if (MemberRemote.Mode == RemotingMode.Client)
+                return await MemberRemote.ReceiveDataAsync<Guid>(nameof(MultiSendOrReceive), timespan);
+
+            if (MemberRemote.Mode == RemotingMode.Host)
+            {
+                foreach (var item in guid)
+                {
+                    await Task.Delay(10);
+                    await MemberRemote.PublishDataAsync(nameof(MultiSendOrReceive), item);
+                }
+
+                return guid;
+            }
 
             throw new ArgumentOutOfRangeException();
         }

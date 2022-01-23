@@ -20,7 +20,7 @@ namespace OwlCore.Tests.Remoting
             var msgConverter = new NewtonsoftRemoteMessageConverter();
 
             var methodInfo = ((Func<Task>)MethodCall_NoParams).Method;
-            var originalMessage = new RemoteMethodCallMessage(MEMBER_REMOTE_ID, MemberRemote.CreateMemberSignature(methodInfo, MemberSignatureScope.AssemblyQualifiedName), Enumerable.Empty<ParameterData>());
+            var originalMessage = new RemoteMethodCallMessage(MEMBER_REMOTE_ID, Guid.NewGuid().ToString(), MemberRemote.CreateMemberSignature(methodInfo, MemberSignatureScope.AssemblyQualifiedName), Enumerable.Empty<ParameterData>());
             var bytes = await msgConverter.SerializeAsync(originalMessage);
 
             Assert.IsNotNull(bytes);
@@ -756,11 +756,11 @@ namespace OwlCore.Tests.Remoting
         {
             var parameterData = new ParameterData
             {
-                Value = new AbstractUI.Models.AbstractButton("someId", "My button")
+                Value = new OwlCore.AbstractUI.Models.AbstractButton("someId", "My button")
                 {
                     Title = "Test title",
                 },
-                AssemblyQualifiedName = typeof(AbstractUI.Models.AbstractButton).AssemblyQualifiedName,
+                AssemblyQualifiedName = typeof(OwlCore.AbstractUI.Models.AbstractButton).AssemblyQualifiedName,
             };
 
             return ValidateMethodAsync(((Func<Task>)MethodCall_SingleParam_ObjectInstance).Method, parameterData);
@@ -775,7 +775,7 @@ namespace OwlCore.Tests.Remoting
         {
             var msgConverter = new NewtonsoftRemoteMessageConverter();
 
-            var originalMessage = new RemoteMethodCallMessage(MEMBER_REMOTE_ID, MemberRemote.CreateMemberSignature(methodInfo, MemberSignatureScope.AssemblyQualifiedName), parameters.ToArray());
+            var originalMessage = new RemoteMethodCallMessage(MEMBER_REMOTE_ID, Guid.NewGuid().ToString(), MemberRemote.CreateMemberSignature(methodInfo, MemberSignatureScope.AssemblyQualifiedName), parameters.ToArray());
             var bytes = await msgConverter.SerializeAsync(originalMessage);
 
             Assert.IsNotNull(bytes);
