@@ -28,7 +28,7 @@ namespace OwlCore.Tests.Extensions
             // Start at -1 to make zero-indexed. (0 = child of root was checked, 1 = grandchild of root was checked, etc)
             // Note that the filter predicate is always run at least once.
             var depthReached = -1;
-            var result = instance.CrawlBy(x => x?.Inner, x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
+            var result = instance.CrawlBy(x => x.Inner, x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
 
             // -1 means the whole tree is crawled and nothing should be found.
             if (expectedInstanceAt == -1)
@@ -107,7 +107,7 @@ namespace OwlCore.Tests.Extensions
             // Start at -1 to make zero-indexed. (0 = child of root was checked, 1 = grandchild of root was checked, etc)
             // Note that the filter predicate is always run at least once.
             var depthReached = -1;
-            var result = await instance.CrawlByAsync(x => x?.GetInnerAsync(), x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
+            var result = await instance.CrawlByAsync(x => x.GetInnerAsync(), x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
 
             // -1 means the whole tree is crawled and nothing should be found.
             if (expectedInstanceAt == -1)
