@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -16,20 +17,16 @@ namespace OwlCore.Extensions
         /// <remarks>
         /// Does not filter against or return the <paramref name="root"/> object.
         /// </remarks>
-        public static T? CrawlBy<T>(this T root, Func<T, T?> selectPredicate, Func<T?, bool> filterPredicate)
+        public static T? CrawlBy<T>(this T root, Func<T, T?> selectPredicate, Func<T, bool> filterPredicate)
         {
         crawl:
             var current = selectPredicate(root);
 
-            if (filterPredicate(current))
-            {
-                return current;
-            }
-
             if (current is null)
-            {
                 return default;
-            }
+
+            if (filterPredicate(current))
+                return current;
 
             root = current;
             goto crawl;
@@ -41,22 +38,16 @@ namespace OwlCore.Extensions
         /// <remarks>
         /// Does not filter against or return the <paramref name="root"/> object.
         /// </remarks>
-        public static async Task<T?> CrawlByAsync<T>(this T root, Func<T, Task<T?>> selectPredicate, Func<T?, bool> filterPredicate)
+        public static async Task<T?> CrawlByAsync<T>(this T root, Func<T, Task<T?>> selectPredicate, Func<T, bool> filterPredicate)
         {
         crawl:
-            var selectTask = selectPredicate(root);
-
-            var current = selectTask is null ? default : await selectTask;
-
-            if (filterPredicate(current))
-            {
-                return current;
-            }
+            var current = await selectPredicate(root);
 
             if (current is null)
-            {
                 return default;
-            }
+
+            if (filterPredicate(current))
+                return current;
 
             root = current;
             goto crawl;
@@ -68,22 +59,16 @@ namespace OwlCore.Extensions
         /// <remarks>
         /// Does not filter against or return the <paramref name="root"/> object.
         /// </remarks>
-        public static async Task<T?> CrawlByAsync<T>(this T root, Func<T, Task<T?>> selectPredicate, Func<T?, Task<bool>> filterPredicate)
+        public static async Task<T?> CrawlByAsync<T>(this T root, Func<T, Task<T?>> selectPredicate, Func<T, Task<bool>> filterPredicate)
         {
         crawl:
-            var selectTask = selectPredicate(root);
+            var current = await selectPredicate(root);
 
-            var current = selectTask is null ? default : await selectTask;
+            if (current is null)
+                return default;
 
             if (await filterPredicate(current))
-            {
                 return current;
-            }
-
-            if (current is null)
-            {
-                return default;
-            }
 
             root = current;
             goto crawl;

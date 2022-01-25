@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OwlCore.Extensions;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +36,7 @@ namespace OwlCore.Tests.Extensions
             if (expectedInstanceAt == -1)
             {
                 // totalDepth is not zero-indexed
-                Assert.AreEqual(totalDepth, depthReached, "Crawled depth does not match total depth.");
+                Assert.AreEqual(totalDepth - 1, depthReached, "Crawled depth does not match total depth.");
                 Assert.IsNull(result, "Value should not be present.");
             }
             // 0 means only the child of root is checked.
@@ -91,8 +93,13 @@ namespace OwlCore.Tests.Extensions
         [DataRow(10, 9), DataRow(5, 4), DataRow(3, 2), DataRow(100, 99)]
         [DataRow(10, -1), DataRow(5, -1), DataRow(3, -1), DataRow(100, -1)]
         [DataRow(10, 0), DataRow(5, 0), DataRow(3, 0), DataRow(100, 0)]
+
+        [DataRow(10, 10, true), DataRow(5, 5, true), DataRow(3, 3, true), DataRow(100, 100, true)]
+        [DataRow(10, 9, true), DataRow(5, 4, true), DataRow(3, 2, true), DataRow(100, 99, true)]
+        [DataRow(10, -1, true), DataRow(5, -1, true), DataRow(3, -1, true), DataRow(100, -1, true)]
+        [DataRow(10, 0, true), DataRow(5, 0, true), DataRow(3, 0, true), DataRow(100, 0, true)]
         [TestMethod, Timeout(10000)]
-        public async Task CrawlByAsync(int totalDepth, int expectedInstanceAt = -1)
+        public async Task CrawlByAsync(int totalDepth, int expectedInstanceAt = -1, bool withAsyncFilter = false)
         {
             var expectedInstance = new CrawlByAsyncTestClass
             {
@@ -107,13 +114,16 @@ namespace OwlCore.Tests.Extensions
             // Start at -1 to make zero-indexed. (0 = child of root was checked, 1 = grandchild of root was checked, etc)
             // Note that the filter predicate is always run at least once.
             var depthReached = -1;
-            var result = await instance.CrawlByAsync(x => x.GetInnerAsync(), x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
+
+            var result = withAsyncFilter ?
+                await instance.CrawlByAsync(x => x.GetInnerAsync(), async x => { await Task.Yield(); ++depthReached; return ReferenceEquals(x, expectedInstance); }) :
+                await instance.CrawlByAsync(x => x.GetInnerAsync(), x => { ++depthReached; return ReferenceEquals(x, expectedInstance); });
 
             // -1 means the whole tree is crawled and nothing should be found.
             if (expectedInstanceAt == -1)
             {
                 // totalDepth is not zero-indexed
-                Assert.AreEqual(totalDepth, depthReached, "Crawled depth does not match total depth.");
+                Assert.AreEqual(totalDepth - 1, depthReached, "Crawled depth does not match total depth.");
                 Assert.IsNull(result, "Value should not be present.");
             }
             // 0 means only the child of root is checked.
