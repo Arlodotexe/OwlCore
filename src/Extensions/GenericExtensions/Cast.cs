@@ -16,7 +16,7 @@ namespace OwlCore.Extensions
         /// <returns>The same object, cast to the requested type.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TTarget Cast<TTarget>(this object obj)
-         where TTarget : class
+            where TTarget : class
         {
             return (TTarget)obj;
         }
