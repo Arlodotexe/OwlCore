@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Diagnostics;
+using OwlCore.Extensions;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -6,27 +8,31 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Diagnostics;
-using OwlCore.Extensions;
 
-namespace OwlCore.Net.HttpClientHandlers
+namespace OwlCore.Net.Http
 {
     /// <summary>
-    /// An <see cref="CompositeHttpClientHandlerActionBase"/> that provides caching functionality.
+    /// An <see cref="HttpClientHandler"/> that caches requests and returns them when specified (with optional cache filtering).
     /// </summary>
-    [Obsolete("This will be removed in a future version. CachedHttpClientHandler now supports proper chaining, please use that instead.", error: false)]
-    public class CachedHttpClientHandlerAction : CompositeHttpClientHandlerActionBase
+    /// <remarks>
+    /// This is a <see cref="DelegatingHandler"/>. By default, the <see cref="DelegatingHandler.InnerHandler"/> property is an <see cref="HttpClientHandler"/> so it can handle HTTP requests without further config.
+    /// <para/>
+    /// You can assign a different <c>InnerHandler</c>, including other <see cref="DelegatingHandler"/>s, to chain handlers together.
+    /// </remarks>
+    public class CachedHttpClientHandler : DelegatingHandler
     {
         private readonly string _cacheFolderPath;
         private readonly TimeSpan _defaultCacheTime;
 
         /// <summary>
-        /// Creates an instance of the <see cref="CachedHttpClientHandlerAction"/>.
+        /// Creates an instance of the <see cref="CachedHttpClientHandler"/>.
         /// </summary>
-        public CachedHttpClientHandlerAction(string cacheFolderPath, TimeSpan defaultCacheTime)
+        public CachedHttpClientHandler(string cacheFolderPath, TimeSpan defaultCacheTime)
         {
             _cacheFolderPath = cacheFolderPath;
             _defaultCacheTime = defaultCacheTime;
+
+            InnerHandler = new HttpClientHandler();
         }
 
         /// <summary>
@@ -40,7 +46,7 @@ namespace OwlCore.Net.HttpClientHandlers
         public event EventHandler<CachedRequestEventArgs>? CachedRequestSaving;
 
         /// <inheritdoc cref="HttpClientHandler.SendAsync(HttpRequestMessage, CancellationToken)"/>
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> baseSendAsync)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var path = Path.GetFullPath(_cacheFolderPath);
 
@@ -83,7 +89,7 @@ namespace OwlCore.Net.HttpClientHandlers
                 }
             }
 
-            var result = await baseSendAsync();
+            var result = await base.SendAsync(request, cancellationToken);
             var freshCacheData = await CreateCachedData(request.RequestUri.AbsoluteUri, result);
 
             var shouldSaveEventArgs = new CachedRequestEventArgs(request.RequestUri, freshCacheData);
@@ -178,5 +184,56 @@ namespace OwlCore.Net.HttpClientHandlers
         {
             return Path.Combine(basePath, requestUri.HashMD5Fast()) + ".cache";
         }
+    }
+
+    /// <summary>
+    /// A class to hold and save cached data.
+    /// </summary>
+    public class CacheEntry
+    {
+        /// <summary>
+        /// The cached response object.
+        /// </summary>
+        public string? RequestUri { get; set; }
+
+        /// <summary>
+        /// The http response content.
+        /// </summary>
+        public byte[]? ContentBytes { get; set; }
+
+        /// <summary>
+        /// Timestamp for the cache.
+        /// </summary>
+        public DateTime TimeStamp { get; set; }
+    }
+
+    /// <summary>
+    /// <see cref="EventArgs"/> used to handled if a request should be saved to disk or used in <see cref="CachedHttpClientHandlerAction"/>.
+    /// </summary>
+    public class CachedRequestEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Creates a new instance of <see cref="CachedRequestEventArgs"/>.
+        /// </summary>
+        public CachedRequestEventArgs(Uri requestUri, CacheEntry cacheEntry)
+        {
+            RequestUri = requestUri;
+            CacheEntry = cacheEntry;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the event was handled.
+        /// </summary>
+        public bool Handled { get; set; }
+
+        /// <summary>
+        /// The uri of the current request.
+        /// </summary>
+        public Uri RequestUri { get; set; }
+
+        /// <summary>
+        /// The cached data, if present.
+        /// </summary>
+        public CacheEntry CacheEntry { get; set; }
     }
 }

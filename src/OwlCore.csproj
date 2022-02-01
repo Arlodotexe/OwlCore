@@ -41,6 +41,12 @@ Our favorite features:
 --- 0.0.45 ---
 [New]
 Added extension methods CrawlBy and CrawlByAsync. Crawls an object tree for nested properties of the same type and returns the first instance that matches a filter predicate. Unit tested.
+Added OwlCore.ComponentModel.IDelegatable.
+Added OwlCore.ComponentModel.ChainedProxyBuilder. Builds a class delegation chain where each item might delegate member access to the next item in the collection. Unit tested.
+
+[Breaking changes]
+CompositeHttpClientHandler and all related classes have been removed in favor of the built-in DelegatingMessageHandler, which all OwlCore handlers support by default.
+OwlCore.Net.HttpClientHandlers namespace has been renamed to OwlCore.Net.Http.
 
 --- 0.0.44 ---
 [New]

@@ -1,16 +1,20 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OwlCore.Net.HttpClientHandlers
+namespace OwlCore.Net.Http
 {
     /// <summary>
-    /// A rate-limiting action holder for use in a <see cref="CompositeHttpClientHandler"/>.
+    /// An <see cref="HttpClientHandler"/> that provides rate limiting functionality.
     /// </summary>
-    [Obsolete("This will be removed in a future version. RateLimitedHttpClientHandler now supports proper chaining, please use that instead.", error: false)]
-    public class RateLimitedHttpClientHandlerAction : CompositeHttpClientHandlerActionBase
+    /// <remarks>
+    /// This is a <see cref="DelegatingHandler"/>. By default, the <see cref="DelegatingHandler.InnerHandler"/> property is an <see cref="HttpClientHandler"/> so it can handle HTTP requests without further config.
+    /// <para/>
+    /// You can assign a different <c>InnerHandler</c>, including other <see cref="DelegatingHandler"/>s, to chain handlers together.
+    /// </remarks>
+    public class RateLimitedHttpClientHandler : DelegatingHandler
     {
         private readonly TimeSpan _cooldownWindowTimeSpan;
         private readonly int _maxNumberOfRequestsPerCooldownWindow;
@@ -22,14 +26,16 @@ namespace OwlCore.Net.HttpClientHandlers
         /// </summary>
         /// <param name="cooldownWindowTimeSpan">The amount of time before the cooldown window resets. Requests that are this old no longer count towards <paramref name="maxNumberOfRequestsPerCooldownWindow"/>.</param>
         /// <param name="maxNumberOfRequestsPerCooldownWindow">The maximum number of requests allowed per cooldown window.</param>
-        public RateLimitedHttpClientHandlerAction(TimeSpan cooldownWindowTimeSpan, int maxNumberOfRequestsPerCooldownWindow)
+        public RateLimitedHttpClientHandler(TimeSpan cooldownWindowTimeSpan, int maxNumberOfRequestsPerCooldownWindow)
         {
             _cooldownWindowTimeSpan = cooldownWindowTimeSpan;
             _maxNumberOfRequestsPerCooldownWindow = maxNumberOfRequestsPerCooldownWindow;
+
+            InnerHandler = new HttpClientHandler();
         }
 
         /// <inheritdoc />
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> baseSendAsync)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             using (await Flow.EasySemaphore(_mutex))
             {
@@ -51,7 +57,7 @@ namespace OwlCore.Net.HttpClientHandlers
                     await Task.Delay(_cooldownWindowTimeSpan - timeSinceOldestRequestWasMade, cancellationToken);
                 }
 
-                return await baseSendAsync();
+                return await base.SendAsync(request, cancellationToken);
             }
         }
     }
