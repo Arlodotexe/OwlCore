@@ -80,7 +80,7 @@ namespace OwlCore.AbstractUI.Models
 
         /// <inheritdoc/>
         [RemoteMethod]
-        bool ICollection<AbstractUIElement>.Remove(AbstractUIElement item)
+        public bool Remove(AbstractUIElement item)
         {
             var removed = _items.Remove(item);
 

@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.45</Version>
+		<Version>0.0.46</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.46 ---
+[Fixes]
+Fixed AbstractUICollection.Remove being restricted to the explicit interface implementation of ICollection{AbstractUIElement}.
+
 --- 0.0.45 ---
 [New]
 Added extension methods CrawlBy and CrawlByAsync. Crawls an object tree for nested properties of the same type and returns the first instance that matches a filter predicate. Unit tested.
