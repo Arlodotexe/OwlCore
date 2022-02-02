@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.46</Version>
+		<Version>0.0.47</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,11 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.47 ---
+[Fixes]
+Added missing AbstractUI ViewModels.
+Added tests to ensure that constructing AbstractUICollectionViewModel works with all possible models.
+
 --- 0.0.46 ---
 [Fixes]
 Fixed AbstractUICollection.Remove being restricted to the explicit interface implementation of ICollection{AbstractUIElement}.
