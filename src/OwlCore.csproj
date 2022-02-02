@@ -41,6 +41,7 @@ Our favorite features:
 --- 0.0.46 ---
 [Fixes]
 Fixed AbstractUICollection.Remove being restricted to the explicit interface implementation of ICollection{AbstractUIElement}.
+Added unit tests and Adding and Removing from AbstractUICollection and AbstractUICollectionViewModel.
 
 --- 0.0.45 ---
 [New]
