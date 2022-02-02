@@ -27,21 +27,18 @@ namespace OwlCore.AbstractUI.ViewModels
         {
             _model = model;
 
-            using (Threading.PrimaryContext)
+            var requestAddMetadataItem = new AbstractUIMetadata("requestAddItem")
             {
-                var requestAddMetadataItem = new AbstractUIMetadata("requestAddItem")
-                {
-                    Title = "Add new",
-                };
+                Title = "Add new",
+            };
 
-                _requestAddMetadataItemVm = new AbstractDataListItemViewModel(requestAddMetadataItem, this);
+            _requestAddMetadataItemVm = new AbstractDataListItemViewModel(requestAddMetadataItem, this);
 
-                var itemViewModels = _model.Items.Select(item => new AbstractDataListItemViewModel(item, this));
-                Items = new ObservableCollection<AbstractDataListItemViewModel>(itemViewModels);
+            var itemViewModels = _model.Items.Select(item => new AbstractDataListItemViewModel(item, this));
+            Items = new ObservableCollection<AbstractDataListItemViewModel>(itemViewModels);
 
-                if (model.IsUserEditingEnabled)
-                    Items.Add(_requestAddMetadataItemVm);
-            }
+            if (model.IsUserEditingEnabled)
+                Items.Add(_requestAddMetadataItemVm);
 
             ItemTappedCommand = new RelayCommand<AbstractDataListItemViewModel>(TapItem);
 
@@ -161,7 +158,8 @@ namespace OwlCore.AbstractUI.ViewModels
         public bool IsUserEditingEnabled
         {
             get => _isUserEditingEnabled;
-            set { 
+            set
+            {
                 _isUserEditingEnabled = value;
                 OnPropertyChanged(nameof(IsUserEditingEnabled));
             }

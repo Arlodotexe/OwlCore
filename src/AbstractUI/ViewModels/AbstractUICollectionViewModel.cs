@@ -78,7 +78,9 @@ namespace OwlCore.AbstractUI.ViewModels
                 AbstractRichTextBlock richText => new AbstractRichTextBlockViewModel(richText),
                 AbstractMultiChoice multiChoiceUIElement => new AbstractMultiChoiceViewModel(multiChoiceUIElement),
                 AbstractUICollection elementGroup => new AbstractUICollectionViewModel(elementGroup),
-                _ => throw new NotImplementedException(),
+                AbstractProgressIndicator progress => new AbstractProgressIndicatorViewModel(progress),
+                AbstractColorPicker color => new AbstractColorPickerViewModel(color),
+                _ => throw new NotSupportedException($"No match ViewModel was found for {element.GetType()}."),
             };
         }
 

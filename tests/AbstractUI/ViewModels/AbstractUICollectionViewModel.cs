@@ -11,6 +11,25 @@ namespace OwlCore.Tests.AbstractUI.ViewModels
     [TestClass]
     public class AbstractUICollectionViewModel
     {
+        [TestMethod]
+        public void AllModelsHaveViewModels()
+        {
+            var elements = new AbstractUICollection("test")
+            {
+                new AbstractButton("btn", "btn"),
+                new AbstractBoolean("bool", "bool"),
+                new AbstractColorPicker("clr"),
+                new AbstractDataList("data", Enumerable.Empty<AbstractUIMetadata>().ToList()),
+                new AbstractMultiChoice("mult", new AbstractUIMetadata("default"), Enumerable.Empty<AbstractUIMetadata>()),
+                new AbstractProgressIndicator("prog", false),
+                new AbstractRichTextBlock("rich", "text"),
+                new AbstractTextBox("txtbx"),
+                new AbstractUICollection("inner"),
+            };
+
+            new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(elements);
+        }
+
         [DataRow(false, DisplayName = "Add to ViewModel")]
         [DataRow(true, DisplayName = "Add to underlying model")]
         [TestMethod, Timeout(2000)]
