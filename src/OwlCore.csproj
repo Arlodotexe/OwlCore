@@ -42,6 +42,7 @@ Our favorite features:
 [Fixes]
 Added missing AbstractUI ViewModels.
 Added tests to ensure that constructing AbstractUICollectionViewModel works with all possible models.
+Fixed InvalidProgramException when calling AbstractUICollection.Remove or AbstractUICollectionViewModel.Remove caused by invalid IL code reaching the JIT Compiler.
 
 --- 0.0.46 ---
 [Fixes]

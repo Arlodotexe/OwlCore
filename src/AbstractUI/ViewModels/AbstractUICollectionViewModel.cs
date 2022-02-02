@@ -121,12 +121,14 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <inheritdoc />
         public bool Remove(AbstractUIViewModelBase item)
         {
-            var removed = _items.Remove(item);
+            if (!_items.Contains(item))
+                return false;
 
-            if (removed)
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            _items.Remove(item);
 
-            return removed;
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+
+            return true;
         }
 
         /// <inheritdoc />

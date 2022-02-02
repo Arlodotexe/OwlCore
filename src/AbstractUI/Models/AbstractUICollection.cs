@@ -82,12 +82,14 @@ namespace OwlCore.AbstractUI.Models
         [RemoteMethod]
         public bool Remove(AbstractUIElement item)
         {
-            var removed = _items.Remove(item);
+            if (!_items.Contains(item))
+                return false;
 
-            if (removed)
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            _items.Remove(item);
 
-            return removed;
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+
+            return true;
         }
 
         /// <inheritdoc/>
@@ -110,6 +112,7 @@ namespace OwlCore.AbstractUI.Models
         {
             ((ICollection<AbstractUIElement>)_items).CopyTo(array, arrayIndex);
         }
+
         /// <inheritdoc/>
         public IEnumerator<AbstractUIElement> GetEnumerator()
         {
