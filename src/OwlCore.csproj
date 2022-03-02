@@ -39,6 +39,10 @@ Our favorite features:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.50 ---
+[New]
+Added ISerializer{T}, ISerializer{T, T2}, IAsyncSerializer{T}, and IAsyncSerializer{T, T2}.
+IRemoteMessageConverter now implements IAsyncSerializer{T, T2}.
+
 [Breaking changes]
 ContextualServiceLocator has been removed.
 
