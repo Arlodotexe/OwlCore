@@ -58,8 +58,7 @@ namespace OwlCore
                 }
                 catch (Exception exc) when (exc is TResult)
                 {
-
-                return default;
+                    return default;
                 }
             }
 
