@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OwlCore.AbstractStorage
@@ -96,6 +97,7 @@ namespace OwlCore.AbstractStorage
         /// </summary>
         /// <remarks>This was created because the local cache folder does not exist by default on WebAssembly.</remarks>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [Obsolete("This will be removed within the next few versions.")]
         public Task EnsureExists();
     }
 }
