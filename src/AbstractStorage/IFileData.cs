@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace OwlCore.AbstractStorage
@@ -58,6 +59,7 @@ namespace OwlCore.AbstractStorage
         /// Writes all text on the <see cref="IFileData"/>.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("This method will soon be removed in favor of an extension method.")]
         public Task WriteAllBytesAsync(byte[] bytes);
 
         /// <summary>
