@@ -40,8 +40,13 @@ Our favorite features:
 		<PackageReleaseNotes>
 --- 0.0.50 ---
 [New]
+An abstract class SettingsBase has been added. Enables MVVM-like setting storage as property getters/setters, with abstracted serialization and data persistence using IAsyncSerializer and AbstractStorage. 
 Added ISerializer{T}, ISerializer{T, T2}, IAsyncSerializer{T}, and IAsyncSerializer{T, T2}.
 IRemoteMessageConverter now implements IAsyncSerializer{T, T2}.
+
+[Improvements]
+IFileData.WriteAllBytesAsync has been marked as obsolete and will be removed in a future version in favor of an extension method.
+IFolderData.EnsureExists has been marked as obsolete and will be removed in a future version.
 
 [Breaking changes]
 ContextualServiceLocator has been removed.
