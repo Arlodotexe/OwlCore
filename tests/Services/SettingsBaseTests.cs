@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,16 +16,17 @@ namespace OwlCore.Tests.Services;
 public class SettingsBaseTests
 {
     [TestMethod]
-    public async Task GetFallbackValue()
+    public Task GetFallbackValue()
     {
         var settingsStore = new MockFolder(name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         Assert.AreEqual(settings.StringData, "Default value");
+        return Task.CompletedTask;
     }
 
     [TestMethod]
-    public async Task SetAndGetValueInMemory()
+    public Task SetAndGetValueInMemory()
     {
         var settingsStore = new MockFolder(name: "Settings");
         var settings = new TestSettings(settingsStore);
@@ -37,6 +39,7 @@ public class SettingsBaseTests
         settings.StringData = newValue;
 
         Assert.AreEqual(newValue, settings.StringData);
+        return Task.CompletedTask;
     }
 
     [TestMethod]
@@ -103,6 +106,70 @@ public class SettingsBaseTests
         Assert.AreNotEqual(newValue, settings.StringData);
     }
 
+    [TestMethod, Timeout(2000)]
+    public async Task SaveNewValueThenLoadNotifiesPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var newValue = nameof(SetAndGetValueInMemory);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+
+        // Assign a value to save.
+        settings.StringData = newValue;
+        Assert.AreEqual(newValue, settings.StringData);
+        await settings.SaveAsync();
+
+        // Assign value different than what was saved.
+        settings.StringData = string.Empty;
+        Assert.AreNotEqual(newValue, settings.StringData);
+        
+        // Track changed properties
+        var changedProperties= new List<string>();
+        settings.PropertyChanged += OnChanged;
+
+        // Reload saved value.
+        await settings.LoadAsync();
+        
+        // Ensure only the assigned property changed.
+        Assert.AreEqual(1, changedProperties.Count);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[0]);
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) => changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+    }
+
+    [TestMethod]
+    public void SetSettingNotifiesPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var newValue = nameof(SetAndGetValueInMemory);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+
+        // Track changed properties
+        var changedProperties= new List<string>();
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = newValue;
+        Assert.AreEqual(newValue, settings.StringData);
+
+        // Ensure only the assigned property changed.
+        Assert.AreEqual(1, changedProperties.Count);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[0]);
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) => changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+    }
+
     private class TestSettings : SettingsBase
     {
         public TestSettings(IFolderData folder)
@@ -115,20 +182,6 @@ public class SettingsBaseTests
             get => GetSetting(() => "Default value");
             set => SetSetting(value);
         }
-
-        public TestCompositeData CompositeData
-        {
-            get => GetSetting(defaultValue: static () =>
-                new TestCompositeData(nameof(TestCompositeData), true, DateTime.Now));
-            set => SetSetting(value);
-        }
-    }
-
-    private record TestCompositeData(string First, bool Second, DateTime Third)
-    {
-        public string First { get; } = First;
-        public bool Second { get; } = Second;
-        public DateTime Third { get; } = Third;
     }
 
     private class MockSerializer : IAsyncSerializer<Stream>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,7 +15,7 @@ namespace OwlCore.Services
     /// <summary>
     /// A base class for getting and setting setting values as properties. Fast access in memory, with data persistence in a file system.
     /// </summary>
-    public abstract class SettingsBase
+    public abstract class SettingsBase : INotifyPropertyChanged
     {
         private readonly IAsyncSerializer<Stream> _settingSerializer;
         private readonly Dictionary<string, (Type Type, object Data)> _runtimeStorage = new();
@@ -43,6 +44,8 @@ namespace OwlCore.Services
         /// <typeparam name="T">The type of the stored value.</typeparam>
         protected void SetSetting<T>(T value, [CallerMemberName] string key = "")
         {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+
             if (value is null)
             {
                 _runtimeStorage.Remove(key);
@@ -156,6 +159,7 @@ namespace OwlCore.Services
                     var settingData = await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
 
                     _runtimeStorage[settingDataFile.Name] = (originalType, settingData);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(settingDataFile.Name));
                 }
                 catch
                 {
@@ -178,5 +182,8 @@ namespace OwlCore.Services
             // Read bytes as string
             return Encoding.UTF8.GetString(typeFileBytes);
         }
+
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }
