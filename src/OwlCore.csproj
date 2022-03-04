@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.50</Version>
+		<Version>0.0.51</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.51 ---
+[New]
+SettingsBase now implements INotifyPropertyChanged. Unit tests included.
+
 --- 0.0.50 ---
 [New]
 An abstract class SettingsBase has been added. Enables MVVM-like setting storage as property getters/setters, with abstracted serialization and data persistence using IAsyncSerializer and AbstractStorage. 
