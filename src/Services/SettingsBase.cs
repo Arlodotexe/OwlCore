@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -18,6 +19,7 @@ namespace OwlCore.Services
     public abstract class SettingsBase : INotifyPropertyChanged
     {
         private readonly IAsyncSerializer<Stream> _settingSerializer;
+        private readonly SemaphoreSlim _runtimeStorageMutex = new(1, 1);
         private readonly Dictionary<string, (Type Type, object Data)> _runtimeStorage = new();
 
         /// <summary>
@@ -44,15 +46,19 @@ namespace OwlCore.Services
         /// <typeparam name="T">The type of the stored value.</typeparam>
         protected void SetSetting<T>(T value, [CallerMemberName] string key = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+            _runtimeStorageMutex.Wait();
 
             if (value is null)
             {
+                _runtimeStorageMutex.Release();
                 _runtimeStorage.Remove(key);
                 return;
             }
 
             _runtimeStorage[key] = (typeof(T), value);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+
+            _runtimeStorageMutex.Release();
         }
 
         /// <summary>
@@ -63,8 +69,12 @@ namespace OwlCore.Services
         /// <typeparam name="T">The type of the stored value.</typeparam>
         protected T GetSetting<T>(Func<T> defaultValue, [CallerMemberName] string key = "")
         {
+            _runtimeStorageMutex.Wait();
             if (_runtimeStorage.TryGetValue(key, out var value))
-                return (T) value.Data;
+            {
+                _runtimeStorageMutex.Release();
+                return (T)value.Data;
+            }
 
             var fallbackValue = defaultValue();
 
@@ -72,17 +82,19 @@ namespace OwlCore.Services
             if (fallbackValue is not null)
                 _runtimeStorage[key] = (typeof(T), fallbackValue);
 
+            _runtimeStorageMutex.Release();
             return fallbackValue;
         }
 
         /// <summary>
         /// Persists all settings from memory onto disk.
         /// </summary>
-        public virtual Task SaveAsync(CancellationToken? cancellationToken = null)
+        public virtual async Task SaveAsync(CancellationToken? cancellationToken = null)
         {
+            await _runtimeStorageMutex.WaitAsync();
             var token = cancellationToken ?? CancellationToken.None;
 
-            return _runtimeStorage.InParallel(async kvp =>
+            await _runtimeStorage.InParallel(async kvp =>
             {
                 // Keeping storage of metadata (e.g. original type) separate from actual data allows us to
                 // pass the file stream to the serializer directly, without loading the whole thing into memory
@@ -91,9 +103,13 @@ namespace OwlCore.Services
                 var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
                 var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
                 if (token.IsCancellationRequested)
+                {
+                    _runtimeStorageMutex.Release();
                     return;
+                }
 
-                using var serializedRawDataStream = await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
+                using var serializedRawDataStream =
+                    await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
                 serializedRawDataStream.Position = 0;
 
                 if (token.IsCancellationRequested)
@@ -114,6 +130,8 @@ namespace OwlCore.Services
                 using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
                 await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
             });
+
+            _runtimeStorageMutex.Release();
         }
 
         /// <summary>
@@ -121,13 +139,15 @@ namespace OwlCore.Services
         /// </summary>
         public virtual async Task LoadAsync(CancellationToken? cancellationToken = null)
         {
+            await _runtimeStorageMutex.WaitAsync();
+
             var token = cancellationToken ?? CancellationToken.None;
 
             var files = await Folder.GetFilesAsync();
             var fileData = files as IFileData[] ?? files.ToArray(); // Handle possible multiple enumeration.
 
             // Remove unpersisted values.
-            var unpersistedSettings = _runtimeStorage.Where(x => fileData.All(y => y.Name != x.Key));
+            var unpersistedSettings = _runtimeStorage.Where(x => fileData.All(y => y.Name != x.Key)).ToArray();
             foreach (var setting in unpersistedSettings)
                 _runtimeStorage.Remove(setting.Key);
 
@@ -145,7 +165,7 @@ namespace OwlCore.Services
                 {
                     using var settingDataStream = await settingDataFile.GetStreamAsync();
                     settingDataStream.Position = 0;
-                    
+
                     var typeFileContentString = await ReadFileAsStringAsync(typeFile, token);
                     if (string.IsNullOrWhiteSpace(typeFileContentString))
                         return;
@@ -156,7 +176,8 @@ namespace OwlCore.Services
                         return;
 
                     // Deserialize data as original type.
-                    var settingData = await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
+                    var settingData =
+                        await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
 
                     _runtimeStorage[settingDataFile.Name] = (originalType, settingData);
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(settingDataFile.Name));
@@ -167,6 +188,8 @@ namespace OwlCore.Services
                     // Setting will not be loaded into memory.
                 }
             });
+            
+            _runtimeStorageMutex.Release();
         }
 
         private static async Task<string> ReadFileAsStringAsync(IFileData file, CancellationToken token)
