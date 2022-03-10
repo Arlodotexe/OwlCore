@@ -12,15 +12,15 @@ namespace OwlCore
         /// Provides syntactic sugar for releasing a <see cref="SemaphoreSlim"/> when execution leaves a <c>using</c> statement.
         /// </summary>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation. When this task completes, the semaphore has entered. Value is a disposable wrapper around the semaphore that calls <see cref="SemaphoreSlim.Release()"/> when disposed.</returns>
-        public static async Task<DisposeToReleaseSemaphoreWrapper> EasySemaphore(SemaphoreSlim semaphore)
+        public static async Task<DisposeToReleaseSemaphoreWrapper> EasySemaphore(SemaphoreSlim semaphore, CancellationToken? cancellationToken = null)
         {
             var wrapper = new DisposeToReleaseSemaphoreWrapper(semaphore);
-            await semaphore.WaitAsync();
+            await semaphore.WaitAsync(cancellationToken ?? CancellationToken.None);
             return wrapper;
         }
 
         /// <summary>
-        /// A wrapper that disposes the given semaphore when disposed. Used for <see cref="Flow.EasySemaphore(SemaphoreSlim)"/>.
+        /// A wrapper that disposes the given semaphore when disposed. Used for <see cref="EasySemaphore(SemaphoreSlim, CancellationToken?)"/>.
         /// </summary>
         public class DisposeToReleaseSemaphoreWrapper : IDisposable
         {
@@ -59,7 +59,7 @@ namespace OwlCore
         }
 
         /// <summary>
-        /// A wrapper that disposes the given semaphore when disposed. Used for <see cref="Flow.EasySemaphore(RemoteSemaphoreSlim)"/>.
+        /// A wrapper that disposes the given semaphore when disposed. Used for <see cref="EasySemaphore(RemoteSemaphoreSlim)"/>.
         /// </summary>
         public class DisposeToReleaseRemoteSemaphoreWrapper : IDisposable
         {

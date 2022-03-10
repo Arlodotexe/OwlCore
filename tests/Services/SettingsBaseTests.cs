@@ -15,7 +15,8 @@ namespace OwlCore.Tests.Services;
 [TestClass]
 public class SettingsBaseTests
 {
-    [TestMethod]
+
+    [TestMethod, Timeout(2000)]
     public Task GetFallbackValue()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -25,7 +26,7 @@ public class SettingsBaseTests
         return Task.CompletedTask;
     }
 
-    [TestMethod]
+    [TestMethod, Timeout(2000)]
     public Task SetAndGetValueInMemory()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -42,7 +43,7 @@ public class SettingsBaseTests
         return Task.CompletedTask;
     }
 
-    [TestMethod]
+    [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsync()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -54,14 +55,16 @@ public class SettingsBaseTests
         Assert.AreNotEqual(newValue, settings.StringData);
 
         settings.StringData = newValue;
+        settings.CompositeData.Label = newValue;
 
         await settings.SaveAsync();
         await settings.LoadAsync();
 
+        Assert.AreEqual(newValue, settings.CompositeData.Label);
         Assert.AreEqual(newValue, settings.StringData);
     }
 
-    [TestMethod]
+    [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsyncWithNewSettingsInstance()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -73,6 +76,7 @@ public class SettingsBaseTests
         Assert.AreNotEqual(newValue, settings.StringData);
 
         settings.StringData = newValue;
+        settings.CompositeData.Label = newValue;
         Assert.AreEqual(newValue, settings.StringData);
 
         await settings.SaveAsync();
@@ -84,10 +88,12 @@ public class SettingsBaseTests
         Assert.AreNotEqual(newValue, settings2.StringData);
 
         await settings2.LoadAsync();
+
+        Assert.AreEqual(newValue, settings.CompositeData.Label);
         Assert.AreEqual(newValue, settings2.StringData);
     }
 
-    [TestMethod]
+    [TestMethod, Timeout(2000)]
     public async Task LoadWithoutSaveDiscardsInMemoryValue()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -154,7 +160,7 @@ public class SettingsBaseTests
         Assert.AreNotEqual(newValue, settings.StringData);
 
         // Track changed properties
-        var changedProperties= new List<string>();
+        var changedProperties = new List<string>();
         settings.PropertyChanged += OnChanged;
 
         // Assign a new value
@@ -170,6 +176,28 @@ public class SettingsBaseTests
         void OnChanged(object? sender, PropertyChangedEventArgs e) => changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
 
+    [TestMethod, Timeout(2000)]
+    public void NoDeadlockWhileGettingSettingDuringPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var newValue = nameof(SetAndGetValueInMemory);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = newValue;
+        Assert.AreEqual(newValue, settings.StringData);
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) => Assert.AreEqual(settings.StringData, settings.StringData);
+    }
+
     private class TestSettings : SettingsBase
     {
         public TestSettings(IFolderData folder)
@@ -181,6 +209,24 @@ public class SettingsBaseTests
         {
             get => GetSetting(() => "Default value");
             set => SetSetting(value);
+        }
+
+        public CompositeTestSetting CompositeData
+        {
+            get => GetSetting(() => new CompositeTestSetting(Array.Empty<byte>(), string.Empty));
+            set => SetSetting(value);
+        }
+
+        public class CompositeTestSetting
+        {
+            public CompositeTestSetting(byte[] Data, string Label)
+            {
+                this.Data = Data;
+                this.Label = Label;
+            }
+
+            public byte[] Data { get; set; }
+            public string Label { get; set;  }
         }
     }
 

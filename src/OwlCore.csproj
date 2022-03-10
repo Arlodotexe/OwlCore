@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.52</Version>
+		<Version>0.0.53</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.53 ---
+[Fixes]
+Fixed a deadlock in SettingsBase when GetProperty is called during an OnPropertyChanged handler.
+
 --- 0.0.52 ---
 [Fixes]
 Fixed possible exception in SettingsBase when LoadAsync and SetProperty are called concurrency.

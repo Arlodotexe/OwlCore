@@ -46,19 +46,19 @@ namespace OwlCore.Services
         /// <typeparam name="T">The type of the stored value.</typeparam>
         protected void SetSetting<T>(T value, [CallerMemberName] string key = "")
         {
-            _runtimeStorageMutex.Wait();
-
             if (value is null)
             {
-                _runtimeStorageMutex.Release();
+                _runtimeStorageMutex.Wait();
                 _runtimeStorage.Remove(key);
+                _runtimeStorageMutex.Release();
                 return;
             }
 
+            _runtimeStorageMutex.Wait();
             _runtimeStorage[key] = (typeof(T), value);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
-
             _runtimeStorageMutex.Release();
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
         }
 
         /// <summary>
@@ -91,47 +91,43 @@ namespace OwlCore.Services
         /// </summary>
         public virtual async Task SaveAsync(CancellationToken? cancellationToken = null)
         {
-            await _runtimeStorageMutex.WaitAsync();
             var token = cancellationToken ?? CancellationToken.None;
 
-            await _runtimeStorage.InParallel(async kvp =>
+            using (await Flow.EasySemaphore(_runtimeStorageMutex, token))
             {
-                // Keeping storage of metadata (e.g. original type) separate from actual data allows us to
-                // pass the file stream to the serializer directly, without loading the whole thing into memory
-                // for modification. 
-                // This allows the serializer to load as little or as much data into memory as it needs at a time.
-                var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
-                var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
-                if (token.IsCancellationRequested)
+                await _runtimeStorage.InParallel(async kvp =>
                 {
-                    _runtimeStorageMutex.Release();
-                    return;
-                }
+                    // Keeping storage of metadata (e.g. original type) separate from actual data allows us to
+                    // pass the file stream to the serializer directly, without loading the whole thing into memory
+                    // for modification. 
+                    // This allows the serializer to load as little or as much data into memory as it needs at a time.
+                    var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
+                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
+                    if (token.IsCancellationRequested)
+                        return;
 
-                using var serializedRawDataStream =
-                    await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
-                serializedRawDataStream.Position = 0;
+                    using var serializedRawDataStream = await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
+                    serializedRawDataStream.Position = 0;
 
-                if (token.IsCancellationRequested)
-                    return;
+                    if (token.IsCancellationRequested)
+                        return;
 
-                using var dataFileStream = await dataFile.GetStreamAsync(FileAccessMode.ReadWrite);
-                dataFileStream.Position = 0;
+                    using var dataFileStream = await dataFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    dataFileStream.Position = 0;
 
-                if (token.IsCancellationRequested)
-                    return;
+                    if (token.IsCancellationRequested)
+                        return;
 
-                await serializedRawDataStream.CopyToAsync(dataFileStream, bufferSize: 81920, token);
-                if (token.IsCancellationRequested)
-                    return;
+                    await serializedRawDataStream.CopyToAsync(dataFileStream, bufferSize: 81920, token);
+                    if (token.IsCancellationRequested)
+                        return;
 
-                // Store the known type for later deserialization. Serializer cannot be relied on for this.
-                var typeContentBytes = Encoding.UTF8.GetBytes(kvp.Value.Type.ToString());
-                using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
-                await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
-            });
-
-            _runtimeStorageMutex.Release();
+                    // Store the known type for later deserialization. Serializer cannot be relied on for this.
+                    var typeContentBytes = Encoding.UTF8.GetBytes(kvp.Value.Type.AssemblyQualifiedName);
+                    using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
+                });
+            }
         }
 
         /// <summary>
@@ -139,8 +135,6 @@ namespace OwlCore.Services
         /// </summary>
         public virtual async Task LoadAsync(CancellationToken? cancellationToken = null)
         {
-            await _runtimeStorageMutex.WaitAsync();
-
             var token = cancellationToken ?? CancellationToken.None;
 
             var files = await Folder.GetFilesAsync();
@@ -155,7 +149,7 @@ namespace OwlCore.Services
             var nonTypeFiles = fileData.Where(x => !x.Name.Contains("Type"));
 
             // Load persisted values.
-            await nonTypeFiles.InParallel(async settingDataFile =>
+            foreach (var settingDataFile in nonTypeFiles)
             {
                 var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}.Type");
                 if (typeFile is null)
@@ -163,23 +157,26 @@ namespace OwlCore.Services
 
                 try
                 {
-                    using var settingDataStream = await settingDataFile.GetStreamAsync();
-                    settingDataStream.Position = 0;
+                    using (await Flow.EasySemaphore(_runtimeStorageMutex, token))
+                    {
+                        using var settingDataStream = await settingDataFile.GetStreamAsync();
+                        settingDataStream.Position = 0;
 
-                    var typeFileContentString = await ReadFileAsStringAsync(typeFile, token);
-                    if (string.IsNullOrWhiteSpace(typeFileContentString))
-                        return;
+                        var typeFileContentString = await ReadFileAsStringAsync(typeFile, token);
+                        if (string.IsNullOrWhiteSpace(typeFileContentString))
+                            return;
 
-                    // Get original type
-                    var originalType = Type.GetType(typeFileContentString);
-                    if (originalType is null)
-                        return;
+                        // Get original type
+                        var originalType = Type.GetType(typeFileContentString);
+                        if (originalType is null)
+                            return;
 
-                    // Deserialize data as original type.
-                    var settingData =
-                        await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
+                        // Deserialize data as original type.
+                        var settingData = await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
 
-                    _runtimeStorage[settingDataFile.Name] = (originalType, settingData);
+                        _runtimeStorage[settingDataFile.Name] = (originalType, settingData);
+                    }
+
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(settingDataFile.Name));
                 }
                 catch
@@ -187,9 +184,7 @@ namespace OwlCore.Services
                     // Ignore any errors when loading, reading or deserializing
                     // Setting will not be loaded into memory.
                 }
-            });
-            
-            _runtimeStorageMutex.Release();
+            }
         }
 
         private static async Task<string> ReadFileAsStringAsync(IFileData file, CancellationToken token)
