@@ -153,7 +153,7 @@ namespace OwlCore.Services
             {
                 var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}.Type");
                 if (typeFile is null)
-                    return; // Type file may be missing or deleted.
+                    continue; // Type file may be missing or deleted.
 
                 try
                 {
@@ -164,12 +164,12 @@ namespace OwlCore.Services
 
                         var typeFileContentString = await ReadFileAsStringAsync(typeFile, token);
                         if (string.IsNullOrWhiteSpace(typeFileContentString))
-                            return;
+                            continue;
 
                         // Get original type
                         var originalType = Type.GetType(typeFileContentString);
                         if (originalType is null)
-                            return;
+                            continue;
 
                         // Deserialize data as original type.
                         var settingData = await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);

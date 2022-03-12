@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.53</Version>
+		<Version>0.0.54</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.54 ---
+[Fixes]
+Fixed an issue in SettingsBase where defaults would incorrectly return when non-setting files existed in the provided folder.
+
 --- 0.0.53 ---
 [Fixes]
 Fixed a deadlock in SettingsBase when GetProperty is called during an OnPropertyChanged handler.

@@ -65,6 +65,36 @@ public class SettingsBaseTests
     }
 
     [TestMethod, Timeout(2000)]
+    public async Task SaveAndLoadAsyncWithNewSettingsInstanceWithNonSettingFilesInFolder()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        const string newValue = nameof(SetAndGetValueInMemory);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+
+        settings.StringData = newValue;
+        settings.CompositeData.Label = newValue;
+        Assert.AreEqual(newValue, settings.StringData);
+
+        await settings.SaveAsync();
+
+        // Reusing the same settings store should allow us to read the values we just saved.
+        var settings2 = new TestSettings(settingsStore);
+
+        // Initial value must not equal new value until loaded.
+        Assert.AreNotEqual(newValue, settings2.StringData);
+
+        await settingsStore.CreateFileAsync("JunkFile");
+        await settings2.LoadAsync();
+
+        Assert.AreEqual(newValue, settings.CompositeData.Label);
+        Assert.AreEqual(newValue, settings2.StringData);
+    }
+
+    [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsyncWithNewSettingsInstance()
     {
         var settingsStore = new MockFolder(name: "Settings");
@@ -340,14 +370,15 @@ public class SettingsBaseTests
 
         public Task<IFileData> CreateFileAsync(string desiredName)
         {
-            throw new NotSupportedException();
+            var file = new MockFile(desiredName);
+            _files.Add(file);
+            return Task.FromResult<IFileData>(file);
         }
 
         public Task<IFileData> CreateFileAsync(string desiredName, CreationCollisionOption options)
         {
             var file = new MockFile(desiredName);
             _files.Add(file);
-
             return Task.FromResult<IFileData>(file);
         }
 
