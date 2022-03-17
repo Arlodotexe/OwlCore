@@ -18,7 +18,6 @@ namespace OwlCore.AbstractUI.ViewModels
         {
             PickColorCommand = new AsyncRelayCommand<string>(PickColorAsync);
 
-
             AttachEvents(model);
         }
 

@@ -12,13 +12,15 @@ namespace OwlCore.AbstractUI.ViewModels
     /// <summary>
     /// A ViewModel wrapper for an <see cref="AbstractUICollection"/>.
     /// </summary>
-    public class AbstractUICollectionViewModel : AbstractUIViewModelBase, ICollection<AbstractUIViewModelBase>, INotifyCollectionChanged
+    public class AbstractUICollectionViewModel : AbstractUIViewModelBase, ICollection<AbstractUIViewModelBase>,
+        INotifyCollectionChanged
     {
         private readonly AbstractUICollection _model;
         private readonly List<AbstractUIViewModelBase> _items;
 
         /// <inheritdoc />
-        public AbstractUICollectionViewModel(AbstractUICollection model) : base(model)
+        public AbstractUICollectionViewModel(AbstractUICollection model)
+            : base(model)
         {
             _model = model;
             _items = model.Select(SetupViewModel).ToList();
@@ -44,7 +46,7 @@ namespace OwlCore.AbstractUI.ViewModels
                 case NotifyCollectionChangedAction.Add:
                     foreach (var item in e.NewItems)
                     {
-                        var vm = SetupViewModel((AbstractUIElement)item);
+                        var vm = SetupViewModel((AbstractUIElement) item);
                         Add(vm);
                     }
 
@@ -54,13 +56,16 @@ namespace OwlCore.AbstractUI.ViewModels
                     {
                         var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
 
-                        if(target is not null)
+                        if (target is not null)
                             Remove(target);
                     }
+
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     Clear();
                     break;
+                case NotifyCollectionChangedAction.Move:
+                case NotifyCollectionChangedAction.Replace:
                 default:
                     ThrowHelper.ThrowNotSupportedException();
                     break;
@@ -69,19 +74,22 @@ namespace OwlCore.AbstractUI.ViewModels
 
         private AbstractUIViewModelBase SetupViewModel(AbstractUIElement element)
         {
-            return element switch
+            using (new Threading.DisposableSyncContext(_syncContext))
             {
-                AbstractTextBox textBox => new AbstractTextBoxViewModel(textBox),
-                AbstractDataList dataList => new AbstractDataListViewModel(dataList),
-                AbstractButton button => new AbstractButtonViewModel(button),
-                AbstractBoolean boolean => new AbstractBooleanViewModel(boolean),
-                AbstractRichTextBlock richText => new AbstractRichTextBlockViewModel(richText),
-                AbstractMultiChoice multiChoiceUIElement => new AbstractMultiChoiceViewModel(multiChoiceUIElement),
-                AbstractUICollection elementGroup => new AbstractUICollectionViewModel(elementGroup),
-                AbstractProgressIndicator progress => new AbstractProgressIndicatorViewModel(progress),
-                AbstractColorPicker color => new AbstractColorPickerViewModel(color),
-                _ => throw new NotSupportedException($"No match ViewModel was found for {element.GetType()}."),
-            };
+                return element switch
+                {
+                    AbstractTextBox textBox => new AbstractTextBoxViewModel(textBox),
+                    AbstractDataList dataList => new AbstractDataListViewModel(dataList),
+                    AbstractButton button => new AbstractButtonViewModel(button),
+                    AbstractBoolean boolean => new AbstractBooleanViewModel(boolean),
+                    AbstractRichTextBlock richText => new AbstractRichTextBlockViewModel(richText),
+                    AbstractMultiChoice multiChoiceUIElement => new AbstractMultiChoiceViewModel(multiChoiceUIElement),
+                    AbstractUICollection elementGroup => new AbstractUICollectionViewModel(elementGroup),
+                    AbstractProgressIndicator progress => new AbstractProgressIndicatorViewModel(progress),
+                    AbstractColorPicker color => new AbstractColorPickerViewModel(color),
+                    _ => throw new NotSupportedException($"No match ViewModel was found for {element.GetType()}."),
+                };
+            }
         }
 
         /// <inheritdoc/>
@@ -106,16 +114,17 @@ namespace OwlCore.AbstractUI.ViewModels
         public PreferredOrientation PreferredOrientation => _model.PreferredOrientation;
 
         /// <inheritdoc/>
-        public int Count => ((ICollection<AbstractUIElement>)_items).Count;
+        public int Count => ((ICollection<AbstractUIElement>) _items).Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly => ((ICollection<AbstractUIElement>)_items).IsReadOnly;
+        public bool IsReadOnly => ((ICollection<AbstractUIElement>) _items).IsReadOnly;
 
         /// <inheritdoc />
         public void Add(AbstractUIViewModelBase item)
         {
             _items.Add(item);
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            CollectionChanged?.Invoke(this,
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         /// <inheritdoc />
@@ -126,7 +135,8 @@ namespace OwlCore.AbstractUI.ViewModels
 
             _items.Remove(item);
 
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            CollectionChanged?.Invoke(this,
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
 
             return true;
         }
@@ -134,20 +144,20 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <inheritdoc />
         public void Clear()
         {
-            ((ICollection<AbstractUIElement>)_items).Clear();
+            ((ICollection<AbstractUIElement>) _items).Clear();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <inheritdoc />
         public bool Contains(AbstractUIViewModelBase item)
         {
-            return ((ICollection<AbstractUIViewModelBase>)_items).Contains(item);
+            return ((ICollection<AbstractUIViewModelBase>) _items).Contains(item);
         }
 
         /// <inheritdoc />
         public void CopyTo(AbstractUIViewModelBase[] array, int arrayIndex)
         {
-            ((ICollection<AbstractUIViewModelBase>)_items).CopyTo(array, arrayIndex);
+            ((ICollection<AbstractUIViewModelBase>) _items).CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc />

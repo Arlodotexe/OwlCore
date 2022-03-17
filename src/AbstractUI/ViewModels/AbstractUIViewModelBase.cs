@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using OwlCore.AbstractUI.Models;
 
@@ -9,12 +10,15 @@ namespace OwlCore.AbstractUI.ViewModels
     /// </summary>
     public class AbstractUIViewModelBase : ObservableObject, IDisposable
     {
+        private protected readonly SynchronizationContext _syncContext;
+
         /// <summary>
         /// Creates a new instance of <see cref="AbstractUIViewModelBase"/>.
         /// </summary>
         /// <param name="model"></param>
         public AbstractUIViewModelBase(AbstractUIBase model)
         {
+            _syncContext = SynchronizationContext.Current;
             if (model.ImagePath != null)
             {
                 //TODO: Check for a valid image.
@@ -43,15 +47,15 @@ namespace OwlCore.AbstractUI.ViewModels
             Model.TooltipTextChanged -= Model_TooltipTextChanged;
         }
 
-        private void Model_TooltipTextChanged(object sender, string? e) => _ = Threading.OnPrimaryThread(() => OnPropertyChanged(nameof(TooltipText)));
+        private void Model_TooltipTextChanged(object sender, string? e) => _syncContext.Post(_ => OnPropertyChanged(nameof(TooltipText)), null);
 
-        private void Model_TitleChanged(object sender, string? e) => _ = Threading.OnPrimaryThread(() => OnPropertyChanged(nameof(Title)));
+        private void Model_TitleChanged(object sender, string? e) => _syncContext.Post(_ => OnPropertyChanged(nameof(Title)), null);
 
-        private void Model_SubtitleChanged(object sender, string? e) => _ = Threading.OnPrimaryThread(() => OnPropertyChanged(nameof(Subtitle)));
+        private void Model_SubtitleChanged(object sender, string? e) => _syncContext.Post(_ => OnPropertyChanged(nameof(Subtitle)), null);
 
-        private void Model_IconCodeChanged(object sender, string? e) => _ = Threading.OnPrimaryThread(() => OnPropertyChanged(nameof(IconCode)));
+        private void Model_IconCodeChanged(object sender, string? e) => _syncContext.Post(_ => OnPropertyChanged(nameof(IconCode)), null);
 
-        private void Model_ImagePathChanged(object sender, string? e) => _ = Threading.OnPrimaryThread(() => OnPropertyChanged(nameof(ImageSource)));
+        private void Model_ImagePathChanged(object sender, string? e) => _syncContext.Post(_ => OnPropertyChanged(nameof(ImageSource)), null);
 
         /// <summary>
         /// The proxied model used by this class.
