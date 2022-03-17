@@ -38,10 +38,10 @@ namespace OwlCore.AbstractUI.Models
         public AbstractUIElement this[int i] => _items.ElementAt(i);
 
         /// <inheritdoc/>
-        public int Count => ((ICollection<AbstractUIElement>)_items).Count;
+        public int Count => _items.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly => ((ICollection<AbstractUIElement>)_items).IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <inheritdoc cref="Models.PreferredOrientation"/>
         public PreferredOrientation PreferredOrientation { get; }
@@ -59,7 +59,7 @@ namespace OwlCore.AbstractUI.Models
             get => _items;
             set
             {
-                ((ICollection<AbstractUIElement>)_items).Clear();
+                _items.Clear();
                 CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
                 _items = value.ToOrAsList();
@@ -96,33 +96,33 @@ namespace OwlCore.AbstractUI.Models
         [RemoteMethod]
         public void Clear()
         {
-            ((ICollection<AbstractUIElement>)_items).Clear();
+            _items.Clear();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <inheritdoc/>
         public bool Contains(AbstractUIElement item)
         {
-            return ((ICollection<AbstractUIElement>)_items).Contains(item);
+            return _items.Contains(item);
         }
 
         /// <inheritdoc/>
         [RemoteMethod]
         public void CopyTo(AbstractUIElement[] array, int arrayIndex)
         {
-            ((ICollection<AbstractUIElement>)_items).CopyTo(array, arrayIndex);
+            _items.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc/>
         public IEnumerator<AbstractUIElement> GetEnumerator()
         {
-            return ((IEnumerable<AbstractUIElement>)_items).GetEnumerator();
+            return _items.GetEnumerator();
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_items).GetEnumerator();
+            return _items.GetEnumerator();
         }
     }
 }
