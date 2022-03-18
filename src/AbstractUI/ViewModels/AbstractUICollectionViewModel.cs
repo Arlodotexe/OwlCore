@@ -12,7 +12,7 @@ namespace OwlCore.AbstractUI.ViewModels
     /// <summary>
     /// A ViewModel wrapper for an <see cref="AbstractUICollection"/>.
     /// </summary>
-    public class AbstractUICollectionViewModel : AbstractUIViewModelBase, ICollection<AbstractUIViewModelBase>,
+    public class AbstractUICollectionViewModel : AbstractUIViewModelBase, IReadOnlyCollection<AbstractUIViewModelBase>,
         INotifyCollectionChanged
     {
         private readonly AbstractUICollection _model;
@@ -47,7 +47,7 @@ namespace OwlCore.AbstractUI.ViewModels
                     foreach (var item in e.NewItems)
                     {
                         var vm = SetupViewModel((AbstractUIElement) item);
-                        Add(vm);
+                        _items.Add(vm);
                     }
 
                     break;
@@ -57,12 +57,12 @@ namespace OwlCore.AbstractUI.ViewModels
                         var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
 
                         if (target is not null)
-                            Remove(target);
+                            _items.Remove(target);
                     }
 
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    Clear();
+                    _items.Clear();
                     break;
                 case NotifyCollectionChangedAction.Move:
                 case NotifyCollectionChangedAction.Replace:
@@ -74,6 +74,7 @@ namespace OwlCore.AbstractUI.ViewModels
 
         private AbstractUIViewModelBase SetupViewModel(AbstractUIElement element)
         {
+            Guard.IsNotNull(_syncContext, nameof(_syncContext));
             using (new Threading.DisposableSyncContext(_syncContext))
             {
                 return element switch
@@ -115,50 +116,6 @@ namespace OwlCore.AbstractUI.ViewModels
 
         /// <inheritdoc/>
         public int Count => ((ICollection<AbstractUIElement>) _items).Count;
-
-        /// <inheritdoc/>
-        public bool IsReadOnly => ((ICollection<AbstractUIElement>) _items).IsReadOnly;
-
-        /// <inheritdoc />
-        public void Add(AbstractUIViewModelBase item)
-        {
-            _items.Add(item);
-            CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
-        }
-
-        /// <inheritdoc />
-        public bool Remove(AbstractUIViewModelBase item)
-        {
-            if (!_items.Contains(item))
-                return false;
-
-            _items.Remove(item);
-
-            CollectionChanged?.Invoke(this,
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public void Clear()
-        {
-            ((ICollection<AbstractUIElement>) _items).Clear();
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        /// <inheritdoc />
-        public bool Contains(AbstractUIViewModelBase item)
-        {
-            return ((ICollection<AbstractUIViewModelBase>) _items).Contains(item);
-        }
-
-        /// <inheritdoc />
-        public void CopyTo(AbstractUIViewModelBase[] array, int arrayIndex)
-        {
-            ((ICollection<AbstractUIViewModelBase>) _items).CopyTo(array, arrayIndex);
-        }
 
         /// <inheritdoc />
         public IEnumerator<AbstractUIViewModelBase> GetEnumerator() => _items.GetEnumerator();

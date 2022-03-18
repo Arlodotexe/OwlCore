@@ -10,7 +10,7 @@ namespace OwlCore.AbstractUI.ViewModels
     /// </summary>
     public class AbstractUIViewModelBase : ObservableObject, IDisposable
     {
-        private protected readonly SynchronizationContext _syncContext;
+        private protected SynchronizationContext _syncContext;
 
         /// <summary>
         /// Creates a new instance of <see cref="AbstractUIViewModelBase"/>.
