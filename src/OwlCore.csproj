@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.55</Version>
+		<Version>0.0.56</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,17 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.56 ---
+[Fixes]
+Fixed InvalidCastException when accessing AbstractUICollectionViewModel.Count.
+Fixed NotifyCollectionChanged not properly emitting for AbstractUICollectionViewModel.
+
+[Improvements]
+Removed hidden AbstractUI dependency on Threading.SetPrimaryThreadInvokeHandler in favor of SynchronizationContext.Post.
+
+[Breaking changes]
+AbstractUICollectionViewModel now implements IReadyOnlyCollection{T} instead of ICollection{T}. Modifications to the collection should happen via the underlying model.
+
 --- 0.0.55 ---
 [Fixes]
 Fixed several InvalidCastExceptions in AbstractUICollection. Added Unit Tests for the entire class.
