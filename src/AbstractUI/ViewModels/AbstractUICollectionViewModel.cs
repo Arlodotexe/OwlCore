@@ -46,8 +46,10 @@ namespace OwlCore.AbstractUI.ViewModels
                 case NotifyCollectionChangedAction.Add:
                     foreach (var item in e.NewItems)
                     {
-                        var vm = SetupViewModel((AbstractUIElement) item);
+                        var vm = SetupViewModel((AbstractUIElement)item);
+
                         _items.Add(vm);
+                        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)vm));
                     }
 
                     break;
@@ -57,12 +59,17 @@ namespace OwlCore.AbstractUI.ViewModels
                         var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
 
                         if (target is not null)
+                        {
                             _items.Remove(target);
+                            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)target));
+                        }
                     }
 
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     _items.Clear();
+
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action));
                     break;
                 case NotifyCollectionChangedAction.Move:
                 case NotifyCollectionChangedAction.Replace:
