@@ -122,7 +122,7 @@ namespace OwlCore.AbstractUI.ViewModels
         public PreferredOrientation PreferredOrientation => _model.PreferredOrientation;
 
         /// <inheritdoc/>
-        public int Count => ((ICollection<AbstractUIElement>) _items).Count;
+        public int Count => _items.Count;
 
         /// <inheritdoc />
         public IEnumerator<AbstractUIViewModelBase> GetEnumerator() => _items.GetEnumerator();
