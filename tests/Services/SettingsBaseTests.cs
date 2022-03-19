@@ -15,7 +15,6 @@ namespace OwlCore.Tests.Services;
 [TestClass]
 public class SettingsBaseTests
 {
-
     [TestMethod, Timeout(2000)]
     public Task GetFallbackValue()
     {
@@ -161,21 +160,22 @@ public class SettingsBaseTests
         // Assign value different than what was saved.
         settings.StringData = string.Empty;
         Assert.AreNotEqual(newValue, settings.StringData);
-        
+
         // Track changed properties
-        var changedProperties= new List<string>();
+        var changedProperties = new List<string>();
         settings.PropertyChanged += OnChanged;
 
         // Reload saved value.
         await settings.LoadAsync();
-        
+
         // Ensure only the assigned property changed.
         Assert.AreEqual(1, changedProperties.Count);
         Assert.AreEqual(nameof(settings.StringData), changedProperties[0]);
 
         settings.PropertyChanged -= OnChanged;
 
-        void OnChanged(object? sender, PropertyChangedEventArgs e) => changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
 
     [TestMethod]
@@ -203,16 +203,16 @@ public class SettingsBaseTests
 
         settings.PropertyChanged -= OnChanged;
 
-        void OnChanged(object? sender, PropertyChangedEventArgs e) => changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
 
     [TestMethod, Timeout(2000)]
-    public void NoDeadlockWhileGettingSettingDuringPropertyChanged()
+    public void NoDeadlockWhileGetSettingDuringPropertyChanged()
     {
         var settingsStore = new MockFolder(name: "Settings");
         var settings = new TestSettings(settingsStore);
-
-        var newValue = nameof(SetAndGetValueInMemory);
+        var newValue = nameof(SettingsBaseTests);
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
@@ -225,7 +225,86 @@ public class SettingsBaseTests
 
         settings.PropertyChanged -= OnChanged;
 
-        void OnChanged(object? sender, PropertyChangedEventArgs e) => Assert.AreEqual(settings.StringData, settings.StringData);
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            Assert.AreEqual(settings.StringData, settings.StringData);
+    }
+
+    [TestMethod, Timeout(2000)]
+    public void NoDeadlockWhileSetSettingDuringPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.State = true;
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (settings.State)
+                settings.State = false;
+        }
+    }
+
+    [TestMethod, Timeout(2000)]
+    public async Task NoDeadlockWhileSetSettingDuringPropertyChangedThenSavingDuringPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+        var savedTaskCompletionSource = new TaskCompletionSource();
+
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.State = true;
+        await savedTaskCompletionSource.Task;
+
+        settings.PropertyChanged -= OnChanged;
+
+        async void OnChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (settings.State)
+            {
+                // Trips another PropertyChanged call
+                settings.State = false;
+            }
+
+            if (!settings.State)
+            {
+                await settings.SaveAsync();
+                savedTaskCompletionSource.SetResult();
+            }
+        }
+    }
+
+    [TestMethod, Timeout(2000)]
+    public async Task NoDeadlockWhileSavingDuringPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+        var newValue = nameof(SettingsBaseTests);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+
+        var savedTaskCompletionSource = new TaskCompletionSource();
+
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = newValue;
+        await savedTaskCompletionSource.Task;
+
+        settings.PropertyChanged -= OnChanged;
+
+        async void OnChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            await settings.SaveAsync();
+            savedTaskCompletionSource.SetResult();
+        }
     }
 
     private class TestSettings : SettingsBase
@@ -238,6 +317,12 @@ public class SettingsBaseTests
         public string StringData
         {
             get => GetSetting(() => "Default value");
+            set => SetSetting(value);
+        }
+
+        public bool State
+        {
+            get => GetSetting(() => false);
             set => SetSetting(value);
         }
 
@@ -256,7 +341,7 @@ public class SettingsBaseTests
             }
 
             public byte[] Data { get; set; }
-            public string Label { get; set;  }
+            public string Label { get; set; }
         }
     }
 
@@ -267,14 +352,17 @@ public class SettingsBaseTests
         public async Task<Stream> SerializeAsync<T>(T data, CancellationToken? cancellationToken = null)
         {
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data, cancellationToken: cancellationToken ?? CancellationToken.None);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
             return stream;
         }
 
-        public async Task<Stream> SerializeAsync(Type inputType, object data, CancellationToken? cancellationToken = null)
+        public async Task<Stream> SerializeAsync(Type inputType, object data,
+            CancellationToken? cancellationToken = null)
         {
             var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data, inputType, cancellationToken: cancellationToken ?? CancellationToken.None);
+            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data, inputType,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
             return stream;
         }
 
@@ -283,7 +371,8 @@ public class SettingsBaseTests
             return System.Text.Json.JsonSerializer.DeserializeAsync<TResult>(serialized).AsTask()!;
         }
 
-        public Task<object> DeserializeAsync(Type returnType, Stream serialized, CancellationToken? cancellationToken = null)
+        public Task<object> DeserializeAsync(Type returnType, Stream serialized,
+            CancellationToken? cancellationToken = null)
         {
             return System.Text.Json.JsonSerializer.DeserializeAsync(serialized, returnType).AsTask()!;
         }
@@ -436,7 +525,8 @@ public class SettingsBaseTests
 
         public override void SetLength(long value) => _underlyingStream.SetLength(value);
 
-        public override void Write(byte[] buffer, int offset, int count) => _underlyingStream.Write(buffer, offset, count);
+        public override void Write(byte[] buffer, int offset, int count) =>
+            _underlyingStream.Write(buffer, offset, count);
 
         public override bool CanRead => _underlyingStream.CanRead;
 
