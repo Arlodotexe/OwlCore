@@ -11,7 +11,7 @@ using NuGet.Frameworks;
 namespace OwlCore.Tests.AbstractUI.Models
 {
     [TestClass]
-    public class AbstractUICollection
+    public class AbstractUICollectionTests
     {
         [TestMethod]
         public void Indexer()
