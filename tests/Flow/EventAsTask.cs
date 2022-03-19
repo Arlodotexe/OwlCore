@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,22 +12,34 @@ namespace OwlCore.Tests.Flow
         public async Task NonGenericEventAsTaskCompletes_CancellationTokenOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x => data.NonGenericEventHandler -= x, CancellationToken.None);
+            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x =>
+            {
+                data.NonGenericEventHandler -= x;
+                unsubbed = true;
+            }, CancellationToken.None);
 
             data.RaiseEvent();
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task NonGenericEventAsTaskCompletes_TimeSpanOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x => data.NonGenericEventHandler -= x, TimeSpan.FromSeconds(20));
+            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x =>
+            {
+                data.NonGenericEventHandler -= x;
+                unsubbed = true;
+            }, TimeSpan.FromSeconds(20));
 
             data.RaiseEvent();
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
@@ -39,74 +48,110 @@ namespace OwlCore.Tests.Flow
             var data = new EventRaisingTestClass();
 
             var tokenSource = new CancellationTokenSource();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x => data.NonGenericEventHandler -= x, tokenSource.Token);
+            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x =>
+            {
+                data.NonGenericEventHandler -= x;
+                unsubbed = true;
+            }, tokenSource.Token);
 
             tokenSource.Cancel();
 
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task NonGenericEventAsTaskCancellation_TimeSpanOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x => data.NonGenericEventHandler -= x, TimeSpan.FromMilliseconds(100));
+            var task = OwlCore.Flow.EventAsTask(x => data.NonGenericEventHandler += x, x =>
+            {
+                data.NonGenericEventHandler -= x;
+                unsubbed = true;
+            }, TimeSpan.FromMilliseconds(100));
 
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task GenericEventAsTaskCompletes_CancellationTokenOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x => data.GenericEventHandler -= x, CancellationToken.None);
+            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x =>
+            {
+                data.GenericEventHandler -= x;
+                unsubbed = true;
+            }, CancellationToken.None);
 
             var raisedValue = "Test";
 
             data.RaiseEvent(raisedValue);
             var res = await task;
             Assert.AreEqual(res?.Result, raisedValue);
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task GenericEventAsTaskCompletes_TimeSpanOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x => data.GenericEventHandler -= x, TimeSpan.FromSeconds(20));
+            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x =>
+            {
+                data.GenericEventHandler -= x;
+                unsubbed = true;
+            }, TimeSpan.FromSeconds(20));
 
             var raisedValue = "Test";
 
             data.RaiseEvent(raisedValue);
             var res = await task;
             Assert.AreEqual(res?.Result, raisedValue);
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task GenericEventAsTaskCancellation_CancellationTokenOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
             var tokenSource = new CancellationTokenSource();
 
-            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x => data.GenericEventHandler -= x, tokenSource.Token);
+            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x =>
+            {
+                data.GenericEventHandler -= x;
+                unsubbed = true;
+            }, tokenSource.Token);
 
             tokenSource.Cancel();
 
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         [TestMethod, Timeout(1000)]
         public async Task GenericEventAsTaskCancellation_TimeSpanOverload()
         {
             var data = new EventRaisingTestClass();
+            var unsubbed = false;
 
-            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x => data.GenericEventHandler -= x, TimeSpan.FromMilliseconds(100));
+            var task = OwlCore.Flow.EventAsTask<string>(x => data.GenericEventHandler += x, x =>
+            {
+                data.GenericEventHandler -= x;
+                unsubbed = true;
+            }, TimeSpan.FromMilliseconds(100));
 
             await task;
+            Assert.IsTrue(unsubbed, "Event not unsubscribed.");
         }
 
         public class EventRaisingTestClass
