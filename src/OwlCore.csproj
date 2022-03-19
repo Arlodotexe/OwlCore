@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.56</Version>
+		<Version>0.0.57</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,32 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.57 ---
+[Overview]
+Refining AbstractUI, fixing consistency and adding unit tests.
+
+[Breaking changes]
+In AbstractButton: Click now returns void instead of Task, and the setter was removed from the Type property as it should not change after creation and had no event for changing.
+AbstractColorPicker.PickColor now returns void instead of Task.
+AbstractDataList.Items is now IReadOnlyList{T} instead of List{T}. Use provided methods to manipulate the items.
+The setter for AbstractDataList.PreferredDisplayMode is now init-only and the setter on the corresponding ViewModel has been removed.
+The setter for AbstractMultiChoice.PreferredDisplayMode is now init-only and the setter on the corresponding ViewModel has been removed.
+The setter for AbstractRichTextBlock.RichText is now init-only and the setter on the corresponding ViewModel has been removed.
+Setting IsIndeterminate in AbstractProgressIndicator properties no longer affect each other. Value should just be ignored if IsIndeterminate is true.
+The property AbstractProgressIndicator.Value, the value parameter in the constructor, and event args in the ValueChanged event are no longer nullable.
+
+[Improvements]
+All AbstractUI models are now unit tested.
+AbstractButton now has a TextChanged event handler for when the Text property is set.
+AbstractDataList now takes IEnumerable instead of List for items in the constructor.
+Extra unit tests for possible deadlocks while operating on SettingsBase from a handler on its own PropertyChanged event.
+
+[Fixes]
+Fixed several AbstractUI models that allowed a changed event to be raised even when the set value is the same.
+Fixed EventAsTask not cancelling properly + unit tests.
+Fixed EventAsTask not unsubscribing when cancelled + unit tests.
+Fixed several concurrency issues with SettingsBase.
+
 --- 0.0.56 ---
 [Fixes]
 Fixed InvalidCastException when accessing AbstractUICollectionViewModel.Count.
