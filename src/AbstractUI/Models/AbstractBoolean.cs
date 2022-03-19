@@ -12,7 +12,7 @@ namespace OwlCore.AbstractUI.Models
         private string _label;
 
         /// <summary>
-        /// Creates a new instance of <see cref="AbstractBoolean"/>/
+        /// Creates a new instance of <see cref="AbstractBoolean"/>.
         /// </summary>
         /// <param name="id"><inheritdoc cref="AbstractUIBase.Id"/></param>
         /// <param name="label"><inheritdoc cref="Label"/></param>

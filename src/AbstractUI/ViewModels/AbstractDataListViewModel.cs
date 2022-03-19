@@ -200,12 +200,7 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public void RemoveItem(AbstractDataListItemViewModel item)
         {
-            var index = _model.Items.IndexOf((AbstractUIMetadata)item.Model);
-
-            if (index == -1)
-                return;
-
-            RemoveItemAt(index);
+            _model.RemoveItem((AbstractUIMetadata)item.Model);
         }
 
         /// <summary>

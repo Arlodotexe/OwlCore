@@ -52,6 +52,9 @@ namespace OwlCore.AbstractUI.Models
             get => _placeholderText;
             set
             {
+                if (_placeholderText == value)
+                    return;
+
                 _placeholderText = value;
                 PlaceholderTextChanged?.Invoke(this, value);
             }
@@ -66,6 +69,9 @@ namespace OwlCore.AbstractUI.Models
             get => _value;
             set
             {
+                if (_value == value)
+                    return;
+
                 _value = value;
                 ValueChanged?.Invoke(this, value);
             }

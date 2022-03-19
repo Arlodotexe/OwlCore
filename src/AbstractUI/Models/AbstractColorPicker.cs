@@ -25,12 +25,7 @@ namespace OwlCore.AbstractUI.Models
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RemoteMethod]
-        public Task PickColor(string hex)
-        {
-            ColorPicked?.Invoke(this, hex);
-
-            return Task.CompletedTask;
-        }
+        public void PickColor(string hex) => ColorPicked?.Invoke(this, hex);
 
         /// <summary>
         /// Raised when the user picks a color.

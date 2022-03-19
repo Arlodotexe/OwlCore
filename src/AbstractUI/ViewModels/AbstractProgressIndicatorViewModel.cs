@@ -1,6 +1,5 @@
 ﻿using OwlCore.AbstractUI.Models;
 using System.ComponentModel;
-using System.Threading;
 
 namespace OwlCore.AbstractUI.ViewModels
 {
@@ -10,7 +9,6 @@ namespace OwlCore.AbstractUI.ViewModels
     [Bindable(true)]
     public class AbstractProgressIndicatorViewModel : AbstractUIViewModelBase
     {
-        private readonly SynchronizationContext _syncContext;
         private bool _isIndeterminate;
         private double _value;
         private double _minimum;
@@ -23,11 +21,10 @@ namespace OwlCore.AbstractUI.ViewModels
         public AbstractProgressIndicatorViewModel(AbstractProgressIndicator model)
             : base(model)
         {
-            _value = model.Value ?? 0;
+            _value = model.Value;
             _minimum = model.Minimum;
             _maximum = model.Maximum;
             _isIndeterminate = model.IsIndeterminate;
-            _syncContext = SynchronizationContext.Current;
 
             AttachEvents(model);
         }
@@ -48,9 +45,9 @@ namespace OwlCore.AbstractUI.ViewModels
             model.IsIndeterminateChanged -= Model_IsIndeterminateChanged;
         }
 
-        private void Model_ValueChanged(object sender, double? e)
+        private void Model_ValueChanged(object sender, double e)
         {
-            _ = Threading.OnPrimaryThread(() => Value = e ?? 0);
+            _syncContext.Post(_ => Value = e, null);
         }
 
         private void Model_MinimumChanged(object sender, double e)

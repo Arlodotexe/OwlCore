@@ -32,7 +32,7 @@ namespace OwlCore.AbstractUI.Models
 
         /// <inheritdoc cref="AbstractMultiChoicePreferredDisplayMode"/>
         [RemoteProperty]
-        public AbstractMultiChoicePreferredDisplayMode PreferredDisplayMode { get; set; }
+        public AbstractMultiChoicePreferredDisplayMode PreferredDisplayMode { get; init; }
 
         /// <summary>
         /// The current selected item.
@@ -44,6 +44,9 @@ namespace OwlCore.AbstractUI.Models
             get => _selectedItem; 
             set
             {
+                if (_selectedItem == value)
+                    return;
+
                 _selectedItem = value;
                 ItemSelected?.Invoke(this, value);
             }

@@ -9,17 +9,7 @@ namespace OwlCore.AbstractUI.Models
     /// </summary>
     public class AbstractButton : AbstractUIElement
     {
-        /// <summary>
-        /// The label that is displayed in the button.
-        /// </summary>
-        [RemoteProperty]
-        public string Text { get; set; }
-
-        /// <summary>
-        /// The type of button.
-        /// </summary>
-        [RemoteProperty]
-        public AbstractButtonType Type { get; set; }
+        private string _text;
 
         /// <summary>
         /// Creates a new instance of <see cref="AbstractButton"/>.
@@ -32,25 +22,45 @@ namespace OwlCore.AbstractUI.Models
             : base(id)
         {
             IconCode = iconCode;
-            Text = text;
+            _text = text;
             Type = type;
         }
 
         /// <summary>
-        /// 
+        /// The label that is displayed in the button.
         /// </summary>
-        /// <returns></returns>
-        [RemoteMethod]
-        public Task Click()
+        public string Text
         {
-            Clicked?.Invoke(this, EventArgs.Empty);
+            get => _text;
+            set
+            {
+                if (_text == value)
+                    return;
 
-            return Task.CompletedTask;
+                _text = value;
+                TextChanged?.Invoke(this, value);
+            }
         }
 
         /// <summary>
-        /// Event that fires when the button is clicked.
+        /// The type of button.
+        /// </summary>
+        public AbstractButtonType Type { get; }
+
+        /// <summary>
+        /// Simulates the user clicking the button.
+        /// </summary>
+        [RemoteMethod]
+        public void Click() => Clicked?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raised when the button is clicked.
         /// </summary>
         public event EventHandler? Clicked;
+
+        /// <summary>
+        /// Raised when the <see cref="Text"/> is changed.
+        /// </summary>
+        public event EventHandler<string>? TextChanged;
     }
 }

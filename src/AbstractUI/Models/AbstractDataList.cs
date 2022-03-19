@@ -14,16 +14,17 @@ namespace OwlCore.AbstractUI.Models
     {
         private readonly CollectionChangedItem<AbstractUIMetadata>[] _emptyAbstractUiArray = Array.Empty<CollectionChangedItem<AbstractUIMetadata>>();
         private bool _isUserEditingEnabled;
+        private readonly List<AbstractUIMetadata> _items;
 
         /// <summary>
         /// Creates a new instance of <see cref="AbstractDataList"/>.
         /// </summary>
         /// <param name="id">A unique identifier for this item.</param>
         /// <param name="items">The initial items for this collection.</param>
-        public AbstractDataList(string id, List<AbstractUIMetadata> items)
+        public AbstractDataList(string id, IEnumerable<AbstractUIMetadata> items)
             : base(id)
         {
-            Items = items;
+            _items = items.ToList();
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// Raised when an item is tapped.
         /// </summary>
-        public event EventHandler<AbstractUIMetadata>? ItemTapped; 
+        public event EventHandler<AbstractUIMetadata>? ItemTapped;
 
         /// <summary>
         /// Raised when <see cref="IsUserEditingEnabled"/> changes.
@@ -55,7 +56,7 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// The items in this collection.
         /// </summary>
-        public List<AbstractUIMetadata> Items { get; }
+        public IReadOnlyList<AbstractUIMetadata> Items => _items;
 
         /// <summary>
         /// If true, the user is able to add or remove items from the list.
@@ -66,6 +67,9 @@ namespace OwlCore.AbstractUI.Models
             get => _isUserEditingEnabled;
             set
             {
+                if (_isUserEditingEnabled == value)
+                    return;
+
                 _isUserEditingEnabled = value;
                 IsUserEditingEnabledChanged?.Invoke(this, value);
             }
@@ -73,12 +77,11 @@ namespace OwlCore.AbstractUI.Models
 
         /// <inheritdoc cref="AbstractDataListPreferredDisplayMode"/>
         [RemoteProperty]
-        public AbstractDataListPreferredDisplayMode PreferredDisplayMode { get; set; }
+        public AbstractDataListPreferredDisplayMode PreferredDisplayMode { get; init; }
 
         /// <summary>
         /// Called when the user wants to add a new item in the list.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the added item.</returns>
         [RemoteMethod]
         public void RequestNewItem()
         {
@@ -112,7 +115,7 @@ namespace OwlCore.AbstractUI.Models
         [RemoteMethod]
         public void InsertItem(AbstractUIMetadata item, int index)
         {
-            Items.Add(item);
+            _items.Add(item);
 
             var addedItems = new List<CollectionChangedItem<AbstractUIMetadata>>
             {
@@ -129,7 +132,7 @@ namespace OwlCore.AbstractUI.Models
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public void RemoveItem(AbstractUIMetadata item)
         {
-            var index = Items.IndexOf(item);
+            var index = _items.IndexOf(item);
             RemoveItemAt(index);
         }
 
@@ -142,7 +145,7 @@ namespace OwlCore.AbstractUI.Models
         public void RemoveItemAt(int index)
         {
             var item = Items.ElementAt(index);
-            Items.RemoveAt(index);
+            _items.RemoveAt(index);
 
             var removedItems = new List<CollectionChangedItem<AbstractUIMetadata>>
             {
