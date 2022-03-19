@@ -28,11 +28,13 @@ namespace OwlCore
         {
             var completionSource = new TaskCompletionSource<(object? Sender, TResult Result)>();
 
+            cancellationToken.Register(() => completionSource.SetCanceled());
+
             subscribe(EventHandler);
 
             try
             {
-                var result = await Task.Run(() => completionSource.Task, cancellationToken);
+                var result = await completionSource.Task;
                 unsubscribe(EventHandler);
                 return result;
             }
@@ -42,10 +44,7 @@ namespace OwlCore
                 return null;
             }
 
-            void EventHandler(object sender, TResult eventArgs)
-            {
-                completionSource.SetResult((sender, eventArgs));
-            }
+            void EventHandler(object sender, TResult eventArgs) => completionSource.SetResult((sender, eventArgs));
         }
 
         /// <summary>
@@ -69,11 +68,13 @@ namespace OwlCore
         {
             var completionSource = new TaskCompletionSource<(object? Sender, EventArgs Result)>();
 
+            cancellationToken.Register(() => completionSource.SetCanceled());
+
             subscribe(EventHandler);
 
             try
             {
-                var result = await Task.Run(() => completionSource.Task, cancellationToken);
+                var result = await completionSource.Task;
                 unsubscribe(EventHandler);
                 return result;
             }
@@ -83,10 +84,7 @@ namespace OwlCore
                 return null;
             }
 
-            void EventHandler(object sender, EventArgs eventArgs)
-            {
-                completionSource.SetResult((sender, eventArgs));
-            }
+            void EventHandler(object sender, EventArgs eventArgs) => completionSource.SetResult((sender, eventArgs));
         }
 
         /// <summary>
@@ -106,30 +104,13 @@ namespace OwlCore
         /// </remarks>
         /// <exception cref="OperationCanceledException"/>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public static async Task<(object? Sender, TResult Result)?> EventAsTask<TResult>(Action<EventHandler<TResult>> subscribe, Action<EventHandler<TResult>> unsubscribe, TimeSpan timeToWait)
+        public static Task<(object? Sender, TResult Result)?> EventAsTask<TResult>(Action<EventHandler<TResult>> subscribe, Action<EventHandler<TResult>> unsubscribe, TimeSpan timeToWait)
         {
-            var completionSource = new TaskCompletionSource<(object? Sender, TResult Result)>();
             var resultCancellationToken = new CancellationTokenSource();
 
             resultCancellationToken.CancelAfter(timeToWait);
-            subscribe(EventHandler);
 
-            try
-            {
-                var result = await Task.Run(() => completionSource.Task, resultCancellationToken.Token);
-                unsubscribe(EventHandler);
-                return result;
-            }
-            catch (TaskCanceledException)
-            {
-                unsubscribe(EventHandler);
-                return null;
-            }
-
-            void EventHandler(object sender, TResult eventArgs)
-            {
-                completionSource.SetResult((sender, eventArgs));
-            }
+            return EventAsTask(subscribe, unsubscribe, resultCancellationToken.Token);
         }
 
         /// <summary>
@@ -149,30 +130,13 @@ namespace OwlCore
         /// </remarks>
         /// <exception cref="OperationCanceledException"/>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public static async Task<(object? Sender, EventArgs Result)?> EventAsTask(Action<EventHandler> subscribe, Action<EventHandler> unsubscribe, TimeSpan timeToWait)
+        public static Task<(object? Sender, EventArgs Result)?> EventAsTask(Action<EventHandler> subscribe, Action<EventHandler> unsubscribe, TimeSpan timeToWait)
         {
-            var completionSource = new TaskCompletionSource<(object? Sender, EventArgs Result)>();
             var resultCancellationToken = new CancellationTokenSource();
 
             resultCancellationToken.CancelAfter(timeToWait);
-            subscribe(EventHandler);
 
-            try
-            {
-                var result = await Task.Run(() => completionSource.Task, resultCancellationToken.Token);
-                unsubscribe(EventHandler);
-                return result;
-            }
-            catch (TaskCanceledException)
-            {
-                unsubscribe(EventHandler);
-                return null;
-            }
-
-            void EventHandler(object sender, EventArgs eventArgs)
-            {
-                completionSource.SetResult((sender, eventArgs));
-            }
+            return EventAsTask(subscribe, unsubscribe, resultCancellationToken.Token);
         }
     }
 }
