@@ -27,20 +27,42 @@ namespace OwlCore
         public static async Task<(object? Sender, TResult Result)?> EventAsTask<TResult>(Action<EventHandler<TResult>> subscribe, Action<EventHandler<TResult>> unsubscribe, CancellationToken cancellationToken)
         {
             var completionSource = new TaskCompletionSource<(object? Sender, TResult Result)>();
+            var unsubbed = false;
 
-            cancellationToken.Register(() => completionSource.SetCanceled());
+            cancellationToken.Register(() =>
+            {
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
+
+                if (!completionSource.Task.IsCompleted)
+                    completionSource.SetCanceled();
+            });
 
             subscribe(EventHandler);
 
             try
             {
                 var result = await completionSource.Task;
-                unsubscribe(EventHandler);
+
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
+
                 return result;
             }
             catch (TaskCanceledException)
             {
-                unsubscribe(EventHandler);
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
+
                 return null;
             }
 
@@ -67,20 +89,39 @@ namespace OwlCore
         public static async Task<(object? Sender, EventArgs Result)?> EventAsTask(Action<EventHandler> subscribe, Action<EventHandler> unsubscribe, CancellationToken cancellationToken)
         {
             var completionSource = new TaskCompletionSource<(object? Sender, EventArgs Result)>();
+            var unsubbed = false;
 
-            cancellationToken.Register(() => completionSource.SetCanceled());
+            cancellationToken.Register(() =>
+            {
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
+
+                if (!completionSource.Task.IsCompleted)
+                    completionSource.SetCanceled();
+            });
 
             subscribe(EventHandler);
 
             try
             {
                 var result = await completionSource.Task;
-                unsubscribe(EventHandler);
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
                 return result;
             }
             catch (TaskCanceledException)
             {
-                unsubscribe(EventHandler);
+                if (!unsubbed)
+                {
+                    unsubscribe(EventHandler);
+                    unsubbed = true;
+                }
                 return null;
             }
 
