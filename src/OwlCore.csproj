@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.57</Version>
+		<Version>0.0.58</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,13 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.58 ---
+[Fixes]
+Fixed an issue with SettingsBase where saving and loading a value shorter than the previous value would result in invalid data.
+
+[Improvements]
+Added LoadFailed and SaveFailed events to SettingsBase.
+
 --- 0.0.57 ---
 [Overview]
 Refining AbstractUI, fixing consistency and adding unit tests.
