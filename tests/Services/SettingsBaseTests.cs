@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OwlCore.AbstractStorage;
 using OwlCore.Services;
+using OwlCore.Extensions;
+using Newtonsoft.Json;
 
 namespace OwlCore.Tests.Services;
 
@@ -35,6 +38,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.StringData = newValue;
 
@@ -52,6 +56,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.StringData = newValue;
         settings.CompositeData.Label = newValue;
@@ -60,6 +65,38 @@ public class SettingsBaseTests
         await settings.LoadAsync();
 
         Assert.AreEqual(newValue, settings.CompositeData.Label);
+        Assert.AreEqual(newValue, settings.StringData);
+    }
+
+    [TestMethod, Timeout(2000)]
+    public async Task SaveValueSaveNewShorterValueThenLoad()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        settings.LoadFailed += (s, e) => Assert.Fail(e.Exception.Message);
+        settings.SaveFailed += (s, e) => Assert.Fail(e.Exception.Message);
+
+        // Set long value
+        settings.StringData = "yy";
+
+        // Save default values to disk
+        await settings.SaveAsync();
+
+        const string newValue = "x";
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.IsTrue(newValue.Length < settings.StringData.Length);
+
+        settings.StringData = newValue;
+
+        // Save new values to disk
+        await settings.SaveAsync();
+
+        // Load new values back from disk
+        await settings.LoadAsync();
+
         Assert.AreEqual(newValue, settings.StringData);
     }
 
@@ -73,6 +110,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.StringData = newValue;
         settings.CompositeData.Label = newValue;
@@ -103,6 +141,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.StringData = newValue;
         settings.CompositeData.Label = newValue;
@@ -132,6 +171,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.StringData = newValue;
         Assert.AreEqual(newValue, settings.StringData);
@@ -151,6 +191,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         // Assign a value to save.
         settings.StringData = newValue;
@@ -188,6 +229,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         // Track changed properties
         var changedProperties = new List<string>();
@@ -216,6 +258,7 @@ public class SettingsBaseTests
 
         // Initial value must not equal new value for test to be valid.
         Assert.AreNotEqual(newValue, settings.StringData);
+        Assert.AreNotEqual(newValue.Length, settings.StringData.Length);
 
         settings.PropertyChanged += OnChanged;
 
@@ -310,7 +353,7 @@ public class SettingsBaseTests
     private class TestSettings : SettingsBase
     {
         public TestSettings(IFolderData folder)
-            : base(folder, MockSerializer.Singleton)
+            : base(folder, NewtonsoftStreamSerializer.Singleton)
         {
         }
 
@@ -345,36 +388,53 @@ public class SettingsBaseTests
         }
     }
 
-    private class MockSerializer : IAsyncSerializer<Stream>
+    private class NewtonsoftStreamSerializer : IAsyncSerializer<Stream>, ISerializer<Stream>
     {
-        public static MockSerializer Singleton { get; } = new();
+        /// <summary>
+        /// A singleton instance for <see cref="NewtonsoftStreamSerializer"/>.
+        /// </summary>
+        public static NewtonsoftStreamSerializer Singleton { get; } = new();
 
-        public async Task<Stream> SerializeAsync<T>(T data, CancellationToken? cancellationToken = null)
+        /// <inheritdoc />
+        public Task<Stream> SerializeAsync<T>(T data, CancellationToken? cancellationToken = null) => Task.Run(() => Serialize(data), cancellationToken ?? CancellationToken.None);
+
+        /// <inheritdoc />
+        public Task<Stream> SerializeAsync(Type inputType, object data, CancellationToken? cancellationToken = null) => Task.Run(() => Serialize(inputType, data), cancellationToken ?? CancellationToken.None);
+
+        /// <inheritdoc />
+        public Task<TResult> DeserializeAsync<TResult>(Stream serialized, CancellationToken? cancellationToken = null) => Task.Run(() => Deserialize<TResult>(serialized), cancellationToken ?? CancellationToken.None);
+
+        /// <inheritdoc />
+        public Task<object> DeserializeAsync(Type returnType, Stream serialized, CancellationToken? cancellationToken = null) => Task.Run(() => Deserialize(returnType, serialized), cancellationToken ?? CancellationToken.None);
+
+        /// <inheritdoc />
+        public Stream Serialize<T>(T data)
         {
-            var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data,
-                cancellationToken: cancellationToken ?? CancellationToken.None);
-            return stream;
+            var res = JsonConvert.SerializeObject(data, typeof(T), null);
+            return new MemoryStream(Encoding.UTF8.GetBytes(res));
         }
 
-        public async Task<Stream> SerializeAsync(Type inputType, object data,
-            CancellationToken? cancellationToken = null)
+        /// <inheritdoc />
+        public Stream Serialize(Type type, object data)
         {
-            var stream = new MemoryStream();
-            await System.Text.Json.JsonSerializer.SerializeAsync(stream, data, inputType,
-                cancellationToken: cancellationToken ?? CancellationToken.None);
-            return stream;
+            var res = JsonConvert.SerializeObject(data, type, null);
+            return new MemoryStream(Encoding.UTF8.GetBytes(res));
         }
 
-        public Task<TResult> DeserializeAsync<TResult>(Stream serialized, CancellationToken? cancellationToken = null)
+        /// <inheritdoc />
+        public TResult Deserialize<TResult>(Stream serialized)
         {
-            return System.Text.Json.JsonSerializer.DeserializeAsync<TResult>(serialized).AsTask()!;
+            serialized.Position = 0;
+            var str = Encoding.UTF8.GetString(serialized.ToBytes());
+            return (TResult)JsonConvert.DeserializeObject(str, typeof(TResult))!;
         }
 
-        public Task<object> DeserializeAsync(Type returnType, Stream serialized,
-            CancellationToken? cancellationToken = null)
+        /// <inheritdoc />
+        public object Deserialize(Type type, Stream serialized)
         {
-            return System.Text.Json.JsonSerializer.DeserializeAsync(serialized, returnType).AsTask()!;
+            serialized.Position = 0;
+            var str = Encoding.UTF8.GetString(serialized.ToBytes());
+            return JsonConvert.DeserializeObject(str, type)!;
         }
     }
 
@@ -459,16 +519,25 @@ public class SettingsBaseTests
 
         public Task<IFileData> CreateFileAsync(string desiredName)
         {
-            var file = new MockFile(desiredName);
-            _files.Add(file);
-            return Task.FromResult<IFileData>(file);
+            return CreateFileAsync(desiredName, CreationCollisionOption.FailIfExists);
         }
 
         public Task<IFileData> CreateFileAsync(string desiredName, CreationCollisionOption options)
         {
-            var file = new MockFile(desiredName);
-            _files.Add(file);
-            return Task.FromResult<IFileData>(file);
+            if (_files.FirstOrDefault(x => x.Name == desiredName) is IFileData file)
+            {
+                if (options == CreationCollisionOption.OpenIfExists)
+                    return Task.FromResult(file);
+
+                if (options == CreationCollisionOption.FailIfExists)
+                    throw new Exception();
+
+                throw new NotSupportedException($"Support for {options} not added.");
+            }
+
+            var newFile = new MockFile(desiredName);
+            _files.Add(newFile);
+            return Task.FromResult<IFileData>(newFile);
         }
 
         public Task<IFolderData?> GetFolderAsync(string name)
@@ -525,8 +594,11 @@ public class SettingsBaseTests
 
         public override void SetLength(long value) => _underlyingStream.SetLength(value);
 
-        public override void Write(byte[] buffer, int offset, int count) =>
-            _underlyingStream.Write(buffer, offset, count);
+        public override void Write(byte[] buffer, int offset, int count) => _underlyingStream.Write(buffer, offset, count);
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _underlyingStream.WriteAsync(buffer, offset, count, cancellationToken);
+
+        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => _underlyingStream.CopyToAsync(destination, bufferSize, cancellationToken);
 
         public override bool CanRead => _underlyingStream.CanRead;
 

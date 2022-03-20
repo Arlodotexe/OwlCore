@@ -78,6 +78,9 @@ namespace OwlCore.Services
         /// <summary>
         /// Persists all settings from memory onto disk.
         /// </summary>
+        /// <remarks>
+        /// If any exceptions are thrown while saving a setting, the exception will be swallowed and emitted via <see cref="SaveFailed"/>, and the setting that failed will be excluded from being persisted.
+        /// </remarks>
         public virtual async Task SaveAsync(CancellationToken? cancellationToken = null)
         {
             var token = cancellationToken ?? CancellationToken.None;
@@ -90,33 +93,48 @@ namespace OwlCore.Services
                 // pass the file stream to the serializer directly, without loading the whole thing into memory
                 // for modification. 
                 // This allows the serializer to load as little or as much data into memory as it needs at a time.
-                var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
-                var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
-                if (token.IsCancellationRequested)
-                    return;
+                try
+                {
+                    var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
+                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
 
-                using var serializedRawDataStream = await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
+                    if (token.IsCancellationRequested)
+                        return;
 
-                if (token.IsCancellationRequested)
-                    return;
+                    using var serializedRawDataStream = await _settingSerializer.SerializeAsync(kvp.Value.Type, kvp.Value.Data, token);
 
-                using var dataFileStream = await dataFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    if (token.IsCancellationRequested)
+                        return;
 
-                if (token.IsCancellationRequested)
-                    return;
+                    using var dataFileStream = await dataFile.GetStreamAsync(FileAccessMode.ReadWrite);
 
-                dataFileStream.Position = 0;
-                serializedRawDataStream.Position = 0;
+                    if (token.IsCancellationRequested)
+                        return;
 
-                await serializedRawDataStream.CopyToAsync(dataFileStream, bufferSize: 81920, token);
+                    dataFileStream.SetLength(serializedRawDataStream.Length);
 
-                if (token.IsCancellationRequested)
-                    return;
+                    dataFileStream.Seek(0, SeekOrigin.Begin);
+                    serializedRawDataStream.Seek(0, SeekOrigin.Begin);
 
-                // Store the known type for later deserialization. Serializer cannot be relied on for this.
-                var typeContentBytes = Encoding.UTF8.GetBytes(kvp.Value.Type.AssemblyQualifiedName);
-                using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
-                await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
+                    await serializedRawDataStream.CopyToAsync(dataFileStream, bufferSize: 81920, token);
+
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    // Store the known type for later deserialization. Serializer cannot be relied on for this.
+                    var typeContentBytes = Encoding.UTF8.GetBytes(kvp.Value.Type.FullName);
+                    using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    typeFileStream.Seek(0, SeekOrigin.Begin);
+                    typeFileStream.SetLength(typeContentBytes.Length);
+
+                    await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
+                }
+                catch (Exception ex)
+                {
+                    // Ignore any errors when saving, writing or serializing.
+                    // Setting will not be saved.
+                    SaveFailed?.Invoke(this, new SettingPersistFailedEventArgs(kvp.Key, ex));
+                }
             };
 
             _storageSemaphore.Release();
@@ -125,6 +143,9 @@ namespace OwlCore.Services
         /// <summary>
         /// Loads all settings from disk into memory.
         /// </summary>
+        /// <remarks>
+        /// If any exceptions are thrown while loading a setting, the exception will be swallowed and emitted via <see cref="LoadFailed"/>, and the current value in memory will be untouched.
+        /// </remarks>
         public virtual async Task LoadAsync(CancellationToken? cancellationToken = null)
         {
             var token = cancellationToken ?? CancellationToken.None;
@@ -148,7 +169,6 @@ namespace OwlCore.Services
                 var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}.Type");
                 if (typeFile is null)
                     continue; // Type file may be missing or deleted.
-
                 try
                 {
                     using var settingDataStream = await settingDataFile.GetStreamAsync();
@@ -170,10 +190,11 @@ namespace OwlCore.Services
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(settingDataFile.Name));
                 }
-                catch
+                catch (Exception ex)
                 {
                     // Ignore any errors when loading, reading or deserializing
                     // Setting will not be loaded into memory.
+                    LoadFailed?.Invoke(this, new SettingPersistFailedEventArgs(settingDataFile.Name, ex));
                 }
             }
 
@@ -184,7 +205,7 @@ namespace OwlCore.Services
         {
             // Load file
             using var typeFileStream = await file.GetStreamAsync();
-            typeFileStream.Position = 0;
+            typeFileStream.Seek(0, SeekOrigin.Begin);
 
             // Convert to raw bytes
             var typeFileBytes = new byte[typeFileStream.Length];
@@ -196,5 +217,40 @@ namespace OwlCore.Services
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Raised when an exception is thrown during <see cref="LoadAsync(CancellationToken?)"/>.
+        /// </summary>
+        public event EventHandler<SettingPersistFailedEventArgs>? LoadFailed;
+
+        /// <summary>
+        /// Raised when an exception is thrown during <see cref="SaveAsync(CancellationToken?)"/>.
+        /// </summary>
+        public event EventHandler<SettingPersistFailedEventArgs>? SaveFailed;
+    }
+
+    /// <summary>
+    /// Event arguments about a failed persistent save or load in <see cref="SettingsBase"/>.
+    /// </summary>
+    public class SettingPersistFailedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Creates a new instance of <see cref="SettingPersistFailedEventArgs"/>.
+        /// </summary>
+        public SettingPersistFailedEventArgs(string settingName, Exception exception)
+        {
+            SettingName = settingName;
+            Exception = exception;
+        }
+
+        /// <summary>
+        /// The exception that was raised when attempting to save or load a setting.
+        /// </summary>
+        public Exception Exception { get; }
+
+        /// <summary>
+        /// The setting which failed to persist.
+        /// </summary>
+        public string SettingName { get; }
     }
 }
