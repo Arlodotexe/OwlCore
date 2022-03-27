@@ -14,7 +14,7 @@
           "src": "../"
         }
       ],
-      "dest": "/api"
+      "dest": "api"
     }
   ],
   "build": {
@@ -29,20 +29,24 @@
       {
         "files": [
           "articles/**.md",
-          "articles/**/toc.yml",
+          "articles/**/toc.yml"
+        ]
+      },
+      {
+        "files": [
+          "index.md",
           "toc.yml",
-          "index.md"
+          "**.md"
         ]
       }
     ],
-    "dest": "wwwroot/",
+    "dest": "wwwroot",
     "template": [
       "default"
     ],
     "globalMetadata": {
-      "_appTitle": "Strix Music",
+      "_appTitle": "OwlCore",
       "_appFooter": "© 2022 Arlo Godfrey",
-      "_appLogoPath": "assets/logos/AppIcon.svg",
       "_enableSearch": true,
       "_appFaviconPath": "assets/favicon.ico"
     },
