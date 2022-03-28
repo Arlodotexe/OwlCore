@@ -41,41 +41,45 @@ namespace OwlCore.AbstractUI.ViewModels
 
         private void OnModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            using (new Threading.DisposableSyncContext(_syncContext))
             {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (var item in e.NewItems)
-                    {
-                        var vm = SetupViewModel((AbstractUIElement)item);
-
-                        _items.Add(vm);
-                        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)vm));
-                    }
-
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (var item in e.OldItems)
-                    {
-                        var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
-
-                        if (target is not null)
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (var item in e.NewItems)
                         {
-                            _items.Remove(target);
-                            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)target));
+                            var vm = SetupViewModel((AbstractUIElement)item);
+
+                            _items.Add(vm);
+                            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)vm));
                         }
-                    }
 
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    _items.Clear();
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (var item in e.OldItems)
+                        {
+                            var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
 
-                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action));
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                case NotifyCollectionChangedAction.Replace:
-                default:
-                    ThrowHelper.ThrowNotSupportedException();
-                    break;
+                            if (target is not null)
+                            {
+                                _items.Remove(target);
+                                CollectionChanged?.Invoke(this,
+                                    new NotifyCollectionChangedEventArgs(e.Action, (object)target));
+                            }
+                        }
+
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        _items.Clear();
+
+                        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action));
+                        break;
+                    case NotifyCollectionChangedAction.Move:
+                    case NotifyCollectionChangedAction.Replace:
+                    default:
+                        ThrowHelper.ThrowNotSupportedException();
+                        break;
+                }
             }
         }
 
