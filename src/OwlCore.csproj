@@ -39,6 +39,9 @@ Our favorite features:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 --- 0.0.59 ---
+[Fixes]
+Fixed an issue where AbstractUICollectionViewModel wouldn't raise NotifyCollectionChanged on the correct SynchronizationContext.
+
 [Breaking changes]
 Removed the ILauncher interface. Use an event handler instead for Uri activation.
 
