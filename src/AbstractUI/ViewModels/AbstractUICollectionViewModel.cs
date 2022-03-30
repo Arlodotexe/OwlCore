@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Microsoft.Toolkit.Diagnostics;
@@ -12,18 +11,18 @@ namespace OwlCore.AbstractUI.ViewModels
     /// <summary>
     /// A ViewModel wrapper for an <see cref="AbstractUICollection"/>.
     /// </summary>
-    public class AbstractUICollectionViewModel : AbstractUIViewModelBase, IReadOnlyCollection<AbstractUIViewModelBase>,
-        INotifyCollectionChanged
+    public class AbstractUICollectionViewModel : AbstractUIViewModelBase
     {
         private readonly AbstractUICollection _model;
-        private readonly List<AbstractUIViewModelBase> _items;
+        private readonly ObservableCollection<AbstractUIViewModelBase> _items;
 
         /// <inheritdoc />
         public AbstractUICollectionViewModel(AbstractUICollection model)
             : base(model)
         {
             _model = model;
-            _items = model.Select(SetupViewModel).ToList();
+            _items = new ObservableCollection<AbstractUIViewModelBase>(model.Select(SetupViewModel));
+            Items = new ReadOnlyObservableCollection<AbstractUIViewModelBase>(_items);
 
             AttachEvents(model);
         }
@@ -41,7 +40,7 @@ namespace OwlCore.AbstractUI.ViewModels
 
         private void OnModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            using (new Threading.DisposableSyncContext(_syncContext))
+            _syncContext.Post(_ =>
             {
                 switch (e.Action)
                 {
@@ -51,7 +50,6 @@ namespace OwlCore.AbstractUI.ViewModels
                             var vm = SetupViewModel((AbstractUIElement)item);
 
                             _items.Add(vm);
-                            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action, (object)vm));
                         }
 
                         break;
@@ -63,16 +61,12 @@ namespace OwlCore.AbstractUI.ViewModels
                             if (target is not null)
                             {
                                 _items.Remove(target);
-                                CollectionChanged?.Invoke(this,
-                                    new NotifyCollectionChangedEventArgs(e.Action, (object)target));
                             }
                         }
 
                         break;
                     case NotifyCollectionChangedAction.Reset:
                         _items.Clear();
-
-                        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(e.Action));
                         break;
                     case NotifyCollectionChangedAction.Move:
                     case NotifyCollectionChangedAction.Replace:
@@ -80,7 +74,7 @@ namespace OwlCore.AbstractUI.ViewModels
                         ThrowHelper.ThrowNotSupportedException();
                         break;
                 }
-            }
+            }, null);
         }
 
         private AbstractUIViewModelBase SetupViewModel(AbstractUIElement element)
@@ -104,34 +98,12 @@ namespace OwlCore.AbstractUI.ViewModels
             }
         }
 
-        /// <inheritdoc/>
-        public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
-        /// <summary>
-        /// Get an item from this <see cref="AbstractUICollection"/>.
-        /// </summary>
-        /// <param name="i">The index</param>
-        public AbstractUIViewModelBase this[int i] => _items.ElementAt(i);
-
         /// <summary>
         /// The items in this group.
         /// </summary>
-        /// <remarks>
-        /// Deprecated. Enumerable the collection directly. This property will be removed in a future version.
-        /// </remarks>
-        [Obsolete("Enumerable the collection directly. This property will be removed in a future version.")]
-        public IReadOnlyList<AbstractUIViewModelBase> Items => _items;
+        public ReadOnlyObservableCollection<AbstractUIViewModelBase> Items { get; }
 
         /// <inheritdoc cref="Models.PreferredOrientation"/>
         public PreferredOrientation PreferredOrientation => _model.PreferredOrientation;
-
-        /// <inheritdoc/>
-        public int Count => _items.Count;
-
-        /// <inheritdoc />
-        public IEnumerator<AbstractUIViewModelBase> GetEnumerator() => _items.GetEnumerator();
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
