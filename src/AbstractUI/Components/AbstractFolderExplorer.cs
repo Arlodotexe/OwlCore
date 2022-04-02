@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Diagnostics;
 using OwlCore.AbstractStorage;
@@ -52,7 +53,7 @@ namespace OwlCore.AbstractUI.Components
         }
 
         /// <inheritdoc />
-        public async Task InitAsync()
+        public async Task InitAsync(CancellationToken cancellationToken = default)
         {
             FolderStack.Push(_rootFolder);
             await SetupFolderAsync(_rootFolder);

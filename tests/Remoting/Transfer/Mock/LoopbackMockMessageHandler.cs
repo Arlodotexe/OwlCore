@@ -46,7 +46,7 @@ namespace OwlCore.Tests.Remoting.Transfer
         }
 
         /// <inheritdoc/>
-        public Task InitAsync()
+        public Task InitAsync(CancellationToken cancellationToken = default)
         {
             IsInitialized = true;
             return Task.CompletedTask;
