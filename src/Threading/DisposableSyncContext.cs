@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Microsoft.Toolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 
 // ReSharper disable once CheckNamespace
 namespace OwlCore

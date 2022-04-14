@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.63</Version>
+		<Version>0.0.65</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,17 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.64 ---
+[New]
+OwlCore.Services now contains a Logger. This is a static class that simply routes messages in via methods and out via an event handler, similar to System.Diagnostics.Debug, but works outside Debug mode. Unit tested.
+
+[Improvements]
+Flow.EventAsTask now uses TrySetCanceled and TrySetResult, fixing some rare cases where an exception might be throwing during parallel execution.
+			
+--- 0.0.64 ---
+[Breaking changes]
+OwlCore has been updated to use CommunityToolkit 8.0 Preview 3 instead of Microsoft.Toolkit 7.1.
+
 --- 0.0.63 ---
 [Fixes]
 Fixed an issue where updating OwlCore in existing apps could result in the error "error CS1705: Assembly 'OwlCore' with identity 'OwlCore, Version=0.0.62, Culture=neutral, PublicKeyToken=null' uses 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' which has a higher version than referenced assembly 'System.Runtime' with identity 'System.Runtime, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
@@ -488,12 +499,12 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	<ItemGroup>
 		<PackageReference Include="Cauldron.BasicInterceptors" Version="3.2.3" />
 		<PackageReference Include="Cauldron.Interception.Fody" Version="3.2.3" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0-preview3" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0-preview3" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
 		<PackageReference Include="MessagePack" Version="2.3.85" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-		<PackageReference Include="Microsoft.Toolkit" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.1" />
-		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Text.Json" Version="5.0.2" />
 		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />

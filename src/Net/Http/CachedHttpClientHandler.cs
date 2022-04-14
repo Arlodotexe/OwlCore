@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Diagnostics;
+﻿using CommunityToolkit.Diagnostics;
 using OwlCore.Extensions;
 using System;
 using System.Diagnostics;

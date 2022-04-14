@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using OwlCore.AbstractUI.Models;
 
 namespace OwlCore.AbstractUI.ViewModels

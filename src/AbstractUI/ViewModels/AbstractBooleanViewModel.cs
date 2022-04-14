@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
 
 namespace OwlCore.AbstractUI.ViewModels

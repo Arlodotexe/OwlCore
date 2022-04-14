@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Toolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 
 namespace OwlCore.Extensions
 {
