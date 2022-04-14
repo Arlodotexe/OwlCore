@@ -38,7 +38,7 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
---- 0.0.64 ---
+--- 0.0.65 ---
 [New]
 OwlCore.Services now contains a Logger. This is a static class that simply routes messages in via methods and out via an event handler, similar to System.Diagnostics.Debug, but works outside Debug mode. Unit tested.
 
