@@ -283,6 +283,42 @@ public class SettingsBaseTests
         void OnChanged(object? sender, PropertyChangedEventArgs e) =>
             changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
+
+    [TestMethod]
+    public void ResetSettingNotifiesPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var intermediateValue = "Intermediate value";
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(intermediateValue, settings.StringData);
+        Assert.AreNotEqual(intermediateValue.Length, settings.StringData.Length);
+
+        // Track changed properties
+        var changedProperties = new List<string>();
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = intermediateValue;
+        Assert.AreEqual(intermediateValue, settings.StringData);
+
+        // Rest value
+        settings.ResetStringData();
+        Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
+
+        // Ensure only the assigned property changed.
+        Assert.AreEqual(2, changedProperties.Count);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[0]);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[1]);
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+    }
+
     [TestMethod, Timeout(2000)]
     public void NoDeadlockWhileGetSettingDuringPropertyChanged()
     {
@@ -410,6 +446,8 @@ public class SettingsBaseTests
             get => GetSetting(() => new CompositeTestSetting(Array.Empty<byte>(), string.Empty));
             set => SetSetting(value);
         }
+
+        public void ResetStringData() => ResetSetting<string>(nameof(StringData));
 
         public class CompositeTestSetting
         {
