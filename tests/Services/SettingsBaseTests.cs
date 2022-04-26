@@ -352,8 +352,8 @@ public class SettingsBaseTests
         Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
         Assert.AreEqual(TestSettings.State_DefaultValue, settings.State);
 
-        // Ensure all properties changed.
-        Assert.AreEqual(2 * 2 + 1, changedProperties.Count);
+        // Ensure properties changed a second time due to reset.
+        Assert.AreEqual(2 + 2 + 1, changedProperties.Count);
         Assert.AreEqual(2, changedProperties.Count(p => p == nameof(settings.StringData)));
         Assert.AreEqual(2, changedProperties.Count(p => p == nameof(settings.CompositeData)));
         Assert.AreEqual(1, changedProperties.Count(p => p == nameof(settings.State)));
