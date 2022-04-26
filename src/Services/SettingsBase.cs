@@ -87,7 +87,7 @@ namespace OwlCore.Services
         }
 
         /// <summary>
-        /// Sets all settings values to to their default.
+        /// Sets all settings values to their default.
         /// </summary>
         public void ResetAllSettings()
         {
