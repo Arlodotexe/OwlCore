@@ -269,7 +269,7 @@ public class SettingsBaseTests
         settings.StringData = intermediateValue;
         Assert.AreEqual(intermediateValue, settings.StringData);
 
-        // Rest value
+        // Reset value
         settings.StringData = null!;
         Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
 
