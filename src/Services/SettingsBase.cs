@@ -87,6 +87,15 @@ namespace OwlCore.Services
         }
 
         /// <summary>
+        /// Sets all settings values to to their default.
+        /// </summary>
+        public void ResetAllSettings()
+        {
+            foreach (string key in _runtimeStorage.Keys)
+                ResetSetting(key);
+        }
+
+        /// <summary>
         /// Persists all settings from memory onto disk.
         /// </summary>
         /// <remarks>
