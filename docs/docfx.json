@@ -9,7 +9,7 @@
           "exclude": [
             "**/bin/**",
             "**/obj/**",
-            "/wwwroot/**"
+            "**/wwwroot/**"
           ],
           "src": "../"
         }
@@ -21,8 +21,8 @@
     "content": [
       {
         "files": [
-          "api/**.yml",
           "api/toc.yml",
+          "api/**.yml",
           "api/index.md"
         ]
       },
