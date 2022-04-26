@@ -47,10 +47,11 @@ namespace OwlCore.Services
             if (value is null)
             {
                 _runtimeStorage.TryRemove(key, out _);
-                return;
             }
-
-            _runtimeStorage[key] = (typeof(T), value);
+            else
+            {
+                _runtimeStorage[key] = (typeof(T), value);
+            }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
         }
@@ -73,6 +74,25 @@ namespace OwlCore.Services
                 _runtimeStorage[key] = (typeof(T), fallbackValue);
 
             return fallbackValue;
+        }
+
+        /// <summary>
+        /// Sets a settings value to its default.
+        /// </summary>
+        /// <param name="key">A unique identifier for the setting.</param>
+        public void ResetSetting(string key)
+        {
+            _runtimeStorage.TryRemove(key, out _);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+        }
+
+        /// <summary>
+        /// Sets all settings values to their default.
+        /// </summary>
+        public void ResetAllSettings()
+        {
+            foreach (string key in _runtimeStorage.Keys)
+                ResetSetting(key);
         }
 
         /// <summary>
