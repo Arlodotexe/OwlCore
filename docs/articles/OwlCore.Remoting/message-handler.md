@@ -1,10 +1,10 @@
 ## Remote message handler
 
-To delegate remote member change messages between machines, you must implement the `OwlCore.Remoting.Transfer.IRemoteMessageHandler` interface.
+To emit and consume RPC calls, you must implement the [`IRemoteMessageHandler`](../../api/OwlCore.Remoting.Transfer.IRemoteMessageHandler.yml) interface.
 
-This instance can be passed to an individual `MemberRemote` to handle messages for that particular instance.
+Once implemented, create an instance an pass it to all [`MemberRemote`](/member-remote.md)s that should use it for incoming and outgoing changes.
 
-Or, it can be used as the default for all by setting `MemberRemote.SetDefaultMessageHandler(myHandler);`.
+By using [`MemberRemote.SetDefaultMessageHandler(myHandler)`](../../api/OwlCore.Remoting.MemberRemote.yml#OwlCore_Remoting_MemberRemote_SetDefaultMessageHandler_OwlCore_Remoting_Transfer_IRemoteMessageHandler_), you can set the default for all [`MemberRemote`](/member-remote.md)s that don't specify a message handler.
 
 ### Example message handler:
 
