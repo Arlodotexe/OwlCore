@@ -319,6 +319,51 @@ public class SettingsBaseTests
             changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
 
+    [TestMethod]
+    public void ResetAllSettingsNotifiesPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var intermediateStringValue = "Intermediate value";
+        var intermediateCompositeValue = new TestSettings.CompositeTestSetting(new byte[] { 0x41, 0x41 }, intermediateStringValue);
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(intermediateStringValue, settings.StringData);
+        Assert.AreNotEqual(intermediateStringValue.Length, settings.StringData.Length);
+        Assert.AreNotEqual(intermediateCompositeValue, settings.CompositeData);
+
+        // Track changed properties
+        var changedProperties = new List<string>();
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = intermediateStringValue;
+        Assert.AreEqual(intermediateStringValue, settings.StringData);
+
+        settings.CompositeData = intermediateCompositeValue;
+        Assert.AreEqual(intermediateCompositeValue, settings.CompositeData);
+
+        // Get a value to force evaluation of the default lambda
+        _ = settings.State;
+
+        // Reset value
+        settings.ResetAllSettings();
+        Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
+        Assert.AreEqual(TestSettings.State_DefaultValue, settings.State);
+
+        // Ensure all properties changed.
+        Assert.AreEqual(2 * 2 + 1, changedProperties.Count);
+        Assert.AreEqual(2, changedProperties.Count(p => p == nameof(settings.StringData)));
+        Assert.AreEqual(2, changedProperties.Count(p => p == nameof(settings.CompositeData)));
+        Assert.AreEqual(1, changedProperties.Count(p => p == nameof(settings.State)));
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+    }
+
     [TestMethod, Timeout(2000)]
     public void NoDeadlockWhileGetSettingDuringPropertyChanged()
     {
@@ -423,6 +468,7 @@ public class SettingsBaseTests
     private class TestSettings : SettingsBase
     {
         public const string StringData_DefaultValue = "Default value";
+        public const bool State_DefaultValue = false;
 
         public TestSettings(IFolderData folder)
             : base(folder, NewtonsoftStreamSerializer.Singleton)
@@ -437,7 +483,7 @@ public class SettingsBaseTests
 
         public bool State
         {
-            get => GetSetting(() => false);
+            get => GetSetting(() => State_DefaultValue);
             set => SetSetting(value);
         }
 
