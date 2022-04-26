@@ -249,6 +249,40 @@ public class SettingsBaseTests
             changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
     }
 
+    [TestMethod]
+    public void SetSettingToNullNotifiesPropertyChanged()
+    {
+        var settingsStore = new MockFolder(name: "Settings");
+        var settings = new TestSettings(settingsStore);
+
+        var intermediateValue = "Intermediate value";
+
+        // Initial value must not equal new value for test to be valid.
+        Assert.AreNotEqual(intermediateValue, settings.StringData);
+        Assert.AreNotEqual(intermediateValue.Length, settings.StringData.Length);
+
+        // Track changed properties
+        var changedProperties = new List<string>();
+        settings.PropertyChanged += OnChanged;
+
+        // Assign a new value
+        settings.StringData = intermediateValue;
+        Assert.AreEqual(intermediateValue, settings.StringData);
+
+        // Rest value
+        settings.StringData = null!;
+        Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
+
+        // Ensure only the assigned property changed.
+        Assert.AreEqual(2, changedProperties.Count);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[0]);
+        Assert.AreEqual(nameof(settings.StringData), changedProperties[1]);
+
+        settings.PropertyChanged -= OnChanged;
+
+        void OnChanged(object? sender, PropertyChangedEventArgs e) =>
+            changedProperties.Add(e.PropertyName ?? throw new InvalidOperationException());
+    }
     [TestMethod, Timeout(2000)]
     public void NoDeadlockWhileGetSettingDuringPropertyChanged()
     {
@@ -352,6 +386,8 @@ public class SettingsBaseTests
 
     private class TestSettings : SettingsBase
     {
+        public const string StringData_DefaultValue = "Default value";
+
         public TestSettings(IFolderData folder)
             : base(folder, NewtonsoftStreamSerializer.Singleton)
         {
@@ -359,7 +395,7 @@ public class SettingsBaseTests
 
         public string StringData
         {
-            get => GetSetting(() => "Default value");
+            get => GetSetting(() => StringData_DefaultValue);
             set => SetSetting(value);
         }
 
