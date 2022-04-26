@@ -47,10 +47,11 @@ namespace OwlCore.Services
             if (value is null)
             {
                 _runtimeStorage.TryRemove(key, out _);
-                return;
             }
-
-            _runtimeStorage[key] = (typeof(T), value);
+            else
+            {
+                _runtimeStorage[key] = (typeof(T), value);
+            }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
         }
