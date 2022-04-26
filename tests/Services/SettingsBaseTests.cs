@@ -304,8 +304,8 @@ public class SettingsBaseTests
         settings.StringData = intermediateValue;
         Assert.AreEqual(intermediateValue, settings.StringData);
 
-        // Rest value
-        settings.ResetStringData();
+        // Reset value
+        settings.ResetSetting<string>(nameof(settings.StringData));
         Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
 
         // Ensure only the assigned property changed.
@@ -446,8 +446,6 @@ public class SettingsBaseTests
             get => GetSetting(() => new CompositeTestSetting(Array.Empty<byte>(), string.Empty));
             set => SetSetting(value);
         }
-
-        public void ResetStringData() => ResetSetting<string>(nameof(StringData));
 
         public class CompositeTestSetting
         {

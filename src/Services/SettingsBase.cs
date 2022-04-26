@@ -79,9 +79,9 @@ namespace OwlCore.Services
         /// <summary>
         /// Sets a settings value to its default.
         /// </summary>
-        /// <param name="key">A unique identifier for this setting.</param>
+        /// <param name="key">A unique identifier for the setting.</param>
         /// <typeparam name="T">The type of the stored value.</typeparam>
-        protected void ResetSetting<T>([CallerMemberName] string key = "")
+        public void ResetSetting<T>(string key)
         {
             SetSetting<T>(default!, key);
         }
