@@ -80,10 +80,10 @@ namespace OwlCore.Services
         /// Sets a settings value to its default.
         /// </summary>
         /// <param name="key">A unique identifier for the setting.</param>
-        /// <typeparam name="T">The type of the stored value.</typeparam>
-        public void ResetSetting<T>(string key)
+        public void ResetSetting(string key)
         {
-            SetSetting<T>(default!, key);
+            _runtimeStorage.TryRemove(key, out _);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
         }
 
         /// <summary>

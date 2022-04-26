@@ -305,7 +305,7 @@ public class SettingsBaseTests
         Assert.AreEqual(intermediateValue, settings.StringData);
 
         // Reset value
-        settings.ResetSetting<string>(nameof(settings.StringData));
+        settings.ResetSetting(nameof(settings.StringData));
         Assert.AreEqual(TestSettings.StringData_DefaultValue, settings.StringData);
 
         // Ensure only the assigned property changed.
