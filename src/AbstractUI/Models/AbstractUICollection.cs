@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using OwlCore.Extensions;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
     /// <summary>
     /// A special <see cref="ICollection"/> that holds <see cref="AbstractUIElement"/>s, with additional options for presenting them.
     /// </summary>
-    [RemoteOptions(RemotingDirection.Bidirectional)]
     public class AbstractUICollection : AbstractUIElement, ICollection<AbstractUIElement>, INotifyCollectionChanged
     {
         private List<AbstractUIElement> _items;
@@ -52,7 +50,6 @@ namespace OwlCore.AbstractUI.Models
         /// <remarks>
         /// Deprecated. Enumerable the collection directly. This property will be removed in a future version.
         /// </remarks>
-        [RemoteProperty]
         [Obsolete("Enumerable the collection directly. This property will be removed in a future version.")]
         public IReadOnlyList<AbstractUIElement> Items
         {
@@ -71,7 +68,6 @@ namespace OwlCore.AbstractUI.Models
         /// Adds the given <paramref name="abstractUIElement"/> to <see cref="Items" />.
         /// </summary>
         /// <param name="abstractUIElement">The item to add.</param>
-        [RemoteMethod]
         public void Add(AbstractUIElement abstractUIElement)
         {
             _items.Add(abstractUIElement);
@@ -79,7 +75,6 @@ namespace OwlCore.AbstractUI.Models
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public bool Remove(AbstractUIElement item)
         {
             if (!_items.Contains(item))
@@ -93,7 +88,6 @@ namespace OwlCore.AbstractUI.Models
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public void Clear()
         {
             _items.Clear();
@@ -107,7 +101,6 @@ namespace OwlCore.AbstractUI.Models
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public void CopyTo(AbstractUIElement[] array, int arrayIndex)
         {
             _items.CopyTo(array, arrayIndex);

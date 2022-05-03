@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
@@ -50,7 +48,6 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// Simulates the user clicking the button.
         /// </summary>
-        [RemoteMethod]
         public void Click() => Clicked?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
