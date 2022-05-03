@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.65</Version>
+		<Version>0.0.66</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -24,7 +24,7 @@ OwlCore is in a rapid development cycle and is constantly being improved upon. U
 Our favorite features:
 - .NET Standard 2.0 - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
 - OwlCore.Remoting - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
-- AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
+- AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
 - AbstractStorage - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
 - Flow.Debouncer - For when something fires repeatedly. but you only care about when it stops.
 - Flow.EventAsTask - Wait for an EventHandler to fire (with cancellation).
@@ -38,6 +38,16 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.66 ---
+[Fixes]
+Fixed an issue in SettingsBase where resetting a property to default by assigning a null value wouldn't fire PropertyChanged.
+			
+[Improvements]
+SettingsBase.ResetSetting() and SettingsBase.ResetAllSettings() have been added.
+
+[Breaking changes]
+Inbox support for OwlCore.Remoting in AbstractUI has been removed. If you need this functionality, create your own remoting-enabled wrapper class around the AbstractUI classes. 
+
 --- 0.0.65 ---
 [New]
 OwlCore.Services now contains a Logger. This is a static class that simply routes messages in via methods and out via an event handler, similar to System.Diagnostics.Debug, but works outside Debug mode. Unit tested.

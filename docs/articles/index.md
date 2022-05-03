@@ -5,7 +5,7 @@
 
 - **.NET Standard 2.0** - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
 - **[OwlCore.Remoting](OwlCore.Remoting/index.html)** - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
-- **AbstractUI** - Standardized simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
+- **AbstractUI** - Standardized simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
 - **AbstractStorage** - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
 - **Flow.Debouncer** - For when something fires repeatedly. but you only care about when it stops.
 - **Flow.EventAsTask** - Wait for an EventHandler to fire (with cancellation).
