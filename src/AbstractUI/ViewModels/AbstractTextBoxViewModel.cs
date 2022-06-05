@@ -73,6 +73,6 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <summary>
         /// Fire to notify that the value of the text box has been changed.
         /// </summary>
-        public IRelayCommand ValueChangedCommand;
+        public IRelayCommand ValueChangedCommand { get; }
     }
 }
