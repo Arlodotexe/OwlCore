@@ -23,6 +23,7 @@ namespace OwlCore.Remoting
         // Semaphore used to ensure the Entered event finishes execution before the Exited event is raised.
         private SemaphoreSlim _interceptSemaphore = new SemaphoreSlim(1, 1);
         private bool _isInvokedInternally;
+        private bool _isEventAddOrRemove;
 
         /// <inheritdoc/>
         public void OnEnter(Type declaringType, object instance, MethodBase methodbase, object[] values)
@@ -31,6 +32,7 @@ namespace OwlCore.Remoting
 
             if (MethodIsEventHandlerAdd(methodbase) || MethodIsEventHandlerRemove(methodbase))
             {
+                _isEventAddOrRemove = true;
                 _interceptSemaphore.Release();
                 return;
             }
@@ -69,7 +71,7 @@ namespace OwlCore.Remoting
         /// <inheritdoc/>
         public void OnExit()
         {
-            if (_isInvokedInternally)
+            if (_isInvokedInternally || _isEventAddOrRemove)
                 return;
 
             _interceptSemaphore.Wait();
