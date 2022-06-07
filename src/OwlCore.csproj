@@ -42,6 +42,9 @@ Our favorite features:
 [Fixes]
 Fixed an exception when [RemoteMethod] is placed on a class with events.
 
+[Improvements]
+Updated dependencies to latest version.
+
 --- 0.0.67 ---
 [Fixes]
 Fixed missing property getter on ValueChangedCommand.
@@ -517,15 +520,15 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	<ItemGroup>
 		<PackageReference Include="Cauldron.BasicInterceptors" Version="3.2.3" />
 		<PackageReference Include="Cauldron.Interception.Fody" Version="3.2.3" />
-		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0-preview3" />
-		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0-preview3" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0-preview4" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0-preview4" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview4" />
 		<PackageReference Include="MessagePack" Version="2.3.85" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="System.Text.Json" Version="5.0.2" />
-		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
+		<PackageReference Include="System.Text.Json" Version="6.0.4" />
+		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
