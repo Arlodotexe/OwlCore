@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Diagnostics;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +21,33 @@ namespace OwlCore.Extensions
         /// <param name="items">The source items.</param>
         /// <param name="func">Returns the task to run in parallel, given <typeparamref name="T"/>.</param>
         /// <returns>A task representing the completion of all tasks.</returns>
-        public static Task InParallel<T>(this IEnumerable<T> items, Func<T, Task> func)
+        public static async Task InParallel<T>(this IEnumerable<T> items, Func<T, Task> func)
         {
-            // Since this overload is using existing tasks, we don't have any overhead creating them for use in <see cref="Task.WhenAll(IEnumerable{Task})"/>.
-            var tasks = items.Select(func);
+            var exceptions = new List<Exception>();
 
-            return Task.WhenAll(tasks);
+            // WhenAll returns after the first exception is thrown
+            // So exceptions need to be captured manually.
+            await Task.WhenAll(items.Select(x => CaptureThrownException(func(x), exceptions)));
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
+
+            static async Task CaptureThrownException(Task task, List<Exception> exceptions)
+            {
+                try
+                {
+                    await task;
+                }
+                catch (Exception ex)
+                {
+                    lock (exceptions)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -36,12 +58,39 @@ namespace OwlCore.Extensions
         /// <param name="items">The source items.</param>
         /// <param name="func">Returns the task to run in parallel, given <typeparamref name="T"/>.</param>
         /// <returns>A <see cref="Task"/> representing the completion of all tasks. The result is an array of all the returned values.</returns>
-        public static Task<T2[]> InParallel<T, T2>(this IEnumerable<T> items, Func<T, Task<T2>> func)
+        public static async Task<T2[]> InParallel<T, T2>(this IEnumerable<T> items, Func<T, Task<T2>> func)
         {
-            // Since this overload is using existing tasks, we don't have any overhead creating them for use in <see cref="Task.WhenAll(IEnumerable{Task})"/>.
-            var tasks = items.Select(func);
+            var exceptions = new List<Exception>();
 
-            return Task.WhenAll(tasks);
+            // WhenAll returns after the first exception is thrown
+            // So exceptions need to be captured manually.
+            var res = await Task.WhenAll(items.Select(x => CaptureThrownException(func(x), exceptions)));
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
+
+            Guard.IsNotNull(res);
+
+            return res.Where(x => x is not null).Cast<T2>().ToArray();
+
+            static async Task<T2?> CaptureThrownException(Task<T2> task, List<Exception> exceptions)
+            {
+                try
+                {
+                    return await task;
+                }
+                catch (Exception ex)
+                {
+                    lock (exceptions)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                return default;
+            }
         }
     }
 }
