@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.68</Version>
+		<Version>0.0.69</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.69 ---
+[Improvements]
+InParallel extension method now throws AggregateException when any tasks throw. Test included up to 1,000,00 inner exceptions.
+
 --- 0.0.68 ---
 [Fixes]
 Fixed an exception when [RemoteMethod] is placed on a class with events.
