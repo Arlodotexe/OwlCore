@@ -17,7 +17,7 @@ namespace OwlCore.Extensions
         public static IEnumerable<T> PruneNull<T>(this IEnumerable<T?> source)
             where T : class
         {
-            return source.Where(x => !(x is null))!;
+            return Enumerable.Cast<T>(source.Where(x => !(x is null)));
         }
 
         /// <summary>
