@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.69</Version>
+		<Version>0.0.70</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,10 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.70 ---
+[Fixes]
+Fixed an issue where updating OwlCore in existing apps could result in the error "error CS1705: Assembly 'OwlCore' with identity 'OwlCore, Version=0.0.69, Culture=neutral, PublicKeyToken=null' uses 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' which has a higher version than referenced assembly 'System.Runtime' with identity 'System.Runtime, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+
 --- 0.0.69 ---
 [Improvements]
 InParallel extension method now throws AggregateException when any tasks throw. Test included up to 1,000,00 inner exceptions.
