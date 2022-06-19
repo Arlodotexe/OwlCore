@@ -229,6 +229,38 @@ namespace OwlCore.Tests.Extensions
         }
 
         [TestMethod, Timeout(1000)]
+        public async Task PostAsync()
+        {
+            var syncContext = new SynchronizationContext();
+
+            var isSuccess = false;
+
+            await syncContext.PostAsync(async () =>
+            {
+                await Task.Delay(100);
+
+                isSuccess = true;
+            });
+
+            Assert.IsTrue(isSuccess);
+        }
+
+        [TestMethod, Timeout(1000)]
+        public async Task PostAsync_ReturnVal()
+        {
+            var syncContext = new SynchronizationContext();
+
+            var isSuccess = await syncContext.PostAsync(async () =>
+            {
+                await Task.Delay(100);
+
+                return true;
+            });
+
+            Assert.IsTrue(isSuccess);
+        }
+
+        [TestMethod, Timeout(1000)]
         public async Task WhenCancelled_SimpleCancellation()
         {
             var cancellationTokenSource = new CancellationTokenSource(100);
