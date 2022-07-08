@@ -16,23 +16,25 @@ public class MyMessageHandler : IRemoteMessageHandler
         // The inbox newtonsoft converter. Tested with various types, structs, primitives, classes and more.
         // Provided by the lib for convenience, the underlying OwlCore.Remoting system doesn't use this property.
         MessageConverter = new NewtonsoftRemoteMessageConverter();
-        
+
         // Set to client or host on different devices to specify direction for one-way remoting.
         // See inline RemotingDirection and RemotingMode docs for more info.
         Mode = RemotingMode.Client | RemotingMode.Host | RemotingMode.Full;
     }
 
-    public RemotingMode Mode {  get; set; }
+    public RemotingMode Mode { get; set; }
 
     public IRemoteMessageConverter MessageConverter { get; }
 
     public bool IsInitialized { get; private set; }
 
+    public MemberSignatureScope MemberSignatureScope { get; set; }
+
     // Raise this event and pass an instance of IRemoteMessage to tell all MemberRemotes to apply the member change.
     // Scoping to the correct member remote is handled automatically, assuming the data is accurate.
     public event EventHandler<IRemoteMessage>? MessageReceived;
 
-    public Task InitAsync()
+    public Task InitAsync(CancellationToken cancellationToken = default)
     {
         // Any async initialization needed for this handler, such as connecting to a server.
         // MemberRemote will call this automatically when it needs to.
@@ -47,5 +49,4 @@ public class MyMessageHandler : IRemoteMessageHandler
         return Task.CompletedTask;
     }
 }
-
 ```
