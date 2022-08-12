@@ -37,6 +37,11 @@ namespace OwlCore.Services
         }
 
         /// <summary>
+        /// Gets or sets the property that determines whether to flush default values to disk.
+        /// </summary>
+        protected bool FlushDefaultValues { get; set; }
+
+        /// <summary>
         /// A folder abstraction where the settings can be stored and persisted.
         /// </summary>
         public IFolderData Folder { get; }
@@ -84,7 +89,7 @@ namespace OwlCore.Services
 
             // Null values are never stored in runtime or persistent storage.
             if (fallbackValue is not null)
-                _runtimeStorage[key] = new(typeof(T), fallbackValue, false);
+                _runtimeStorage[key] = new(typeof(T), fallbackValue, FlushDefaultValues);
 
             return fallbackValue;
         }
