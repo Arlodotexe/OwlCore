@@ -84,7 +84,7 @@ namespace OwlCore.Services
 
             // Null values are never stored in runtime or persistent storage.
             if (fallbackValue is not null)
-                _runtimeStorage[key] = new(typeof(T), fallbackValue);
+                _runtimeStorage[key] = new(typeof(T), fallbackValue, false);
 
             return fallbackValue;
         }
