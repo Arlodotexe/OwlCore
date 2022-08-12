@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Diagnostics;
 using OwlCore.AbstractStorage;
 
 namespace OwlCore.Services
@@ -256,8 +257,11 @@ namespace OwlCore.Services
             var typeFileBytes = new byte[typeFileStream.Length];
             var read = await typeFileStream.ReadAsync(typeFileBytes, 0, typeFileBytes.Length, token);
 
+            // Check amount read
+            Guard.HasSizeEqualTo(typeFileBytes, read);
+
             // Read bytes as string
-            return Encoding.UTF8.GetString(typeFileBytes.Take(read).ToArray());
+            return Encoding.UTF8.GetString(typeFileBytes);
         }
 
         /// <inheritdoc />
