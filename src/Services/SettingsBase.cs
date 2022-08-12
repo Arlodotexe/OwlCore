@@ -41,7 +41,7 @@ namespace OwlCore.Services
         /// Gets or sets the property that determines whether to flush default values to disk.
         /// Setting to false is recommended if your default values never change.
         /// </summary>
-        protected bool FlushDefaultValues { get; set; }
+        protected bool FlushDefaultValues { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the property that determines whether to only persist settings when they are changed through <see cref="SetSetting{T}"/>.
