@@ -44,9 +44,9 @@ namespace OwlCore.Services
         protected bool FlushDefaultValues { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the property that determines whether to only persist settings when they are changed through <see cref="SetSetting{T}"/>.
+        /// Gets or sets a value that determines whether or not to flush settings that are unchanged in memory.
         /// </summary>
-        protected bool PersistIfChanged { get; set; }
+        protected bool FlushOnlyChangedValues { get; set; }
 
         /// <summary>
         /// A folder abstraction where the settings can be stored and persisted.
