@@ -44,7 +44,8 @@ namespace OwlCore.Services
         protected bool FlushDefaultValues { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value that determines whether or not to flush settings that are unchanged in memory. Setting to true is recommended if you don't expect others to modify the settings files.
+        /// Gets or sets a value that determines whether or not to flush settings that are unchanged in memory.
+        /// Setting to true is recommended if you don't expect others to modify the settings files.
         /// </summary>
         protected bool FlushOnlyChangedValues { get; set; }
 
