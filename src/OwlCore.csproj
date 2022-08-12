@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.71</Version>
+		<Version>0.0.72</Version>
 		<Product>OwlCore</Product>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
@@ -38,6 +38,14 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.0.72 ---
+[New]
+Added a FlushDefaultValues property to SettingsBase. Default value is true to match existing behavior. When set to false, it will skip writing default values to disk - recommended if your default values never change. 
+Added a FlushOnlyChangedValues property to SettingsBase. Default value is false to match existing behavior. When set to true, only values that are changed in memory will be flushed to storage - recommended if you don't expect others to modify the settings files.
+
+[Improvements]
+In SettingsBase, when the stream for a setting isn't fully read (which makes deserialization impossible), the setting won't be loaded and LoadFailed will be emitted.
+
 --- 0.0.71 ---
 [New]
 Added new extension: SynchronizationContext.PostAsync. Allows cleanly waiting for an async callback to fully complete before continuing execution.
