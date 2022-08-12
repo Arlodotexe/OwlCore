@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Diagnostics;
 using OwlCore.AbstractStorage;
 
 namespace OwlCore.Services
@@ -16,9 +17,14 @@ namespace OwlCore.Services
     /// </summary>
     public abstract class SettingsBase : INotifyPropertyChanged
     {
+        /// <summary>
+        /// A constant value that represents the suffix of the type settings file.
+        /// </summary>
+        public const string TypeFileSuffix = ".Type";
+
         private readonly IAsyncSerializer<Stream> _settingSerializer;
         private readonly SemaphoreSlim _storageSemaphore = new(1, 1);
-        private readonly ConcurrentDictionary<string, (Type Type, object Data)> _runtimeStorage = new();
+        private readonly ConcurrentDictionary<string, SettingsBase.SettingValue> _runtimeStorage = new();
 
         /// <summary>
         /// Creates a new instance of <see cref="SettingsBase"/>.
@@ -30,6 +36,18 @@ namespace OwlCore.Services
             _settingSerializer = settingSerializer;
             Folder = folder;
         }
+
+        /// <summary>
+        /// Gets or sets the property that determines whether to flush default values to disk.
+        /// Setting to false is recommended if your default values never change.
+        /// </summary>
+        protected bool FlushDefaultValues { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value that determines whether or not to flush settings that are unchanged in memory.
+        /// Setting to true is recommended if you don't expect others to modify the settings files.
+        /// </summary>
+        protected bool FlushOnlyChangedValues { get; set; }
 
         /// <summary>
         /// A folder abstraction where the settings can be stored and persisted.
@@ -50,7 +68,15 @@ namespace OwlCore.Services
             }
             else
             {
-                _runtimeStorage[key] = (typeof(T), value);
+                if (_runtimeStorage.ContainsKey(key))
+                {
+                    _runtimeStorage[key].Data = value;
+                    _runtimeStorage[key].IsDirty = true;
+                }
+                else
+                {
+                    _runtimeStorage[key] = new(typeof(T), value);
+                }
             }
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
@@ -71,7 +97,7 @@ namespace OwlCore.Services
 
             // Null values are never stored in runtime or persistent storage.
             if (fallbackValue is not null)
-                _runtimeStorage[key] = (typeof(T), fallbackValue);
+                _runtimeStorage[key] = new(typeof(T), fallbackValue, FlushDefaultValues);
 
             return fallbackValue;
         }
@@ -115,8 +141,12 @@ namespace OwlCore.Services
                 // This allows the serializer to load as little or as much data into memory as it needs at a time.
                 try
                 {
+                    // Don't save settings whose value didn't change
+                    if (FlushOnlyChangedValues && !kvp.Value.IsDirty)
+                        continue;
+
                     var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
-                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}.Type", CreationCollisionOption.OpenIfExists);
+                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}{TypeFileSuffix}", CreationCollisionOption.OpenIfExists);
 
                     if (token.IsCancellationRequested)
                         return;
@@ -148,6 +178,9 @@ namespace OwlCore.Services
                     typeFileStream.SetLength(typeContentBytes.Length);
 
                     await typeFileStream.WriteAsync(typeContentBytes, 0, typeContentBytes.Length, token);
+
+                    // Setting saved, set IsDirty to false
+                    kvp.Value.IsDirty = false;
                 }
                 catch (Exception ex)
                 {
@@ -181,12 +214,12 @@ namespace OwlCore.Services
                 _runtimeStorage.TryRemove(setting.Key, out _);
 
             // Filter out non Type files, so only raw data files remain.
-            var nonTypeFiles = fileData.Where(x => !x.Name.Contains("Type"));
+            var nonTypeFiles = fileData.Where(x => !x.Name.Contains(TypeFileSuffix));
 
             // Load persisted values.
             foreach (var settingDataFile in nonTypeFiles)
             {
-                var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}.Type");
+                var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}{TypeFileSuffix}");
                 if (typeFile is null)
                     continue; // Type file may be missing or deleted.
                 try
@@ -206,7 +239,7 @@ namespace OwlCore.Services
                     // Deserialize data as original type.
                     var settingData = await _settingSerializer.DeserializeAsync(originalType, settingDataStream, token);
 
-                    _runtimeStorage[settingDataFile.Name] = (originalType, settingData);
+                    _runtimeStorage[settingDataFile.Name] = new(originalType, settingData, false); // Data doesn't need to be saved
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(settingDataFile.Name));
                 }
@@ -229,7 +262,10 @@ namespace OwlCore.Services
 
             // Convert to raw bytes
             var typeFileBytes = new byte[typeFileStream.Length];
-            await typeFileStream.ReadAsync(typeFileBytes, 0, typeFileBytes.Length, token);
+            var read = await typeFileStream.ReadAsync(typeFileBytes, 0, typeFileBytes.Length, token);
+
+            // Check amount read
+            Guard.HasSizeEqualTo(typeFileBytes, read);
 
             // Read bytes as string
             return Encoding.UTF8.GetString(typeFileBytes);
@@ -247,6 +283,25 @@ namespace OwlCore.Services
         /// Raised when an exception is thrown during <see cref="SaveAsync(CancellationToken?)"/>.
         /// </summary>
         public event EventHandler<SettingPersistFailedEventArgs>? SaveFailed;
+
+        /// <summary>
+        /// A wrapper that holds settings data.
+        /// </summary>
+        /// <param name="Type">The type of setting.</param>
+        /// <param name="Data">The value of the setting.</param>
+        /// <param name="IsDirty">Determines whether the <paramref name="Data"/> was modified or not.</param>
+        public record SettingValue(Type Type, object Data, bool IsDirty = true)
+        {
+            /// <summary>
+            /// Gets or sets the value of the setting.
+            /// </summary>
+            public object Data { get; set; } = Data;
+
+            /// <summary>
+            /// Gets or sets the value that determines whether the <see cref="Data"/> was modified or not.
+            /// </summary>
+            public bool IsDirty { get; set; } = IsDirty;
+        }
     }
 
     /// <summary>
