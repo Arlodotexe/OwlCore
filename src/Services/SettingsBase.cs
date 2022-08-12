@@ -43,6 +43,11 @@ namespace OwlCore.Services
         protected bool FlushDefaultValues { get; set; }
 
         /// <summary>
+        /// Gets or sets the property that determines whether to only persist settings when they are changed through <see cref="SetSetting{T}"/>.
+        /// </summary>
+        protected bool PersistIfChanged { get; set; }
+
+        /// <summary>
         /// A folder abstraction where the settings can be stored and persisted.
         /// </summary>
         public IFolderData Folder { get; }
@@ -135,7 +140,7 @@ namespace OwlCore.Services
                 try
                 {
                     // Don't save settings whose value didn't change
-                    if (!kvp.Value.IsDirty)
+                    if (PersistIfChanged && !kvp.Value.IsDirty)
                         continue;
 
                     var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
