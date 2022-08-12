@@ -141,7 +141,7 @@ namespace OwlCore.Services
                 try
                 {
                     // Don't save settings whose value didn't change
-                    if (PersistIfChanged && !kvp.Value.IsDirty)
+                    if (FlushOnlyChangedValues && !kvp.Value.IsDirty)
                         continue;
 
                     var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
