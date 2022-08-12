@@ -13,7 +13,6 @@
 - **Flow.EasySemaphore** - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
 - **Threading.PrimaryContext** - Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
 - **Threading.OnPrimaryThread** - Easily invoke a callback on your primary thread.
-- **CompositeHttpClientHandler** - Chain multiple HttpClientHandlers together.
 - **CachedHttpClientHandler** - Cache http requests to disk and return them as needed.
 - **RateLimitedHttpClientHandler** - Limit the number of requests within a window of time.
 - **Countless extension methods** - PruneNull, Shuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, and more.
