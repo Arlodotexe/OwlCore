@@ -99,7 +99,7 @@ namespace OwlCore.Tests.Remoting
         }
 
         [TestMethod]
-        [Timeout(1000)]
+        [Timeout(5000)]
         public async Task TestPublishReceiveRemoteMethod()
         {
             var sender = new DataProxyRemotingTestClass(RemotingMode.Host);
