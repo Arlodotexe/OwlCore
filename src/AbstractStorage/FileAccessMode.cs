@@ -1,8 +1,11 @@
-﻿namespace OwlCore.AbstractStorage
+﻿using System;
+
+namespace OwlCore.AbstractStorage
 {
     /// <summary>
     /// Specifies whether to access a file in read-only mode or in read/write mode.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public enum FileAccessMode
     {
         /// <summary>

@@ -8,6 +8,7 @@ namespace OwlCore.AbstractStorage.Scanners
     /// <summary>
     /// Handles discovery of files in a given folder.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public interface IFileScanner : IDisposable
     {
         /// <summary>

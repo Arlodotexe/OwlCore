@@ -1,4 +1,6 @@
-﻿namespace OwlCore.AbstractStorage
+﻿using System;
+
+namespace OwlCore.AbstractStorage
 {
     /// <summary>
     /// Specifies what to do if a file or folder with the specified name already exists in the current folder when you create a new file or folder.
@@ -7,6 +9,7 @@
     /// Methods that don't explicitly pass a value from the CreationCollisionOption enumeration use the FailIfExists value as the default when you create a file or folder.
     /// Mirrors the <see langword="enum"/> at https://docs.microsoft.com/en-us/uwp/api/Windows.Storage.CreationCollisionOption?view=winrt-19041
     /// </remarks>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public enum CreationCollisionOption : byte
     {
         /// <summary>

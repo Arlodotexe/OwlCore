@@ -9,6 +9,7 @@ namespace OwlCore.AbstractStorage.Scanners
     /// <summary>
     /// A <see cref="IFileScanner"/> that scans for all files in a folder and subfolders with a depth-first search.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public class DepthFirstFileScanner : IFileScanner
     {
         private CancellationTokenSource? _scanningCancellationTokenSource;

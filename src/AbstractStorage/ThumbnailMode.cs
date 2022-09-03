@@ -7,6 +7,7 @@ namespace OwlCore.AbstractStorage
     /// <summary>
     /// Describes the purpose of the thumbnail to determine how to adjust the thumbnail image to retrieve.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public enum ThumbnailMode
     {
         /// <summary>

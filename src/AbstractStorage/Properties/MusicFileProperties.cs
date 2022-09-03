@@ -7,6 +7,7 @@ namespace OwlCore.AbstractStorage
     /// Contains the music-related properties for a file or folder.
     /// </summary>
     /// <remarks>Adapted from <see href="https://docs.microsoft.com/en-us/uwp/api/Windows.Storage.FileProperties.MusicProperties?view=winrt-19041"/></remarks>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public class MusicFileProperties
     {
         /// <summary>

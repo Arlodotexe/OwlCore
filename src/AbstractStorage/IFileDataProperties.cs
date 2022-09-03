@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace OwlCore.AbstractStorage
 {
     /// <summary>
     /// Provides access to the properties of a file.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public interface IFileDataProperties
     {
         /// <summary>

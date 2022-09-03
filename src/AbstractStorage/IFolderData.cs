@@ -7,6 +7,7 @@ namespace OwlCore.AbstractStorage
     /// <summary>
     /// Represents a folder that resides on a file system.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public interface IFolderData
     {
         /// <summary>

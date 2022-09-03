@@ -9,6 +9,7 @@ namespace OwlCore.AbstractStorage
     /// <summary>
     /// Provides safe interactions with the file system.
     /// </summary>
+    [Obsolete("AbstractStorage is being deprecated in favor of OwlCore.Storage, and will be removed in a future version. Please migrate to the new package.")]
     public interface IFileSystemService : IAsyncInit
     {
         /// <summary>
