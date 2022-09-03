@@ -45,6 +45,10 @@ Added a FlushOnlyChangedValues property to SettingsBase. Default value is false 
 
 [Improvements]
 In SettingsBase, when the stream for a setting isn't fully read (which makes deserialization impossible), the setting won't be loaded and LoadFailed will be emitted.
+AbstractStorage has been marked as deprecated. See OwlCore.Storage instead.
+
+[Breaking changes]
+OwlCore.Validation.Ensure and all usages of it have been removed in favor of CommunityToolkit.Diagnostics.Guard.
 
 --- 0.0.71 ---
 [New]
