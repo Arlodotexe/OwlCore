@@ -28,8 +28,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: dotnet build
-        run: dotnet build /r
+      - name: Build
+        run: msbuild -r
 
       - name: dotnet test
         run: dotnet test
