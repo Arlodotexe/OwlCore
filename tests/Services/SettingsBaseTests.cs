@@ -1,5 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using OwlCore.Extensions;
+using OwlCore.Services;
+using OwlCore.Storage;
+using OwlCore.Storage.Memory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -7,11 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OwlCore.AbstractStorage;
-using OwlCore.Services;
-using OwlCore.Extensions;
-using Newtonsoft.Json;
 
 namespace OwlCore.Tests.Services;
 
@@ -21,7 +21,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public Task GetFallbackValue()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         Assert.AreEqual(settings.StringData, "Default value");
@@ -31,7 +31,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public Task SetAndGetValueInMemory()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         const string newValue = nameof(SetAndGetValueInMemory);
@@ -49,7 +49,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsync()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         const string newValue = nameof(SetAndGetValueInMemory);
@@ -71,7 +71,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task SaveValueSaveNewShorterValueThenLoad()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         settings.LoadFailed += (s, e) => Assert.Fail(e.Exception.Message);
@@ -103,7 +103,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsyncWithNewSettingsInstanceWithNonSettingFilesInFolder()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         const string newValue = nameof(SetAndGetValueInMemory);
@@ -134,7 +134,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task SaveAndLoadAsyncWithNewSettingsInstance()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         const string newValue = nameof(SetAndGetValueInMemory);
@@ -164,7 +164,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task LoadWithoutSaveDiscardsInMemoryValue()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var newValue = nameof(SetAndGetValueInMemory);
@@ -184,7 +184,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task SaveNewValueThenLoadNotifiesPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var newValue = nameof(SetAndGetValueInMemory);
@@ -222,7 +222,7 @@ public class SettingsBaseTests
     [TestMethod]
     public void SetSettingNotifiesPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var newValue = nameof(SetAndGetValueInMemory);
@@ -252,7 +252,7 @@ public class SettingsBaseTests
     [TestMethod]
     public void SetSettingToNullNotifiesPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var intermediateValue = "Intermediate value";
@@ -287,7 +287,7 @@ public class SettingsBaseTests
     [TestMethod]
     public void ResetSettingNotifiesPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var intermediateValue = "Intermediate value";
@@ -322,7 +322,7 @@ public class SettingsBaseTests
     [TestMethod]
     public void ResetAllSettingsNotifiesPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         var intermediateStringValue = "Intermediate value";
@@ -367,7 +367,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public void NoDeadlockWhileGetSettingDuringPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
         var newValue = nameof(SettingsBaseTests);
 
@@ -390,7 +390,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public void NoDeadlockWhileSetSettingDuringPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
 
         settings.PropertyChanged += OnChanged;
@@ -410,7 +410,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task NoDeadlockWhileSetSettingDuringPropertyChangedThenSavingDuringPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
         var savedTaskCompletionSource = new TaskCompletionSource();
 
@@ -441,7 +441,7 @@ public class SettingsBaseTests
     [TestMethod, Timeout(2000)]
     public async Task NoDeadlockWhileSavingDuringPropertyChanged()
     {
-        var settingsStore = new MockFolder(name: "Settings");
+        var settingsStore = new MemoryFolder(id: "Settings", name: "Settings");
         var settings = new TestSettings(settingsStore);
         var newValue = nameof(SettingsBaseTests);
 
@@ -470,7 +470,7 @@ public class SettingsBaseTests
         public const string StringData_DefaultValue = "Default value";
         public const bool State_DefaultValue = false;
 
-        public TestSettings(IFolderData folder)
+        public TestSettings(IModifiableFolder folder)
             : base(folder, NewtonsoftStreamSerializer.Singleton)
         {
         }
@@ -554,188 +554,5 @@ public class SettingsBaseTests
             var str = Encoding.UTF8.GetString(serialized.ToBytes());
             return JsonConvert.DeserializeObject(str, type)!;
         }
-    }
-
-    public class MockFile : IFileData
-    {
-        private readonly MemoryStream _mockStream = new();
-
-        public MockFile(string name)
-        {
-            Id = name;
-            Path = name;
-            Name = name;
-            DisplayName = name;
-            FileExtension = string.Empty;
-        }
-
-        public string? Id { get; }
-        public string Path { get; }
-        public string Name { get; }
-        public string DisplayName { get; }
-        public string FileExtension { get; }
-
-        public IFileDataProperties Properties { get; set; }
-
-        public Task<IFolderData> GetParentAsync()
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<Stream> GetStreamAsync(FileAccessMode accessMode = FileAccessMode.Read)
-        {
-            // A new non-disposing stream must be created over the actual content each time.
-            // If we returned the raw stream, the data would be deleted when the stream is disposed.
-            return Task.FromResult<Stream>(new NonDisposingProxyStream(_mockStream));
-        }
-
-        public Task Delete()
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task WriteAllBytesAsync(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<Stream> GetThumbnailAsync(ThumbnailMode thumbnailMode, uint requiredSize)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    public class MockFolder : IFolderData
-    {
-        private ConcurrentBag<IFileData> _files = new();
-
-        public MockFolder(string name)
-        {
-            Name = name;
-            Path = name;
-            Id = name;
-        }
-
-        public string? Id { get; }
-        public string Name { get; }
-        public string Path { get; }
-
-        public Task<IFolderData?> GetParentAsync()
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IFolderData> CreateFolderAsync(string desiredName)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IFolderData> CreateFolderAsync(string desiredName, CreationCollisionOption options)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IFileData> CreateFileAsync(string desiredName)
-        {
-            return CreateFileAsync(desiredName, CreationCollisionOption.FailIfExists);
-        }
-
-        public Task<IFileData> CreateFileAsync(string desiredName, CreationCollisionOption options)
-        {
-            if (_files.FirstOrDefault(x => x.Name == desiredName) is IFileData file)
-            {
-                if (options == CreationCollisionOption.OpenIfExists)
-                    return Task.FromResult(file);
-
-                if (options == CreationCollisionOption.FailIfExists)
-                    throw new Exception();
-
-                throw new NotSupportedException($"Support for {options} not added.");
-            }
-
-            var newFile = new MockFile(desiredName);
-            _files.Add(newFile);
-            return Task.FromResult<IFileData>(newFile);
-        }
-
-        public Task<IFolderData?> GetFolderAsync(string name)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IFileData?> GetFileAsync(string name)
-        {
-            return Task.FromResult(_files.FirstOrDefault(x => x.Name == name));
-        }
-
-        public Task<IEnumerable<IFolderData>> GetFoldersAsync()
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IEnumerable<IFileData>> GetFilesAsync()
-        {
-            return Task.FromResult<IEnumerable<IFileData>>(_files.ToArray());
-        }
-
-        public Task DeleteAsync()
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task EnsureExists()
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    /// <summary>
-    /// Proxies another stream for reading and writing, but does not dispose it.
-    /// </summary>
-    /// <remarks>
-    /// Needed to properly emulate file storage in memory. If we returned the raw MemoryStream, it would effectively delete the data.
-    /// </remarks>
-    public class NonDisposingProxyStream : Stream
-    {
-        private readonly Stream _underlyingStream;
-
-        public NonDisposingProxyStream(Stream underlyingStream)
-        {
-            _underlyingStream = underlyingStream;
-        }
-
-        public override void Flush() => _underlyingStream.Flush();
-
-        public override int Read(byte[] buffer, int offset, int count) => _underlyingStream.Read(buffer, offset, count);
-
-        public override long Seek(long offset, SeekOrigin origin) => _underlyingStream.Seek(offset, origin);
-
-        public override void SetLength(long value) => _underlyingStream.SetLength(value);
-
-        public override void Write(byte[] buffer, int offset, int count) => _underlyingStream.Write(buffer, offset, count);
-
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _underlyingStream.WriteAsync(buffer, offset, count, cancellationToken);
-
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => _underlyingStream.CopyToAsync(destination, bufferSize, cancellationToken);
-
-        public override bool CanRead => _underlyingStream.CanRead;
-
-        public override bool CanSeek => _underlyingStream.CanSeek;
-
-        public override bool CanWrite => _underlyingStream.CanWrite;
-
-        public override long Length => _underlyingStream.Length;
-
-        public override long Position
-        {
-            get => _underlyingStream.Position;
-            set => _underlyingStream.Position = value;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-        }
-
-        public override ValueTask DisposeAsync() => default;
     }
 }

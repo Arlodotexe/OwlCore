@@ -40,14 +40,16 @@ Our favorite features:
 		<PackageReleaseNotes>
 --- 0.0.72 ---
 [New]
+OwlCore now pulls in OwlCore.Storage as a transitive reference.
 Added a FlushDefaultValues property to SettingsBase. Default value is true to match existing behavior. When set to false, it will skip writing default values to disk - recommended if your default values never change. 
 Added a FlushOnlyChangedValues property to SettingsBase. Default value is false to match existing behavior. When set to true, only values that are changed in memory will be flushed to storage - recommended if you don't expect others to modify the settings files.
 
 [Improvements]
-In SettingsBase, when the stream for a setting isn't fully read (which makes deserialization impossible), the setting won't be loaded and LoadFailed will be emitted.
 AbstractStorage has been marked as deprecated. See OwlCore.Storage instead.
+In SettingsBase, when the stream for a setting isn't fully read (which makes deserialization impossible), the setting won't be loaded and LoadFailed will be emitted.
 
 [Breaking changes]
+OwlCore.Services.SettingsBase has been migrated to OwlCore.Storage.
 OwlCore.Validation.Ensure and all usages of it have been removed in favor of CommunityToolkit.Diagnostics.Guard.
 
 --- 0.0.71 ---
@@ -551,6 +553,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="OwlCore.Storage" Version="0.3.0" />
 		<PackageReference Include="System.Text.Json" Version="6.0.4" />
 		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
 	</ItemGroup>

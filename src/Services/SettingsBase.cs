@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Diagnostics;
-using OwlCore.AbstractStorage;
+using OwlCore.Storage;
 
 namespace OwlCore.Services
 {
@@ -31,7 +31,7 @@ namespace OwlCore.Services
         /// </summary>
         /// <param name="folder">The folder where settings are stored.</param>
         /// <param name="settingSerializer">The serializer used to serialize and deserialize settings to and from disk.</param>
-        protected SettingsBase(IFolderData folder, IAsyncSerializer<Stream> settingSerializer)
+        protected SettingsBase(IModifiableFolder folder, IAsyncSerializer<Stream> settingSerializer)
         {
             _settingSerializer = settingSerializer;
             Folder = folder;
@@ -50,9 +50,9 @@ namespace OwlCore.Services
         protected bool FlushOnlyChangedValues { get; set; }
 
         /// <summary>
-        /// A folder abstraction where the settings can be stored and persisted.
+        /// A folder abstraction where the settings are stored and persisted.
         /// </summary>
-        public IFolderData Folder { get; }
+        public IModifiableFolder Folder { get; }
 
         /// <summary>
         /// Stores a settings value.
@@ -145,8 +145,8 @@ namespace OwlCore.Services
                     if (FlushOnlyChangedValues && !kvp.Value.IsDirty)
                         continue;
 
-                    var dataFile = await Folder.CreateFileAsync(kvp.Key, CreationCollisionOption.OpenIfExists);
-                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}{TypeFileSuffix}", CreationCollisionOption.OpenIfExists);
+                    var dataFile = await Folder.CreateFileAsync(kvp.Key, cancellationToken: token);
+                    var typeFile = await Folder.CreateFileAsync($"{kvp.Key}{TypeFileSuffix}", cancellationToken: token);
 
                     if (token.IsCancellationRequested)
                         return;
@@ -156,7 +156,7 @@ namespace OwlCore.Services
                     if (token.IsCancellationRequested)
                         return;
 
-                    using var dataFileStream = await dataFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    using var dataFileStream = await dataFile.OpenStreamAsync(FileAccess.ReadWrite, token);
 
                     if (token.IsCancellationRequested)
                         return;
@@ -171,9 +171,11 @@ namespace OwlCore.Services
                     if (token.IsCancellationRequested)
                         return;
 
+                    Guard.IsNotNullOrWhiteSpace(kvp.Value.Type.FullName);
+
                     // Store the known type for later deserialization. Serializer cannot be relied on for this.
                     var typeContentBytes = Encoding.UTF8.GetBytes(kvp.Value.Type.FullName);
-                    using var typeFileStream = await typeFile.GetStreamAsync(FileAccessMode.ReadWrite);
+                    using var typeFileStream = await typeFile.OpenStreamAsync(FileAccess.ReadWrite, token);
                     typeFileStream.Seek(0, SeekOrigin.Begin);
                     typeFileStream.SetLength(typeContentBytes.Length);
 
@@ -205,26 +207,25 @@ namespace OwlCore.Services
 
             await _storageSemaphore.WaitAsync(token);
 
-            var files = await Folder.GetFilesAsync();
-            var fileData = files as IFileData[] ?? files.ToArray(); // Handle possible multiple enumeration.
+            var files = await Folder.GetFilesAsync(cancellationToken: token).ToListAsync(cancellationToken: token);
 
             // Remove unpersisted values.
-            var unpersistedSettings = _runtimeStorage.Where(x => fileData.All(y => y.Name != x.Key)).ToArray();
+            var unpersistedSettings = _runtimeStorage.Where(x => files.All(y => y.Name != x.Key)).ToArray();
             foreach (var setting in unpersistedSettings)
                 _runtimeStorage.TryRemove(setting.Key, out _);
 
             // Filter out non Type files, so only raw data files remain.
-            var nonTypeFiles = fileData.Where(x => !x.Name.Contains(TypeFileSuffix));
+            var nonTypeFiles = files.Where(x => !x.Name.Contains(TypeFileSuffix));
 
             // Load persisted values.
             foreach (var settingDataFile in nonTypeFiles)
             {
-                var typeFile = fileData.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}{TypeFileSuffix}");
+                var typeFile = files.FirstOrDefault(x => x.Name == $"{settingDataFile.Name}{TypeFileSuffix}");
                 if (typeFile is null)
                     continue; // Type file may be missing or deleted.
                 try
                 {
-                    using var settingDataStream = await settingDataFile.GetStreamAsync();
+                    using var settingDataStream = await settingDataFile.OpenStreamAsync(cancellationToken: token);
                     settingDataStream.Position = 0;
 
                     var typeFileContentString = await ReadFileAsStringAsync(typeFile, token);
@@ -254,10 +255,10 @@ namespace OwlCore.Services
             _storageSemaphore.Release();
         }
 
-        private static async Task<string> ReadFileAsStringAsync(IFileData file, CancellationToken token)
+        private static async Task<string> ReadFileAsStringAsync(IFile file, CancellationToken token)
         {
             // Load file
-            using var typeFileStream = await file.GetStreamAsync();
+            using var typeFileStream = await file.OpenStreamAsync(cancellationToken: token);
             typeFileStream.Seek(0, SeekOrigin.Begin);
 
             // Convert to raw bytes
