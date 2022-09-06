@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OwlCore.Extensions;
-using OwlCore.Tests.Remoting.Transfer;
 
 namespace OwlCore.Tests.Flow
 {

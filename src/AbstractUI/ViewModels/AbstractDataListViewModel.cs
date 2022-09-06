@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
-using OwlCore.Events;
+using OwlCore.ComponentModel;
 
 namespace OwlCore.AbstractUI.ViewModels
 {

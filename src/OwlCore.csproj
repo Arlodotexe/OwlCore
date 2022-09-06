@@ -565,14 +565,17 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="OwlCore.Storage" Version="0.5.0" />
+		<PackageReference Include="OwlCore.Extensions" Version="0.1.0" />
+		<PackageReference Include="OwlCore.ComponentModel" Version="0.0.0" />
+
 		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0" />
 		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-		<PackageReference Include="MessagePack" Version="2.3.85" />
+
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="OwlCore.Storage" Version="0.3.0" />
 		<PackageReference Include="System.Text.Json" Version="6.0.4" />
 		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
 	</ItemGroup>

@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OwlCore.Services;
+using OwlCore.Diagnostics;
 
-namespace OwlCore.Tests.Services;
+namespace OwlCore.Tests.Diagnostics;
 
 [TestClass]
 public class LoggerTests
