@@ -84,7 +84,7 @@ namespace OwlCore.AbstractUI.ViewModels
 
             ItemSelected?.Invoke(this, selectedItem);
 
-            Model.Cast<AbstractMultiChoice>().SelectedItem = (AbstractUIMetadata)selectedItem.Model;
+            ((AbstractMultiChoice)Model).SelectedItem = (AbstractUIMetadata)selectedItem.Model;
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using OwlCore.Extensions;
 
 namespace OwlCore.Net.Http
 {
@@ -18,11 +19,11 @@ namespace OwlCore.Net.Http
     {
         private readonly TimeSpan _cooldownWindowTimeSpan;
         private readonly int _maxNumberOfRequestsPerCooldownWindow;
-        private static readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim _mutex = new(1, 1);
         private static readonly Queue<DateTime> _requestTimestampsInCooldownWindow = new Queue<DateTime>();
 
         /// <summary>
-        /// Creates a new instance of <see cref="RateLimitedHttpClientHandlerAction"/>.
+        /// Creates a new instance of <see cref="RateLimitedHttpClientHandler"/>.
         /// </summary>
         /// <param name="cooldownWindowTimeSpan">The amount of time before the cooldown window resets. Requests that are this old no longer count towards <paramref name="maxNumberOfRequestsPerCooldownWindow"/>.</param>
         /// <param name="maxNumberOfRequestsPerCooldownWindow">The maximum number of requests allowed per cooldown window.</param>
@@ -37,7 +38,7 @@ namespace OwlCore.Net.Http
         /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            using (await Flow.EasySemaphore(_mutex))
+            using (await _mutex.DisposableWaitAsync(cancellationToken: cancellationToken))
             {
                 // store the timestamp of the request being made
                 _requestTimestampsInCooldownWindow.Enqueue(DateTime.Now);
