@@ -43,6 +43,11 @@ This repo now follows a modified variant of semver2.0, standard across all new O
 
 This release marks a major effort to consolidate namespaces and migrate away from deprecated code.
 
+[Improvements]
+OwlCore.Remoting is now in a separate nuget package.
+OwlCore.ComponentModel is now in a separate nuget package.
+OwlCore.Extensions is now in a separate nuget package.
+
 [Breaking]
 OwlCore.AbstractStorage has been removed. Please migrate to the (much better) OwlCore.Storage instead.
 OwlCore.Services.IInstanceCacheRepository and OwlCore.Services.InstanceCacheRepository have been removed. Just use a Dictionary{T, T} instead.
