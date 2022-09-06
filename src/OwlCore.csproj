@@ -55,8 +55,9 @@ OwlCore.Services.SettingsBase was moved to OwlCore.ComponentModel.SettingsBase.
 OwlCore.Services.LogLevel was moved to OwlCore.ComponentModel.LogLevel.
 OwlCore.Services.Logger was moved to OwlCore.ComponentModel.Logger.
 OwlCore.Services.LoggerMessageEventArgs was moved to OwlCore.ComponentModel.LoggerMessageEventArgs.
-OwlCore.Validation.Mime.MimeTypeMap has been moved to extension methods in OwlCore.Extensions. 
-
+OwlCore.Validation.Mime.MimeTypeMap has been moved to extension methods in OwlCore.Extensions.
+ReferenceEqualityComparer has been moved from OwlCore.EqualityComparers to OwlCore.Collections.Generic, matching the namespace of the System.Collections.Generic.ReferenceEqualityComparer in .NET 5+.
+OwlCore.APIs.GetAllItemsAsync has been moved to OwlCore.Flow.GetPaginatedItemsAsync.
 
 --- 0.0.72 ---
 [New]

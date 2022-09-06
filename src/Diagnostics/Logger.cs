@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace OwlCore.Services
+namespace OwlCore.Diagnostics
 {
     /// <summary>
     /// Routes log messages in through methods and out through an event.

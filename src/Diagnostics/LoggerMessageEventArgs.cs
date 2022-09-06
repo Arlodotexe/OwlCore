@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace OwlCore.Services
+namespace OwlCore.Diagnostics
 {
     /// <summary>
     /// Contains information about a logged message.

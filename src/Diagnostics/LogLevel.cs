@@ -1,4 +1,4 @@
-﻿namespace OwlCore.Services
+﻿namespace OwlCore.Diagnostics
 {
     /// <summary>
     /// Defines logging severity levels.
