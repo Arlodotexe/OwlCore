@@ -20,21 +20,16 @@
 		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
-OwlCore is in a rapid development cycle and is constantly being improved upon. Until a stable release, breaking changes can happen any time. Comprehensive changelogs included with every release.
+Essential supplemental tooling for .NET development. Included in this package:
+- OwlCore.Storage: The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
+- OwlCore.Extensions: A collection of exceptionally useful extension methods.
+- OwlCore.ComponentModel: Provides classes used to implement the run-time behavior of components. SettingsBase, IDelegatable{T}, IAsyncInit, etc.
+- OwlCore.AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
+- Much more not listed, much more to come.
 
-Our favorite features:
-- .NET Standard 2.0 - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
-- OwlCore.Remoting - A lightweight and ultra-flexible RPC framework for .NET Standard 2.0.
-- AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
-- AbstractStorage - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
-- Flow.Debouncer - For when something fires repeatedly. but you only care about when it stops.
-- Flow.EventAsTask - Wait for an EventHandler to fire (with cancellation).
-- Flow.EasySemaphore - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
-- Threading.PrimaryContext -  Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
-- Threading.OnPrimaryThread - Easily invoke a callback on your primary thread.
-- CachedHttpClientHandler - Cache http requests to disk and return them as needed. Supports chaining.
-- RateLimitedHttpClientHandler - Limit the number of requests within a window of time. Supports chaining.
-- Countless extension methods. PruneNull, Shuffle and Unshuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, InsertOrReplace, and MUCH more.
+The experimental, available in separate packages:
+- OwlCore.Remoting: A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
+- OwlCore.Kubo: A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
 		</Description>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
@@ -46,9 +41,9 @@ This release marks a major effort to consolidate namespaces and migrate away fro
 
 [New]
 OwlCore.Extensions is now in a separate nuget package.
-OwlCore.Remoting is now in a separate nuget package.
 OwlCore.ComponentModel is now in a separate nuget package.
 OwlCore.Storage has been added as a transitive reference.
+OwlCore.Remoting is now in a separate nuget package and not included as a transitive reference.
 Added a FlushDefaultValues property to SettingsBase. Default value is true to match existing behavior. When set to false, it will skip writing default values to disk - recommended if your default values never change. 
 Added a FlushOnlyChangedValues property to SettingsBase. Default value is false to match existing behavior. When set to true, only values that are changed in memory will be flushed to storage - recommended if you don't expect others to modify the settings files.
 
@@ -568,7 +563,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 
 	<ItemGroup>
 		<PackageReference Include="OwlCore.Storage" Version="0.5.0" />
-		<PackageReference Include="OwlCore.Extensions" Version="0.1.0" />
+		<PackageReference Include="OwlCore.Extensions" Version="0.3.0" />
 		<PackageReference Include="OwlCore.ComponentModel" Version="0.0.0" />
 
 		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0" />
