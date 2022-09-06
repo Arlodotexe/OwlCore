@@ -38,6 +38,26 @@ Our favorite features:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.1.0 ---
+This repo now follows a modified variant of semver2.0, standard across all new OwlCore repos. Breaking changes may occur as a minor version bump while the major version is 0.
+
+This release marks a major effort to consolidate namespaces and migrate away from deprecated code.
+
+[Breaking]
+OwlCore.AbstractStorage has been removed. Please migrate to the (much better) OwlCore.Storage instead.
+OwlCore.Services.IInstanceCacheRepository and OwlCore.Services.InstanceCacheRepository have been removed. Just use a Dictionary{T, T} instead.
+OwlCore.Provisos.IAsyncInit was moved to OwlCore.ComponentModel.IAsyncInit.
+OwlCore.Events.CollectionChangedEventHandler was moved to OwlCore.ComponentModel.CollectionChangedEventHandler.
+OwlCore.Events.CollectionChangedItem{T} was moved to OwlCore.ComponentModel.CollectionChangedItem{T}.
+OwlCore.Provisos.IAsyncSerializer{T} was moved to OwlCore.ComponentModel.IAsyncSerializer{T}.
+OwlCore.Services.IDelegatable{T} was moved to OwlCore.ComponentModel.IDelegatable{T}.
+OwlCore.Services.SettingsBase was moved to OwlCore.ComponentModel.SettingsBase.
+OwlCore.Services.LogLevel was moved to OwlCore.ComponentModel.LogLevel.
+OwlCore.Services.Logger was moved to OwlCore.ComponentModel.Logger.
+OwlCore.Services.LoggerMessageEventArgs was moved to OwlCore.ComponentModel.LoggerMessageEventArgs.
+OwlCore.Validation.Mime.MimeTypeMap has been moved to extension methods in OwlCore.Extensions. 
+
+
 --- 0.0.72 ---
 [New]
 OwlCore now pulls in OwlCore.Storage as a transitive reference.
@@ -544,11 +564,9 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Cauldron.BasicInterceptors" Version="3.2.3" />
-		<PackageReference Include="Cauldron.Interception.Fody" Version="3.2.3" />
-		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0-preview4" />
-		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0-preview4" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview4" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
 		<PackageReference Include="MessagePack" Version="2.3.85" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />

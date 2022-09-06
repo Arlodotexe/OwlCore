@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OwlCore.Events
+namespace OwlCore.ComponentModel
 {
     /// <summary>
     /// Delegates changes to a collection

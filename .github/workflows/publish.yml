@@ -9,18 +9,14 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: windows-2022
+    runs-on: ubuntu-2022
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.3
-    - name: Build
-      run: msbuild -r -p:Configuration=Release
-    - name: Publish to NuGet
-      run: dotnet nuget push "/home/runner/work/OwlCore/OwlCore/src/bin/Release/OwlCore.*.*.*.nupkg" --skip-duplicate --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: dotnet build
+      run: dotnet build -p:Configuration=Release
     - name: dotnet test
       run: dotnet test

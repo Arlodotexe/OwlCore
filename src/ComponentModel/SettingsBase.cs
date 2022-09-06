@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Diagnostics;
 using OwlCore.Storage;
 
-namespace OwlCore.Services
+namespace OwlCore.ComponentModel
 {
     /// <summary>
     /// A base class for getting and setting setting values as properties. Fast access in memory, with data persistence in a file system.

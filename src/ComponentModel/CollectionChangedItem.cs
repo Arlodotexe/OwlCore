@@ -1,4 +1,4 @@
-﻿namespace OwlCore.Events
+﻿namespace OwlCore.ComponentModel
 {
     /// <summary>
     /// Holds data about an item that was changed in a collection.
