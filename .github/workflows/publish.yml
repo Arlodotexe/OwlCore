@@ -1,8 +1,8 @@
 name: Publish to Nuget
 
 on:
-  #push:
-    #branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,7 +16,19 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -p:Configuration=Release
+
     - name: dotnet build
       run: dotnet build -p:Configuration=Release
+
     - name: dotnet test
       run: dotnet test
+
+    - name: Publish to NuGet
+      run: dotnet nuget push "/home/runner/work/OwlCore/OwlCore/src/bin/Release/OwlCore.*.*.*.nupkg" --skip-duplicate --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.json
+      
