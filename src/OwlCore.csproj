@@ -15,8 +15,9 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.72</Version>
+		<Version>0.1.0</Version>
 		<Product>OwlCore</Product>
+		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
 OwlCore is in a rapid development cycle and is constantly being improved upon. Until a stable release, breaking changes can happen any time. Comprehensive changelogs included with every release.
