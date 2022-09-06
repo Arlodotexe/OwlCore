@@ -52,6 +52,7 @@ In SettingsBase, when the stream for a setting isn't fully read (which makes des
 
 [Breaking changes]
 OwlCore.AbstractStorage has been removed. Please migrate to the (much better) OwlCore.Storage instead.
+OwlCore.AbstractUI.Models.AbstractUICollection.Items property has been removed. Enumerate or modify the collection directly instead.
 OwlCore.Services.SettingsBase has been migrated to OwlCore.Storage.
 OwlCore.Validation.Ensure and all usages of it have been removed in favor of CommunityToolkit.Diagnostics.Guard.
 OwlCore.Services.IInstanceCacheRepository and OwlCore.Services.InstanceCacheRepository have been removed. Just use a Dictionary{T, T} instead.
