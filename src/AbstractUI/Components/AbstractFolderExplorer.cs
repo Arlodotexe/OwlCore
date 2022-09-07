@@ -12,7 +12,7 @@ using OwlCore.Storage;
 namespace OwlCore.AbstractUI.Components
 {
     /// <summary>
-    /// An <see cref="AbstractUICollection"/> that acts as a standalone, inbox component. A Folder explorer that interops with <see cref="OwlCore.AbstractStorage"/> to browse and select subfolders from an <see cref="IFolderData"/>.
+    /// An <see cref="AbstractUICollection"/> that acts as a standalone, inbox component. A Folder explorer that interops with <see cref="OwlCore.Storage"/> to browse and select subfolders from an <see cref="IFolder"/>.
     /// </summary>
     public class AbstractFolderExplorer : AbstractUICollection, IAsyncInit, IDisposable
     {

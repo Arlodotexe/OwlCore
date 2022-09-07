@@ -45,7 +45,7 @@ namespace OwlCore.AbstractUI.Models
         public PreferredOrientation PreferredOrientation { get; }
 
         /// <summary>
-        /// Adds the given <paramref name="abstractUIElement"/> to <see cref="Items" />.
+        /// Adds the given <paramref name="abstractUIElement"/> to the collection.
         /// </summary>
         /// <param name="abstractUIElement">The item to add.</param>
         public void Add(AbstractUIElement abstractUIElement)

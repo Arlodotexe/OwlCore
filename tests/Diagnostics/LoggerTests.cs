@@ -117,7 +117,8 @@ public class LoggerTests
     }
         
     [TestMethod]
-    public async Task Log()
+    public Task Log()
     {
+        return Task.CompletedTask;
     }
 }
