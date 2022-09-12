@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ubuntu-2022
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
