@@ -40,7 +40,7 @@ namespace OwlCore.Tests
 
                 return true;
             }
-            else if (originalValue != null && !originalType.IsPrimitive && !originalType.IsValueType)
+            else if (originalValue != null && originalType != null && !originalType.IsPrimitive && !originalType.IsValueType)
             {
                 return CrawlAndCheckObjectProperties(originalValue, originalType, deserValue, deserType);
             }
@@ -80,7 +80,7 @@ namespace OwlCore.Tests
                     }
                 }
             }
-            else if (originalValue != null && !originalType.IsPrimitive && !originalType.IsValueType)
+            else if (originalValue != null && originalType != null && !originalType.IsPrimitive && !originalType.IsValueType)
             {
                 CrawlAndAssertObjectProperties(originalValue, originalType, deserValue, deserType);
             }

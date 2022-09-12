@@ -56,7 +56,7 @@ namespace OwlCore.AbstractUI.ViewModels
                     case NotifyCollectionChangedAction.Remove:
                         foreach (var item in e.OldItems)
                         {
-                            var target = _items.FirstOrDefault(x => x.Id == item.Cast<AbstractUIElement>().Id);
+                            var target = _items.FirstOrDefault(x => x.Id == ((AbstractUIElement)item).Id);
 
                             if (target is not null)
                             {

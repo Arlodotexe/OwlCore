@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Diagnostics;
-using OwlCore.AbstractStorage;
 using OwlCore.AbstractUI.Models;
 using OwlCore.Extensions;
-using OwlCore.Provisos;
+using OwlCore.ComponentModel;
+using OwlCore.Storage;
 
 namespace OwlCore.AbstractUI.Components
 {
     /// <summary>
-    /// An <see cref="AbstractUICollection"/> that acts as a standalone, inbox component. A Folder explorer that interops with <see cref="OwlCore.AbstractStorage"/> to browse and select subfolders from an <see cref="IFolderData"/>.
+    /// An <see cref="AbstractUICollection"/> that acts as a standalone, inbox component. A Folder explorer that interops with <see cref="OwlCore.Storage"/> to browse and select subfolders from an <see cref="IFolder"/>.
     /// </summary>
     public class AbstractFolderExplorer : AbstractUICollection, IAsyncInit, IDisposable
     {
@@ -24,19 +24,19 @@ namespace OwlCore.AbstractUI.Components
 
         private readonly AbstractUICollection _actionButtons = new("ActionButtons", PreferredOrientation.Horizontal);
 
-        private readonly IFolderData _rootFolder;
+        private readonly IFolder _rootFolder;
         private readonly AbstractButton _selectButton;
         private readonly AbstractButton _cancelButton;
 
-        private IFolderData[]? _currentDisplayedFolders;
+        private IFolder[]? _currentDisplayedFolders;
         private AbstractDataList? _currentDataList;
         private bool _isRootFolder;
 
         /// <summary>
         /// Creates a new instance of <see cref="AbstractFolderExplorer"/>.
         /// </summary>
-        public AbstractFolderExplorer(IFolderData rootFolder)
-            : base($"{rootFolder.Path}.{nameof(AbstractFolderExplorer)}")
+        public AbstractFolderExplorer(IFolder rootFolder)
+            : base($"{rootFolder.Id}.{nameof(AbstractFolderExplorer)}")
         {
             _rootFolder = rootFolder;
             _cancelButton = new AbstractButton("cancelFolderExplorerButton", "Cancel", type: AbstractButtonType.Cancel);
@@ -45,7 +45,7 @@ namespace OwlCore.AbstractUI.Components
             _actionButtons.Add(_cancelButton);
             _actionButtons.Add(_selectButton);
 
-            FolderStack = new Stack<IFolderData>();
+            FolderStack = new Stack<IFolder>();
 
             Title = "Pick a folder";
 
@@ -81,22 +81,22 @@ namespace OwlCore.AbstractUI.Components
         /// <summary>
         /// Holds all navigated directories. The top of the stack has the current folder. The last item in the stack has the root folder.
         /// </summary>
-        public Stack<IFolderData> FolderStack { get; }
+        public Stack<IFolder> FolderStack { get; }
 
         /// <summary>
         /// The folder that the user has selected, if any.
         /// </summary>
-        public IFolderData? SelectedFolder { get; private set; }
+        public IFolder? SelectedFolder { get; private set; }
 
         /// <summary>
         /// Currently opened folder.
         /// </summary>
-        public IFolderData? CurrentFolder { get; private set; }
+        public IFolder? CurrentFolder { get; private set; }
 
         /// <summary>
         /// Raised when the user has selected a folder.
         /// </summary>
-        public event EventHandler<IFolderData>? FolderSelected;
+        public event EventHandler<IFolder>? FolderSelected;
 
         /// <summary>
         /// Raised when the user has canceled folder picking.
@@ -106,7 +106,7 @@ namespace OwlCore.AbstractUI.Components
         /// <summary>
         /// Raised on directory navigation.
         /// </summary>
-        public event EventHandler<IFolderData>? DirectoryChanged;
+        public event EventHandler<IFolder>? DirectoryChanged;
 
         /// <summary>
         /// Raised when navigating to a folder has failed.
@@ -118,14 +118,14 @@ namespace OwlCore.AbstractUI.Components
         /// </summary>
         /// <param name="folder">The current directory to open.</param>
         /// <returns>Created datalist for the UI to display.</returns>
-        private async Task SetupFolderAsync(IFolderData folder)
+        private async Task SetupFolderAsync(IFolder folder)
         {
             try
             {
                 CurrentFolder = folder;
                 _isRootFolder = ReferenceEquals(folder, _rootFolder);
 
-                var folders = await folder.GetFoldersAsync();
+                var folders = await folder.GetFoldersAsync().ToListAsync();
                 var folderData = folders.ToArray();
 
                 _currentDisplayedFolders = folderData;
@@ -139,7 +139,7 @@ namespace OwlCore.AbstractUI.Components
             }
         }
 
-        private void CreateAndSetupAbstractUIForFolders(IFolderData[] folderData)
+        private void CreateAndSetupAbstractUIForFolders(IFolder[] folderData)
         {
             var folderListMetadata = new List<AbstractUIMetadata>();
 
@@ -185,7 +185,7 @@ namespace OwlCore.AbstractUI.Components
         {
             Guard.IsNotNull(_currentDisplayedFolders, nameof(_currentDisplayedFolders));
 
-            IFolderData targetFolder;
+            IFolder targetFolder;
 
             if (ReferenceEquals(e, _backUIMetadata))
             {
@@ -216,7 +216,7 @@ namespace OwlCore.AbstractUI.Components
         /// <summary>
         /// Creates a new instance of <see cref="AbstractFolderExplorerNavigationFailedEventArgs"/>.
         /// </summary>
-        public AbstractFolderExplorerNavigationFailedEventArgs(IFolderData folder, Exception? exception = null)
+        public AbstractFolderExplorerNavigationFailedEventArgs(IFolder folder, Exception? exception = null)
         {
             Folder = folder;
             Exception = exception;
@@ -230,6 +230,6 @@ namespace OwlCore.AbstractUI.Components
         /// <summary>
         /// The folder that couldn't be navigated to.
         /// </summary>
-        public IFolderData Folder { get; }
+        public IFolder Folder { get; }
     }
 }

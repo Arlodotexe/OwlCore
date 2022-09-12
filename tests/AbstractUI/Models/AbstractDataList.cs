@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OwlCore.AbstractUI.Models;
 using OwlCore.Extensions;
+using OwlCore.ComponentModel;
 
 namespace OwlCore.Tests.AbstractUI.Models
 {
@@ -97,7 +98,7 @@ namespace OwlCore.Tests.AbstractUI.Models
 
             data.ItemsChanged -= Data_ItemsChanged;
 
-            void Data_ItemsChanged(object sender, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> removedItems)
+            void Data_ItemsChanged(object sender, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> removedItems)
             {
                 Assert.AreEqual(1, addedItems.Count);
                 Assert.AreEqual(0, removedItems.Count);
@@ -134,7 +135,7 @@ namespace OwlCore.Tests.AbstractUI.Models
 
             data.ItemsChanged -= Data_ItemsChanged;
 
-            void Data_ItemsChanged(object sender, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> removedItems)
+            void Data_ItemsChanged(object sender, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> removedItems)
             {
                 Assert.AreEqual(1, addedItems.Count);
                 Assert.AreEqual(0, removedItems.Count);
@@ -166,7 +167,7 @@ namespace OwlCore.Tests.AbstractUI.Models
 
             data.ItemsChanged -= Data_ItemsChanged;
 
-            void Data_ItemsChanged(object sender, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> removedItems)
+            void Data_ItemsChanged(object sender, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> removedItems)
             {
                 Assert.AreEqual(0, addedItems.Count);
                 Assert.AreEqual(1, removedItems.Count);
@@ -198,7 +199,7 @@ namespace OwlCore.Tests.AbstractUI.Models
 
             data.ItemsChanged -= Data_ItemsChanged;
 
-            void Data_ItemsChanged(object sender, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<Events.CollectionChangedItem<AbstractUIMetadata>> removedItems)
+            void Data_ItemsChanged(object sender, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> addedItems, IReadOnlyList<CollectionChangedItem<AbstractUIMetadata>> removedItems)
             {
                 Assert.AreEqual(0, addedItems.Count);
                 Assert.AreEqual(1, removedItems.Count);

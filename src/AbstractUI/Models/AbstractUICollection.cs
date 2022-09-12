@@ -45,27 +45,7 @@ namespace OwlCore.AbstractUI.Models
         public PreferredOrientation PreferredOrientation { get; }
 
         /// <summary>
-        /// The items in this group.
-        /// </summary>
-        /// <remarks>
-        /// Deprecated. Enumerable the collection directly. This property will be removed in a future version.
-        /// </remarks>
-        [Obsolete("Enumerable the collection directly. This property will be removed in a future version.")]
-        public IReadOnlyList<AbstractUIElement> Items
-        {
-            get => _items;
-            set
-            {
-                _items.Clear();
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-
-                _items = value.ToOrAsList();
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value));
-            }
-        }
-
-        /// <summary>
-        /// Adds the given <paramref name="abstractUIElement"/> to <see cref="Items" />.
+        /// Adds the given <paramref name="abstractUIElement"/> to the collection.
         /// </summary>
         /// <param name="abstractUIElement">The item to add.</param>
         public void Add(AbstractUIElement abstractUIElement)

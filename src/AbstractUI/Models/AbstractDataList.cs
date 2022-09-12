@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OwlCore.Events;
+using OwlCore.ComponentModel;
 
 namespace OwlCore.AbstractUI.Models
 {
