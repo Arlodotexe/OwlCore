@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OwlCore.Storage;
+using OwlCore.Storage.SystemIO;
 
 namespace OwlCore.Net.Http
 {
@@ -21,7 +23,7 @@ namespace OwlCore.Net.Http
     /// </remarks>
     public class CachedHttpClientHandler : DelegatingHandler
     {
-        private readonly string _cacheFolderPath;
+        private readonly IModifiableFolder _cacheFolder;
         private readonly TimeSpan _defaultCacheTime;
 
         /// <summary>
@@ -29,7 +31,12 @@ namespace OwlCore.Net.Http
         /// </summary>
         public CachedHttpClientHandler(string cacheFolderPath, TimeSpan defaultCacheTime)
         {
-            _cacheFolderPath = cacheFolderPath;
+            var path = Path.GetFullPath(cacheFolderPath);
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            _cacheFolder = new SystemFolder(cacheFolderPath);
             _defaultCacheTime = defaultCacheTime;
 
             InnerHandler = new HttpClientHandler();
@@ -48,11 +55,6 @@ namespace OwlCore.Net.Http
         /// <inheritdoc cref="HttpClientHandler.SendAsync(HttpRequestMessage, CancellationToken)"/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var path = Path.GetFullPath(_cacheFolderPath);
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
             // check if item is cached
             var cachedData = ReadCachedFile(path, request.RequestUri.AbsoluteUri);
 
@@ -139,16 +141,11 @@ namespace OwlCore.Net.Http
         /// <summary>
         /// Read cache data.
         /// </summary>
-        /// <param name="path">Path to the cache file</param>
+        /// <param name="file">The file to read</param>
         /// <param name="request">API request information</param>
         /// <returns>Information related to cache in a <see cref="CacheEntry"/></returns>
-        private static CacheEntry? ReadCachedFile(string path, string request)
+        private static CacheEntry? ReadCachedFile(IFile file, string request)
         {
-            var cachedFilePath = GetCachedFilePath(path, request);
-
-            if (!File.Exists(cachedFilePath))
-                return null;
-
             CacheEntry? cacheEntry = null;
             bool fileExists = false;
             try
@@ -184,56 +181,5 @@ namespace OwlCore.Net.Http
         {
             return Path.Combine(basePath, requestUri.HashMD5Fast()) + ".cache";
         }
-    }
-
-    /// <summary>
-    /// A class to hold and save cached data.
-    /// </summary>
-    public class CacheEntry
-    {
-        /// <summary>
-        /// The cached response object.
-        /// </summary>
-        public string? RequestUri { get; set; }
-
-        /// <summary>
-        /// The http response content.
-        /// </summary>
-        public byte[]? ContentBytes { get; set; }
-
-        /// <summary>
-        /// Timestamp for the cache.
-        /// </summary>
-        public DateTime TimeStamp { get; set; }
-    }
-
-    /// <summary>
-    /// <see cref="EventArgs"/> used to handle if a request should be saved to disk or used in <see cref="CachedHttpClientHandler"/>.
-    /// </summary>
-    public class CachedRequestEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Creates a new instance of <see cref="CachedRequestEventArgs"/>.
-        /// </summary>
-        public CachedRequestEventArgs(Uri requestUri, CacheEntry cacheEntry)
-        {
-            RequestUri = requestUri;
-            CacheEntry = cacheEntry;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the event was handled.
-        /// </summary>
-        public bool Handled { get; set; }
-
-        /// <summary>
-        /// The uri of the current request.
-        /// </summary>
-        public Uri RequestUri { get; set; }
-
-        /// <summary>
-        /// The cached data, if present.
-        /// </summary>
-        public CacheEntry CacheEntry { get; set; }
     }
 }
