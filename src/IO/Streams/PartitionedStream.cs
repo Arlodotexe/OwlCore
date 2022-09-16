@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 
 namespace OwlCore.IO.Streams
 {
@@ -52,17 +52,10 @@ namespace OwlCore.IO.Streams
         /// Discovers and returns all existing partitions in the source stream.
         /// </summary>
         /// <returns>A collection of all found partitions.</returns>
-        public IEnumerable<StreamPartition> GetAllPartitions()
-        {
-            lock (Source)
-            {
-                foreach (var (id, startPosition) in GetExistingPartitionData(Source))
-                    yield return new StreamPartition(id, this);
-            }
-        }
+        public IEnumerable<StreamPartition> GetAllPartitions() => GetExistingPartitionData(this);
 
         /// <summary>
-        /// Creates and appends a new, empty partition to the source stream.
+        /// Creates and appends a new, empty partition to the end of the source stream.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. Value is the created partition.</returns>
         public StreamPartition CreatePartition(byte id)
@@ -90,7 +83,7 @@ namespace OwlCore.IO.Streams
                 // Write modified partition map to source.
                 Source.Write(newPartitionMap, (int) Source.Length - partitionMap.Length, newPartitionMap.Length);
 
-                return new StreamPartition(id, this);
+                return new StreamPartition(id, Source.Position, this);
             }
         }
 
@@ -183,14 +176,13 @@ namespace OwlCore.IO.Streams
 
             if (!found)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(partition.Id),
-                    "The provided partition ID was not found.");
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(partition.Id), "The provided partition ID was not found.");
             }
 
-            // Remove old partition map
+            // Remove old partition map entirely.
             Source.SetLength(Source.Length - partitionMap.Length);
 
-            // Insert new partition map
+            // Insert new partition map.
             Source.Seek(0, SeekOrigin.End);
             Source.Write(newPartitionMap, 0, newPartitionMap.Length);
 
@@ -199,7 +191,7 @@ namespace OwlCore.IO.Streams
             Defragment();
 
             // Shift all data after this partition backwards to replace this partition
-            Source.Position = partition.PartitionStartPosition;
+            Source.Position = partition.ContainerStartPosition;
 
             // TODO
         }
@@ -226,13 +218,11 @@ namespace OwlCore.IO.Streams
         }
 
         /// <summary>
-        /// Reads the provided <param name="stream"/> for the partition map and returns the positions and IDs of all known partitions.
+        /// Reads the provided <param name="container"/> for the partition map and returns the positions and IDs of all known partitions.
         /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        private static IEnumerable<PartitionData> GetExistingPartitionData(Stream stream)
+        private static IEnumerable<StreamPartition> GetExistingPartitionData(PartitionedStream container)
         {
-            var partitionMap = TryGetRawPartitionMap(stream);
+            var partitionMap = TryGetRawPartitionMap(container.Source);
             if (partitionMap.Length == 0)
                 yield break;
 
@@ -245,7 +235,7 @@ namespace OwlCore.IO.Streams
 
                 // Partitions are stored in the map in the same order as partitions live in the stream
                 // First partition data == first partition.
-                yield return new PartitionData(partitionMap[partitionIdOffset], startPosition);
+                yield return new StreamPartition(partitionMap[partitionIdOffset], startPosition, container);
             }
         }
 
@@ -307,6 +297,7 @@ namespace OwlCore.IO.Streams
             Guard.IsEqualTo(0, actualMapSize % SinglePartitionMapEntrySize, nameof(actualMapSize));
             return mapChunk;
         }
+
 
         private record PartitionData(byte Id, long StartPosition);
     }
