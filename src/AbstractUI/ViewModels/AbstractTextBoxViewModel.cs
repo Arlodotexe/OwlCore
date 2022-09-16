@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
 using OwlCore.Extensions;
 
@@ -73,6 +73,6 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <summary>
         /// Fire to notify that the value of the text box has been changed.
         /// </summary>
-        public IRelayCommand ValueChangedCommand;
+        public IRelayCommand ValueChangedCommand { get; }
     }
 }

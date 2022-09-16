@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using OwlCore.Extensions;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
     /// <summary>
     /// A special <see cref="ICollection"/> that holds <see cref="AbstractUIElement"/>s, with additional options for presenting them.
     /// </summary>
-    [RemoteOptions(RemotingDirection.Bidirectional)]
     public class AbstractUICollection : AbstractUIElement, ICollection<AbstractUIElement>, INotifyCollectionChanged
     {
         private List<AbstractUIElement> _items;
@@ -38,40 +36,18 @@ namespace OwlCore.AbstractUI.Models
         public AbstractUIElement this[int i] => _items.ElementAt(i);
 
         /// <inheritdoc/>
-        public int Count => ((ICollection<AbstractUIElement>)_items).Count;
+        public int Count => _items.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly => ((ICollection<AbstractUIElement>)_items).IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <inheritdoc cref="Models.PreferredOrientation"/>
         public PreferredOrientation PreferredOrientation { get; }
 
         /// <summary>
-        /// The items in this group.
-        /// </summary>
-        /// <remarks>
-        /// Deprecated. Enumerable the collection directly. This property will be removed in a future version.
-        /// </remarks>
-        [RemoteProperty]
-        [Obsolete("Enumerable the collection directly. This property will be removed in a future version.")]
-        public IReadOnlyList<AbstractUIElement> Items
-        {
-            get => _items;
-            set
-            {
-                ((ICollection<AbstractUIElement>)_items).Clear();
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-
-                _items = value.ToOrAsList();
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value));
-            }
-        }
-
-        /// <summary>
-        /// Adds the given <paramref name="abstractUIElement"/> to <see cref="Items" />.
+        /// Adds the given <paramref name="abstractUIElement"/> to the collection.
         /// </summary>
         /// <param name="abstractUIElement">The item to add.</param>
-        [RemoteMethod]
         public void Add(AbstractUIElement abstractUIElement)
         {
             _items.Add(abstractUIElement);
@@ -79,7 +55,6 @@ namespace OwlCore.AbstractUI.Models
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public bool Remove(AbstractUIElement item)
         {
             if (!_items.Contains(item))
@@ -93,36 +68,34 @@ namespace OwlCore.AbstractUI.Models
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public void Clear()
         {
-            ((ICollection<AbstractUIElement>)_items).Clear();
+            _items.Clear();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <inheritdoc/>
         public bool Contains(AbstractUIElement item)
         {
-            return ((ICollection<AbstractUIElement>)_items).Contains(item);
+            return _items.Contains(item);
         }
 
         /// <inheritdoc/>
-        [RemoteMethod]
         public void CopyTo(AbstractUIElement[] array, int arrayIndex)
         {
-            ((ICollection<AbstractUIElement>)_items).CopyTo(array, arrayIndex);
+            _items.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc/>
         public IEnumerator<AbstractUIElement> GetEnumerator()
         {
-            return ((IEnumerable<AbstractUIElement>)_items).GetEnumerator();
+            return _items.GetEnumerator();
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_items).GetEnumerator();
+            return _items.GetEnumerator();
         }
     }
 }

@@ -1,10 +1,13 @@
 ## Member remote
 
-Given a message handler, a MemberRemote does two things:
-1) Emit outgoing member change data, by intercepting method calls and property changes.
-   - It does this by weaving properties and methods with interceptors at compile time, and generating data that uniquely identifies the action, instance, property/method, and data needed to replicate the change. 
-2) Apply incoming member change data, when the message handler is given data.
-   - A member change message contains all the data needed to identify what and where a member change occured. MemberRemote uses reflection to apply the change at runtime.
+The [MemberRemote](../../api/OwlCore.Remoting.MemberRemote.yml) enables sending and receiving RPC calls between two remoting-enabled object instances.
+
+A MemberRemote does two things:
+
+1) Emit outgoing member change data to the supplied [Message Handler](message-handler.md), using IL weaved method call and property setter interceptors.
+2) Applies member change messages emitted by the supplied [Message Handler](message-handler.md) which are targeted to a MemberRemote with the same ID.
+
+It does this by IL weaving interceptors at compile time. When a property/field setter or method call is intercepted, MemberRemote gathers the information needed to replicate the unique member change and emits an [IRemoteMemberMessage](../../api/OwlCore.Remoting.Transfer.IRemoteMemberMessage.yml), which is passed to the provided [Message Handler](message-handler.md).
 
 ## Example
 

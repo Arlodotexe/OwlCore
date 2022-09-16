@@ -1,5 +1,4 @@
-﻿using OwlCore.Remoting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace OwlCore.AbstractUI.Models
@@ -31,19 +30,20 @@ namespace OwlCore.AbstractUI.Models
         public IEnumerable<AbstractUIMetadata> Items { get; }
 
         /// <inheritdoc cref="AbstractMultiChoicePreferredDisplayMode"/>
-        [RemoteProperty]
-        public AbstractMultiChoicePreferredDisplayMode PreferredDisplayMode { get; set; }
+        public AbstractMultiChoicePreferredDisplayMode PreferredDisplayMode { get; init; }
 
         /// <summary>
         /// The current selected item.
         /// </summary>
         /// <remarks>Must be specified on object creation, even if the item is just a prompt to choose something.</remarks>
-        [RemoteProperty]
         public AbstractUIMetadata SelectedItem
         {
             get => _selectedItem; 
             set
             {
+                if (_selectedItem == value)
+                    return;
+
                 _selectedItem = value;
                 ItemSelected?.Invoke(this, value);
             }

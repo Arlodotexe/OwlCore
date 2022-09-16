@@ -1,5 +1,4 @@
 ﻿
-using OwlCore.Validation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using CommunityToolkit.Diagnostics;
 
 namespace OwlCore.Collections.ObjectModel
 {
@@ -58,8 +58,8 @@ namespace OwlCore.Collections.ObjectModel
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public SynchronizedObservableCollection(IEnumerable<T>? collection, SynchronizationContext context)
         {
-            Ensure.IsNotNull(nameof(collection), collection);
-            Ensure.IsNotNull(nameof(context), context);
+            Guard.IsNotNull(collection);
+            Guard.IsNotNull(context);
 
             _context = context;
 
@@ -443,9 +443,9 @@ namespace OwlCore.Collections.ObjectModel
         /// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="SynchronizedObservableCollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
         public new void CopyTo(T[] array, int arrayIndex)
         {
-            Ensure.IsNotNull(nameof(array), array);
-            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
-            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+            Guard.IsNotNull(array);
+            Guard.IsTrue(arrayIndex >= 0 && arrayIndex < array.Length);
+            Guard.IsTrue(array.Length - arrayIndex >= Count, nameof(array), "Invalid offset length.");
 
             _itemsLocker.EnterReadLock();
 
@@ -461,11 +461,11 @@ namespace OwlCore.Collections.ObjectModel
 
         void ICollection.CopyTo(Array array, int arrayIndex)
         {
-            Ensure.IsNotNull(nameof(array), array);
-            Ensure.IsValid(nameof(array), array.Rank == 1, "Multidimensional array are not supported");
-            Ensure.IsValid(nameof(array), array.GetLowerBound(0) == 0, "Non-zero lower bound is not supported");
-            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
-            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+            Guard.IsNotNull(array);
+            Guard.IsTrue(array.Rank == 1, nameof(array.Rank), "Multidimensional array are not supported");
+            Guard.IsTrue(array.GetLowerBound(0) == 0, nameof(array), "Non-zero lower bound is not supported");
+            Guard.IsTrue(arrayIndex >= 0 && arrayIndex < array.Length);
+            Guard.IsTrue(array.Length - arrayIndex >= Count, nameof(array), "Invalid offset length.");
 
             _itemsLocker.EnterReadLock();
 

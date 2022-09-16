@@ -1,5 +1,4 @@
 ﻿using System;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
@@ -46,12 +45,14 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// Placeholder text to show when the text box is empty.
         /// </summary>
-        [RemoteProperty]
         public string PlaceholderText
         {
             get => _placeholderText;
             set
             {
+                if (_placeholderText == value)
+                    return;
+
                 _placeholderText = value;
                 PlaceholderTextChanged?.Invoke(this, value);
             }
@@ -60,12 +61,14 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// The initial or current value of the text box.
         /// </summary>
-        [RemoteProperty]
         public string Value
         {
             get => _value;
             set
             {
+                if (_value == value)
+                    return;
+
                 _value = value;
                 ValueChanged?.Invoke(this, value);
             }

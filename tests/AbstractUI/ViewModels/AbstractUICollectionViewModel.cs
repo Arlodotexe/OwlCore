@@ -1,16 +1,111 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OwlCore.AbstractUI.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OwlCore.AbstractUI.Models;
 
 namespace OwlCore.Tests.AbstractUI.ViewModels
 {
     [TestClass]
     public class AbstractUICollectionViewModel
     {
+        [TestInitialize]
+        public void Setup()
+        {
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+        }
+
+        [DataRow(false, DisplayName = "Manipulate ViewModel")]
+        [DataRow(true, DisplayName = "Manipulate underlying model")]
+        [TestMethod]
+        public void Indexer(bool manipulateModel = false)
+        {
+            var boolElement = new AbstractBoolean("bool", "label");
+            var abstractUICollection = new AbstractUICollection("id")
+            {
+                boolElement,
+            };
+
+            var viewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+
+            Assert.AreEqual(boolElement.Id, viewModel.Items[0].Id);
+        }
+
+        [TestMethod]
+        public void Indexer_ThrowsOutOfRange()
+        {
+            var abstractUICollection = new AbstractUICollection("id");
+
+            var viewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => viewModel.Items[5]);
+        }
+
+        [TestMethod]
+        public void Count()
+        {
+            var boolElement = new AbstractBoolean("bool", "label");
+            var abstractUICollection = new AbstractUICollection("id")
+            {
+                boolElement,
+            };
+
+            var viewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+
+            Assert.AreEqual(1, viewModel.Items.Count);
+        }
+
+        [TestMethod, Timeout(1000)]
+        public async Task Clear()
+        {
+            var boolElement = new AbstractBoolean("bool", "label");
+            var abstractUICollection = new AbstractUICollection("id")
+            {
+                boolElement
+            };
+
+            var viewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+
+            // Collection must have an item for a clear test to be valid
+            Assert.AreEqual(1, abstractUICollection.Count);
+            Assert.AreEqual(1, viewModel.Items.Count);
+
+            abstractUICollection.Clear();
+
+            var taskCompletion = new TaskCompletionSource();
+            ((INotifyCollectionChanged)viewModel.Items).CollectionChanged += ViewModelOnCollectionChanged;
+            await taskCompletion.Task;
+
+            Assert.AreEqual(0, viewModel.Items.Count);
+
+            ((INotifyCollectionChanged)viewModel.Items).CollectionChanged -= ViewModelOnCollectionChanged;
+
+            void ViewModelOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => taskCompletion.SetResult();
+        }
+
+        [TestMethod, Timeout(1000)]
+        public async Task Contains()
+        {
+            var boolElement = new AbstractBoolean("bool", "label");
+            var abstractUICollection = new AbstractUICollection("id");
+
+            var viewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+            abstractUICollection.Add(boolElement);
+
+            var taskCompletion = new TaskCompletionSource();
+            ((INotifyCollectionChanged)viewModel.Items).CollectionChanged += ViewModelOnCollectionChanged;
+            await taskCompletion.Task;
+
+            Assert.AreEqual(true, viewModel.Items.Any(x => x.Id == boolElement.Id));
+
+            ((INotifyCollectionChanged)viewModel.Items).CollectionChanged -= ViewModelOnCollectionChanged;
+
+            void ViewModelOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => taskCompletion.SetResult();
+        }
+
         [TestMethod]
         public void AllModelsHaveViewModels()
         {
@@ -20,7 +115,8 @@ namespace OwlCore.Tests.AbstractUI.ViewModels
                 new AbstractBoolean("bool", "bool"),
                 new AbstractColorPicker("clr"),
                 new AbstractDataList("data", Enumerable.Empty<AbstractUIMetadata>().ToList()),
-                new AbstractMultiChoice("mult", new AbstractUIMetadata("default"), Enumerable.Empty<AbstractUIMetadata>()),
+                new AbstractMultiChoice("mult", new AbstractUIMetadata("default"),
+                    Enumerable.Empty<AbstractUIMetadata>()),
                 new AbstractProgressIndicator("prog", false),
                 new AbstractRichTextBlock("rich", "text"),
                 new AbstractTextBox("txtbx"),
@@ -30,10 +126,8 @@ namespace OwlCore.Tests.AbstractUI.ViewModels
             new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(elements);
         }
 
-        [DataRow(false, DisplayName = "Add to ViewModel")]
-        [DataRow(true, DisplayName = "Add to underlying model")]
         [TestMethod, Timeout(2000)]
-        public void CollectionChanged_Add(bool manipulateModel = false)
+        public async Task CollectionChanged_Add()
         {
             var elementToAdd = new AbstractBoolean("bool", "label");
 
@@ -41,67 +135,58 @@ namespace OwlCore.Tests.AbstractUI.ViewModels
             var abstractUICollectionViewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
 
             var collectionChangedTaskCompletionSource = new TaskCompletionSource();
-            abstractUICollectionViewModel.CollectionChanged += OnCollectionChanged;
+            ((INotifyCollectionChanged)abstractUICollectionViewModel.Items).CollectionChanged += OnCollectionChanged;
+            
+            abstractUICollection.Add(elementToAdd);
 
-            if (manipulateModel)
-                abstractUICollection.Add(elementToAdd);
-            else
-                abstractUICollectionViewModel.Add(new OwlCore.AbstractUI.ViewModels.AbstractBooleanViewModel(elementToAdd));
+            await collectionChangedTaskCompletionSource.Task;
 
-            Assert.IsTrue(collectionChangedTaskCompletionSource.Task.IsCompleted, "CollectionChanged was not emitted.");
-
-            void OnCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
             {
-                Assert.AreEqual(System.Collections.Specialized.NotifyCollectionChangedAction.Add, e.Action);
+                Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action);
                 collectionChangedTaskCompletionSource.SetResult();
             }
         }
 
-        [DataRow(false, DisplayName = "Remove from ViewModel")]
-        [DataRow(true, DisplayName = "Remove from underlying model")]
         [TestMethod, Timeout(2000)]
-        public void CollectionChanged_AddRemove(bool manipulateModel = false)
+        public async Task CollectionChanged_AddRemove()
         {
             var element = new AbstractBoolean("bool", "label");
-            var elementViewModel = new OwlCore.AbstractUI.ViewModels.AbstractBooleanViewModel(element);
 
             var abstractUICollection = new AbstractUICollection("id");
-            var abstractUICollectionViewModel = new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
+            var abstractUICollectionViewModel =
+                new OwlCore.AbstractUI.ViewModels.AbstractUICollectionViewModel(abstractUICollection);
 
             var collectionChangedTaskCompletionSource_Add = new TaskCompletionSource();
-            abstractUICollectionViewModel.CollectionChanged += OnCollectionChanged_Add;
+            ((INotifyCollectionChanged)abstractUICollectionViewModel.Items).CollectionChanged += OnCollectionChanged_Add;
 
-            if (manipulateModel)
-                abstractUICollection.Add(element);
-            else
-                abstractUICollectionViewModel.Add(elementViewModel);
+            abstractUICollection.Add(element);
 
-            Assert.IsTrue(collectionChangedTaskCompletionSource_Add.Task.IsCompleted, "Item not added. CollectionChanged was not emitted.");
+            await collectionChangedTaskCompletionSource_Add.Task;
 
-            abstractUICollectionViewModel.CollectionChanged -= OnCollectionChanged_Add;
+            ((INotifyCollectionChanged)abstractUICollectionViewModel.Items).CollectionChanged -= OnCollectionChanged_Add;
 
-            void OnCollectionChanged_Add(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            void OnCollectionChanged_Add(object? sender,
+                NotifyCollectionChangedEventArgs e)
             {
-                Assert.AreEqual(System.Collections.Specialized.NotifyCollectionChangedAction.Add, e.Action);
+                Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action);
                 collectionChangedTaskCompletionSource_Add.SetResult();
             }
 
             // Remove
             var collectionChangedTaskCompletionSource_Remove = new TaskCompletionSource();
-            abstractUICollectionViewModel.CollectionChanged += OnCollectionChanged_Remove;
+            ((INotifyCollectionChanged)abstractUICollectionViewModel.Items).CollectionChanged += OnCollectionChanged_Remove;
 
-            if (manipulateModel)
-                abstractUICollection.Remove(element);
-            else
-                abstractUICollectionViewModel.Remove(elementViewModel);
+            abstractUICollection.Remove(element);
 
-            Assert.IsTrue(collectionChangedTaskCompletionSource_Remove.Task.IsCompleted, "Item not Removed. CollectionChanged was not emitted.");
+            await collectionChangedTaskCompletionSource_Remove.Task;
 
-            abstractUICollectionViewModel.CollectionChanged -= OnCollectionChanged_Remove;
+            ((INotifyCollectionChanged)abstractUICollectionViewModel.Items).CollectionChanged -= OnCollectionChanged_Remove;
 
-            void OnCollectionChanged_Remove(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            void OnCollectionChanged_Remove(object? sender,
+                NotifyCollectionChangedEventArgs e)
             {
-                Assert.AreEqual(System.Collections.Specialized.NotifyCollectionChangedAction.Remove, e.Action);
+                Assert.AreEqual(NotifyCollectionChangedAction.Remove, e.Action);
                 collectionChangedTaskCompletionSource_Remove.SetResult();
             }
         }

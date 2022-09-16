@@ -559,6 +559,5 @@ FodyWeavers.xsd
 
 # Manually added
 docs/wwwroot
-docs/api/
-!docs/api/toc.yaml
+docs/api/*
 !docs/api/index.md

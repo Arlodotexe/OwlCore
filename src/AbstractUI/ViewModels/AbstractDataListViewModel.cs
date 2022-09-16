@@ -2,10 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Diagnostics;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
-using OwlCore.Events;
+using OwlCore.ComponentModel;
 
 namespace OwlCore.AbstractUI.ViewModels
 {
@@ -200,12 +200,7 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public void RemoveItem(AbstractDataListItemViewModel item)
         {
-            var index = _model.Items.IndexOf((AbstractUIMetadata)item.Model);
-
-            if (index == -1)
-                return;
-
-            RemoveItemAt(index);
+            _model.RemoveItem((AbstractUIMetadata)item.Model);
         }
 
         /// <summary>

@@ -1,10 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections;
 
 namespace OwlCore.Tests
@@ -44,7 +40,7 @@ namespace OwlCore.Tests
 
                 return true;
             }
-            else if (originalValue != null && !originalType.IsPrimitive && !originalType.IsValueType)
+            else if (originalValue != null && originalType != null && !originalType.IsPrimitive && !originalType.IsValueType)
             {
                 return CrawlAndCheckObjectProperties(originalValue, originalType, deserValue, deserType);
             }
@@ -84,7 +80,7 @@ namespace OwlCore.Tests
                     }
                 }
             }
-            else if (originalValue != null && !originalType.IsPrimitive && !originalType.IsValueType)
+            else if (originalValue != null && originalType != null && !originalType.IsPrimitive && !originalType.IsValueType)
             {
                 CrawlAndAssertObjectProperties(originalValue, originalType, deserValue, deserType);
             }

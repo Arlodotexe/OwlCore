@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Diagnostics;
+﻿using CommunityToolkit.Diagnostics;
 using OwlCore.Extensions;
 using System;
 using System.Diagnostics;
@@ -208,7 +208,7 @@ namespace OwlCore.Net.Http
     }
 
     /// <summary>
-    /// <see cref="EventArgs"/> used to handled if a request should be saved to disk or used in <see cref="CachedHttpClientHandlerAction"/>.
+    /// <see cref="EventArgs"/> used to handle if a request should be saved to disk or used in <see cref="CachedHttpClientHandler"/>.
     /// </summary>
     public class CachedRequestEventArgs : EventArgs
     {

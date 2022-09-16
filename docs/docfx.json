@@ -3,47 +3,57 @@
     {
       "src": [
         {
-          "src": "../",
           "files": [
             "src/OwlCore.csproj"
-          ]
+          ],
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/wwwroot/**"
+          ],
+          "src": "../"
         }
       ],
-      "dest": "../docs/api",
-      "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "dest": "api"
     }
   ],
   "build": {
     "content": [
       {
-        "src": "../docs",
         "files": [
-          "api/**.yml",
           "api/toc.yml",
+          "api/**.yml",
           "api/index.md"
         ]
       },
       {
         "files": [
           "articles/**.md",
-          "articles/**/toc.yml",
+          "articles/**/toc.yml"
+        ]
+      },
+      {
+        "files": [
+          "index.md",
           "toc.yml",
-          "index.md"
-        ],
-        "src": "../docs"
+          "**.md"
+        ]
       }
     ],
-    "dest": "../docs/wwwroot/",
-    "globalMetadataFiles": [],
-    "fileMetadataFiles": [],
+    "dest": "wwwroot",
     "template": [
       "default"
     ],
+    "globalMetadata": {
+      "_appTitle": "OwlCore",
+      "_appFooter": "© 2022 Arlo Godfrey",
+      "_enableSearch": true,
+      "_appFaviconPath": "assets/favicon.ico"
+    },
+    "postProcessors": [
+      "ExtractSearchIndex"
+    ],
     "markdownEngineName": "markdig",
-    "noLangKeyword": false,
-    "keepFileLink": false,
-    "cleanupCacheHistory": false,
-    "disableGitFeatures": false
+    "noLangKeyword": false
   }
 }

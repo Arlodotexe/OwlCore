@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using OwlCore.Remoting;
 
 namespace OwlCore.AbstractUI.Models
 {
@@ -24,13 +23,7 @@ namespace OwlCore.AbstractUI.Models
         /// Called to notify listeners that a color has been picked.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        [RemoteMethod]
-        public Task PickColor(string hex)
-        {
-            ColorPicked?.Invoke(this, hex);
-
-            return Task.CompletedTask;
-        }
+        public void PickColor(string hex) => ColorPicked?.Invoke(this, hex);
 
         /// <summary>
         /// Raised when the user picks a color.

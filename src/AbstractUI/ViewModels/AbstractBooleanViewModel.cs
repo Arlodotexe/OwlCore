@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
 
 namespace OwlCore.AbstractUI.ViewModels
@@ -8,8 +8,7 @@ namespace OwlCore.AbstractUI.ViewModels
     /// </summary>
     public class AbstractBooleanViewModel : AbstractUIViewModelBase
     {
-        private string _label;
-        private bool _state;
+        private readonly AbstractBoolean _model;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractBooleanViewModel"/> class.
@@ -18,9 +17,9 @@ namespace OwlCore.AbstractUI.ViewModels
         public AbstractBooleanViewModel(AbstractBoolean model)
             : base(model)
         {
+            _model = model;
+
             ToggledCommand = new RelayCommand(OnToggled);
-            _label = model.Label ?? string.Empty;
-            _state = model.State;
 
             AttachEvents(model);
         }
@@ -39,18 +38,18 @@ namespace OwlCore.AbstractUI.ViewModels
 
         private void OnToggled()
         {
-            ((AbstractBoolean)Model).State = !IsToggled;
+            _model.State = !_model.State;
         }
 
-        private void Model_LabelChanged(object sender, string e) => Label = e;
+        private void Model_LabelChanged(object sender, string e) => OnPropertyChanged(nameof(Label));
 
-        private void Model_StateChanged(object sender, bool e) => IsToggled = e;
+        private void Model_StateChanged(object sender, bool e) => OnPropertyChanged(nameof(IsToggled));
 
         /// <inheritdoc cref="AbstractBoolean.Label"/>
         public string Label
         {
-            get => _label;
-            set => SetProperty(ref _label, value);
+            get => _model.Label;
+            set => _model.Label = value;
         }
 
         /// <summary>
@@ -58,15 +57,8 @@ namespace OwlCore.AbstractUI.ViewModels
         /// </summary>
         public bool IsToggled
         {
-            get => _state;
-            set
-            {
-                if (value == _state)
-                    return;
-
-                SetProperty(ref _state, value);
-                ((AbstractBoolean)Model).State = value;
-            }
+            get => _model.State;
+            set => _model.State = value;
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <inheritdoc/>
         public override void Dispose()
         {
-            DetachEvents((AbstractBoolean)Model);
+            DetachEvents(_model);
             base.Dispose();
         }
     }

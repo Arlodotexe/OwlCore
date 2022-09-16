@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
 using OwlCore.Extensions;
 
@@ -21,17 +21,11 @@ namespace OwlCore.AbstractUI.ViewModels
         {
             _model = model;
 
-            ClickCommand = new RelayCommand(ButtonClicked);
+            ClickCommand = new RelayCommand(model.Click);
         }
 
-        /// <summary>
-        /// Text to show on the button.
-        /// </summary>
-        public AbstractButtonType Type
-        {
-            get => _model.Type;
-            set => SetProperty(_model.Type, value, _model, (u, n) => _model.Type = n);
-        }
+        /// <inheritdoc/>
+        public AbstractButtonType Type => _model.Type;
 
         /// <summary>
         /// Text to show on the button.
@@ -43,7 +37,7 @@ namespace OwlCore.AbstractUI.ViewModels
         }
 
         /// <summary>
-        /// Event that fires when the button is clicked.
+        /// Raised when the button is clicked.
         /// </summary>
         public event EventHandler Clicked
         {
@@ -52,16 +46,8 @@ namespace OwlCore.AbstractUI.ViewModels
         }
 
         /// <summary>
-        /// Command for <see cref="AbstractButton"/> click.
+        /// Command for <see cref="AbstractButton.Click"/>.
         /// </summary>
         public IRelayCommand ClickCommand;
-
-        /// <summary>
-        /// Button clicked command.
-        /// </summary>
-        private void ButtonClicked()
-        {
-            _model.Click().Forget();
-        }
     }
 }

@@ -15,29 +15,188 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.0.52</Version>
+		<Version>0.1.0</Version>
 		<Product>OwlCore</Product>
+		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
 
-OwlCore is in a rapid development cycle and is constantly being improved upon. Until a stable release, breaking changes can happen any time. Comprehensive changelogs included with every release.
+Essential supplemental tooling for .NET development. Included in this package:
+- OwlCore.Storage: The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
+- OwlCore.Extensions: A collection of exceptionally useful extension methods.
+- OwlCore.ComponentModel: Provides classes used to implement the run-time behavior of components. SettingsBase, IDelegatable{T}, IAsyncInit, etc.
+- OwlCore.AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
+- Much more not listed, much more to come.
 
-Our favorite features:
-- .NET Standard 2.0 - Battle-tested on Uno Platform and UWP, for both hobby and enterprise-level applications.
-- OwlCore.Remoting - Painlessly sync member changes in C# with an external source via magic (reflection + IL weaving).
-- AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting. (Optional OwlCore.Remoting integration)
-- AbstractStorage - Abstract away your storage needs for easy implementation switching and unit test mocking. Based on the Windows StorageFile APIs, designed to be completely agnostic of any underlying platform or protocol.
-- Flow.Debouncer - For when something fires repeatedly. but you only care about when it stops.
-- Flow.EventAsTask - Wait for an EventHandler to fire (with cancellation).
-- Flow.EasySemaphore - Use a "using" statement with your semaphores instead of manually calling WaitAsync and Release.
-- Threading.PrimaryContext -  Use a "using" statement to execute on your main thread. No dispatcher, callbacks or cleanup needed.
-- Threading.OnPrimaryThread - Easily invoke a callback on your primary thread.
-- CachedHttpClientHandler - Cache http requests to disk and return them as needed. Supports chaining.
-- RateLimitedHttpClientHandler - Limit the number of requests within a window of time. Supports chaining.
-- Countless extension methods. PruneNull, Shuffle and Unshuffle, InParallel, ChangeDate, HashMD5Fast, DistinctBy, InsertOrAdd, InsertOrReplace, and MUCH more.
+The experimental, available in separate packages:
+- OwlCore.Remoting: A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
+- OwlCore.Kubo: A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
 		</Description>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.1.0 ---
+This package now follows a modified variant of semver2.0, standard across all new OwlCore packages. Breaking changes may occur as a minor version bump if the major version is 0.
+
+This release marks a major effort to consolidate namespaces and migrate away from deprecated code.
+
+[New]
+OwlCore.Extensions is now in a separate nuget package.
+OwlCore.ComponentModel is now in a separate nuget package.
+OwlCore.Storage has been added as a transitive reference.
+OwlCore.Remoting is now in a separate nuget package and not included as a transitive reference.
+Added a FlushDefaultValues property to SettingsBase. Default value is true to match existing behavior. When set to false, it will skip writing default values to disk - recommended if your default values never change. 
+Added a FlushOnlyChangedValues property to SettingsBase. Default value is false to match existing behavior. When set to true, only values that are changed in memory will be flushed to storage - recommended if you don't expect others to modify the settings files.
+
+[Improvements]
+In SettingsBase, when the stream for a setting isn't fully read (which makes deserialization impossible), the setting won't be loaded and LoadFailed will be emitted.
+
+[Breaking changes]
+OwlCore.AbstractStorage has been removed. Please migrate to the (much better) OwlCore.Storage instead.
+OwlCore.AbstractUI.Models.AbstractUICollection.Items property has been removed. Enumerate or modify the collection directly instead.
+OwlCore.Services.SettingsBase has been migrated to OwlCore.Storage.
+OwlCore.Validation.Ensure and all usages of it have been removed in favor of CommunityToolkit.Diagnostics.Guard.
+OwlCore.Services.IInstanceCacheRepository and OwlCore.Services.InstanceCacheRepository have been removed. Just use a Dictionary{T, T} instead.
+OwlCore.Provisos.IAsyncInit was moved to OwlCore.ComponentModel.IAsyncInit.
+OwlCore.Events.CollectionChangedEventHandler was moved to OwlCore.ComponentModel.CollectionChangedEventHandler.
+OwlCore.Events.CollectionChangedItem{T} was moved to OwlCore.ComponentModel.CollectionChangedItem{T}.
+OwlCore.Provisos.IAsyncSerializer{T} was moved to OwlCore.ComponentModel.IAsyncSerializer{T}.
+OwlCore.Services.IDelegatable{T} was moved to OwlCore.ComponentModel.IDelegatable{T}.
+OwlCore.Services.SettingsBase was moved to OwlCore.ComponentModel.SettingsBase.
+OwlCore.Services.LogLevel was moved to OwlCore.ComponentModel.LogLevel.
+OwlCore.Services.Logger was moved to OwlCore.ComponentModel.Logger.
+OwlCore.Services.LoggerMessageEventArgs was moved to OwlCore.ComponentModel.LoggerMessageEventArgs.
+OwlCore.Validation.Mime.MimeTypeMap has been moved to extension methods in OwlCore.Extensions.
+ReferenceEqualityComparer has been moved from OwlCore.EqualityComparers to OwlCore.Collections.Generic, matching the namespace of the System.Collections.Generic.ReferenceEqualityComparer in .NET 5+.
+OwlCore.APIs.GetAllItemsAsync has been moved to OwlCore.Flow.GetPaginatedItemsAsync.
+OwlCore.Flow.EasySemaphore has been moved to an extension method, as OwlCore.Extensions.SemaphoreSlimExtensions.DisposableWaitAsync.
+OwlCore.Flow.WhenCancelled has been moved to an extension method, as OwlCore.Extensions.AsyncExtensions.WhenCancelledAsync.
+
+--- 0.0.71 ---
+[New]
+Added new extension: SynchronizationContext.PostAsync. Allows cleanly waiting for an async callback to fully complete before continuing execution.
+
+--- 0.0.70 ---
+[Fixes]
+Fixed an issue where updating OwlCore in existing apps could result in the error "error CS1705: Assembly 'OwlCore' with identity 'OwlCore, Version=0.0.69, Culture=neutral, PublicKeyToken=null' uses 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' which has a higher version than referenced assembly 'System.Runtime' with identity 'System.Runtime, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+
+--- 0.0.69 ---
+[Improvements]
+InParallel extension method now throws AggregateException when any tasks throw. Test included up to 1,000,00 inner exceptions.
+
+--- 0.0.68 ---
+[Fixes]
+Fixed an exception when [RemoteMethod] is placed on a class with events.
+
+[Improvements]
+Updated dependencies to latest version.
+
+--- 0.0.67 ---
+[Fixes]
+Fixed missing property getter on ValueChangedCommand.
+
+--- 0.0.66 ---
+[Fixes]
+Fixed an issue in SettingsBase where resetting a property to default by assigning a null value wouldn't fire PropertyChanged.
+			
+[Improvements]
+SettingsBase.ResetSetting() and SettingsBase.ResetAllSettings() have been added.
+
+[Breaking changes]
+Inbox support for OwlCore.Remoting in AbstractUI has been removed. If you need this functionality, create your own remoting-enabled wrapper class around the AbstractUI classes. 
+
+--- 0.0.65 ---
+[New]
+OwlCore.Services now contains a Logger. This is a static class that simply routes messages in via methods and out via an event handler, similar to System.Diagnostics.Debug, but works outside Debug mode. Unit tested.
+
+[Improvements]
+Flow.EventAsTask now uses TrySetCanceled and TrySetResult, fixing some rare cases where an exception might be throwing during parallel execution.
+			
+--- 0.0.64 ---
+[Breaking changes]
+OwlCore has been updated to use CommunityToolkit 8.0 Preview 3 instead of Microsoft.Toolkit 7.1.
+
+--- 0.0.63 ---
+[Fixes]
+Fixed an issue where updating OwlCore in existing apps could result in the error "error CS1705: Assembly 'OwlCore' with identity 'OwlCore, Version=0.0.62, Culture=neutral, PublicKeyToken=null' uses 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' which has a higher version than referenced assembly 'System.Runtime' with identity 'System.Runtime, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+
+--- 0.0.62 ---
+[Breaking changes]
+Added CancellationToken parameter to IAsyncInit.InitAsync().
+
+[Improvements]
+Improved inline docs for IAsyncInit.
+
+--- 0.0.61 ---
+[Breaking changes]
+To fix an issue where AbstractUICollectionViewModel.NotifyCollectionChanged wasn't being seen on some UI frameworks, the Items property is now a ReadOnlyObservableCollection and the collection is no longer enumerable and is no longer marked Deprecated. AbstractUICollection.Items is still marked as potentially obsolete.
+
+--- 0.0.60 ---
+[Fixes]
+Fixed an issue where updating OwlCore in existing apps could result in the error "error CS1705: Assembly 'OwlCore' with identity 'OwlCore, Version=0.0.59, Culture=neutral, PublicKeyToken=null' uses 'System.Runtime, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' which has a higher version than referenced assembly 'System.Runtime' with identity 'System.Runtime, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+
+--- 0.0.59 ---
+[Fixes]
+Fixed an issue where AbstractUICollectionViewModel wouldn't raise NotifyCollectionChanged on the correct SynchronizationContext.
+
+[Breaking changes]
+Removed the ILauncher interface. Use an event handler instead for Uri activation.
+
+--- 0.0.58 ---
+[Fixes]
+Fixed an issue with SettingsBase where saving and loading a value shorter than the previous value would result in invalid data.
+
+[Improvements]
+Added LoadFailed and SaveFailed events to SettingsBase.
+
+--- 0.0.57 ---
+[Overview]
+Refining AbstractUI, fixing consistency and adding unit tests.
+
+[Breaking changes]
+In AbstractButton: Click now returns void instead of Task, and the setter was removed from the Type property as it should not change after creation and had no event for changing.
+AbstractColorPicker.PickColor now returns void instead of Task.
+AbstractDataList.Items is now IReadOnlyList{T} instead of List{T}. Use provided methods to manipulate the items.
+The setter for AbstractDataList.PreferredDisplayMode is now init-only and the setter on the corresponding ViewModel has been removed.
+The setter for AbstractMultiChoice.PreferredDisplayMode is now init-only and the setter on the corresponding ViewModel has been removed.
+The setter for AbstractRichTextBlock.RichText is now init-only and the setter on the corresponding ViewModel has been removed.
+Setting IsIndeterminate in AbstractProgressIndicator properties no longer affect each other. Value should just be ignored if IsIndeterminate is true.
+The property AbstractProgressIndicator.Value, the value parameter in the constructor, and event args in the ValueChanged event are no longer nullable.
+
+[Improvements]
+All AbstractUI models are now unit tested.
+AbstractButton now has a TextChanged event handler for when the Text property is set.
+AbstractDataList now takes IEnumerable instead of List for items in the constructor.
+Extra unit tests for possible deadlocks while operating on SettingsBase from a handler on its own PropertyChanged event.
+
+[Fixes]
+Fixed several AbstractUI models that allowed a changed event to be raised even when the set value is the same.
+Fixed EventAsTask not cancelling properly + unit tests.
+Fixed EventAsTask not unsubscribing when cancelled + unit tests.
+Fixed several concurrency issues with SettingsBase.
+
+--- 0.0.56 ---
+[Fixes]
+Fixed InvalidCastException when accessing AbstractUICollectionViewModel.Count.
+Fixed NotifyCollectionChanged not properly emitting for AbstractUICollectionViewModel.
+
+[Improvements]
+Removed hidden AbstractUI dependency on Threading.SetPrimaryThreadInvokeHandler in favor of SynchronizationContext.Post.
+
+[Breaking changes]
+AbstractUICollectionViewModel now implements IReadyOnlyCollection{T} instead of ICollection{T}. Modifications to the collection should happen via the underlying model.
+
+--- 0.0.55 ---
+[Fixes]
+Fixed several InvalidCastExceptions in AbstractUICollection. Added Unit Tests for the entire class.
+
+--- 0.0.54 ---
+[Fixes]
+Fixed an issue in SettingsBase where defaults would incorrectly return when non-setting files existed in the provided folder. Unit test included.
+
+--- 0.0.53 ---
+[Fixes]
+Fixed a deadlock in SettingsBase when GetProperty is called during an OnPropertyChanged handler. Unit test included.
+
 --- 0.0.52 ---
 [Fixes]
 Fixed possible exception in SettingsBase when LoadAsync and SetProperty are called concurrency.
@@ -404,17 +563,19 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Cauldron.BasicInterceptors" Version="3.2.3" />
-		<PackageReference Include="Cauldron.Interception.Fody" Version="3.2.3" />
-		<PackageReference Include="MessagePack" Version="2.3.85" />
+		<PackageReference Include="OwlCore.Storage" Version="0.5.0" />
+		<PackageReference Include="OwlCore.Extensions" Version="0.3.0" />
+		<PackageReference Include="OwlCore.ComponentModel" Version="0.0.0" />
+
+		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-		<PackageReference Include="Microsoft.Toolkit" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.1" />
-		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="System.Text.Json" Version="5.0.2" />
-		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
+		<PackageReference Include="System.Text.Json" Version="6.0.4" />
+		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

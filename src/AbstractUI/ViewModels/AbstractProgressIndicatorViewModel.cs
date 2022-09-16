@@ -21,7 +21,7 @@ namespace OwlCore.AbstractUI.ViewModels
         public AbstractProgressIndicatorViewModel(AbstractProgressIndicator model)
             : base(model)
         {
-            _value = model.Value ?? 0;
+            _value = model.Value;
             _minimum = model.Minimum;
             _maximum = model.Maximum;
             _isIndeterminate = model.IsIndeterminate;
@@ -45,24 +45,24 @@ namespace OwlCore.AbstractUI.ViewModels
             model.IsIndeterminateChanged -= Model_IsIndeterminateChanged;
         }
 
-        private void Model_ValueChanged(object sender, double? e)
+        private void Model_ValueChanged(object sender, double e)
         {
-            _ = Threading.OnPrimaryThread(() => Value = e ?? 0);
+            _syncContext.Post(_ => Value = e, null);
         }
 
         private void Model_MinimumChanged(object sender, double e)
         {
-            _ = Threading.OnPrimaryThread(() => Minimum = e);
+            _syncContext.Post(_ => Minimum = e, null);
         }
 
         private void Model_MaximumChanged(object sender, double e)
         {
-            _ = Threading.OnPrimaryThread(() => Maximum = e);
+            _syncContext.Post(_ => Maximum = e, null);
         }
 
         private void Model_IsIndeterminateChanged(object sender, bool e)
         {
-            _ = Threading.OnPrimaryThread(() => IsIndeterminate = e);
+            _syncContext.Post(_ => IsIndeterminate = e, null);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace OwlCore.AbstractUI.ViewModels
         /// <inheritdoc/>
         public override void Dispose()
         {
-            DetachEvents((AbstractProgressIndicator)Model);
+            DetachEvents((AbstractProgressIndicator) Model);
             base.Dispose();
         }
     }

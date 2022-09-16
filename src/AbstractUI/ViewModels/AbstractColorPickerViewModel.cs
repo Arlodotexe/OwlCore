@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using OwlCore.AbstractUI.Models;
 using System.Threading.Tasks;
 
@@ -17,7 +17,6 @@ namespace OwlCore.AbstractUI.ViewModels
             : base(model)
         {
             PickColorCommand = new AsyncRelayCommand<string>(PickColorAsync);
-
 
             AttachEvents(model);
         }

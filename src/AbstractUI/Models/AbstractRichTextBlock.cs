@@ -26,6 +26,6 @@ namespace OwlCore.AbstractUI.Models
         /// <summary>
         /// Markdown-formatted text.
         /// </summary>
-        public string RichText { get; set; }
+        public string RichText { get; init; }
     }
 }

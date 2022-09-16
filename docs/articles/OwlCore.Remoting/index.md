@@ -1,16 +1,15 @@
-# Overview
-[OwlCore.Remoting](https://arlo.site/owlcore/api/OwlCore.Remoting.html) uses IL Weaving and reflection to enable easy syncing of class instances.
+# Getting started
+[OwlCore.Remoting](https://arlo.site/owlcore/api/OwlCore.Remoting.html) is a lightweight and ultra-flexible RPC framework for .NET Standard 2.0.
 
-It'll work across different machines, different platforms, different codebases (with common types), even different points in time.
+It works across different processes, different machines, different platforms, and even at different points in time.
 
-It's stupid easy, stupid fun, and stupid powerful.
+### Prerequisites
 
+Make sure you've installed OwlCore using the [Nuget package](https://www.nuget.org/packages/OwlCore/).
 
-### Weavers and setup 
+This library relies on [Cauldron.BasicInterceptors](https://capgemini.github.io/Cauldron/netstandard/html/N_Cauldron_Interception.htm) to IL weave method and property interceptors at compile time.
 
-Member interception is handled via IL weavers and attributes that inject code at compile time.
-
-For now, you must manually install [this package](https://www.nuget.org/packages/Cauldron.BasicInterceptors/) in your project and include the following `FodyWeavers.xml` file in the project root to enable weaving. This will be fixed in a future release.
+For now, you must manually install the [nuget package](https://www.nuget.org/packages/Cauldron.BasicInterceptors/) in your project and include the following `FodyWeavers.xml` file in the project root:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -19,9 +18,11 @@ For now, you must manually install [this package](https://www.nuget.org/packages
 </Weavers>
 ```
 
-### Getting started
-1. [Create your MessageHandler](./message-handler.md)
-2. [Set up a class](./member-remote.md) for remoting.
+Note that due to the Fody dependency, compiling OwlCore requires MSBuild running under Windows, and will not compile on platforms such as Linux. [Here](https://github.com/Capgemini/Cauldron/issues/84) is the relevant GitHub issue.
+
+### The basics
+1. [Using MemberRemote](./member-remote.md) to enable remoting in a class.
+2. [Create a MessageHandler](./message-handler.md)
 3. Understanding [Remoting direction](./remoting-modes-and-directions.md).
 
 
