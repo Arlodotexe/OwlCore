@@ -35,6 +35,14 @@ The experimental, available in separate packages:
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
 -- 0.2.0 ---
+[Breaking]
+OwlCore.IO.Streams.BitStream has been removed. Please use System.IO.MemoryStream instead.
+The namespace OwlCore.IO.Streams has been removed.
+
+[New]
+The namespace OwlCore.IO has been added.
+OwlCore.IO.PartitionedStream has been added. Partition any Stream into multiple Streams. A StreamPartition implements System.IO.Stream for compatability.
+
 [Other]
 OwlCore has been upgraded to C# 10.
 
