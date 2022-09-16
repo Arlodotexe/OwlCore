@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.1.0</Version>
+		<Version>0.2.0</Version>
 		<Product>OwlCore</Product>
 		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
@@ -34,6 +34,10 @@ The experimental, available in separate packages:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+-- 0.2.0 ---
+[Other]
+OwlCore has been upgraded to C# 10.
+
 --- 0.1.0 ---
 This package now follows a modified variant of semver2.0, standard across all new OwlCore packages. Breaking changes may occur as a minor version bump if the major version is 0.
 
