@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace OwlCore.Tests
 {
-    internal static class Helpers
+    internal static class TestHelpers
     {
         public static bool SmartEquals(object? originalValue, object? deserValue) => SmartEquals(originalValue, originalValue?.GetType(), deserValue, deserValue?.GetType());
 
