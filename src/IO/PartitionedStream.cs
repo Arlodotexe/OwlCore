@@ -66,6 +66,7 @@ public class PartitionedStream
 
         lock (Source)
         {
+            // TODO Ensure partition map is getting created when necessary (with empty stream).
             // TODO Check if ID is already in use. Collision options?
 
             // Clone existing partition map (padded with space for new partition)

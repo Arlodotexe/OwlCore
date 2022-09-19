@@ -165,7 +165,7 @@ public class StreamPartition : Stream
     public override int ReadByte()
     {
         var buffer = new byte[1];
-        ReadBytesFromPartition(buffer, bufferOffset: 0, partitionOffset: Position, count: 1);
+        ReadBytesFromPartition(buffer, bufferOffset: 0, partitionOffset: Position, count: 1, _container.TryGetRawPartitionMap());
         return buffer[0];
     }
 
@@ -178,7 +178,7 @@ public class StreamPartition : Stream
     /// <inheritdoc />
     public override int Read(byte[] buffer, int offset, int count)
     {
-        ReadBytesFromPartition(buffer, bufferOffset: offset, partitionOffset: Position, count);
+        ReadBytesFromPartition(buffer, bufferOffset: offset, partitionOffset: Position, count, _container.TryGetRawPartitionMap());
 
         return count;
     }
@@ -256,11 +256,10 @@ public class StreamPartition : Stream
     /// <param name="partitionOffset">The partitionOffset to start reading from, as if the partition were a single congruent stream.</param>
     /// <param name="count">The number of bytes to read.</param>
     /// <param name="partitionMap">An existing partition map, if you already have it.</param>
-    private void ReadBytesFromPartition(byte[] buffer, long bufferOffset, long partitionOffset, long count, byte[]? partitionMap = null)
+    private void ReadBytesFromPartition(byte[] buffer, long bufferOffset, long partitionOffset, long count, byte[] partitionMap)
     {
         Guard.IsGreaterThanOrEqualTo(0, partitionOffset, nameof(partitionOffset));
 
-        partitionMap ??= _container.TryGetRawPartitionMap();
         EnsureValidPartitionMap(partitionMap);
 
         var partitionLength = GetLengthRaw(partitionMap);
@@ -268,8 +267,8 @@ public class StreamPartition : Stream
 
         var bytesRead = 0L;
 
-        // Find only the partitions needed to read the bytes.
-        var fragments = GetFragmentsToFitLength(partitionOffset, ContainerStartPosition);
+        // Find only the fragments needed to read the bytes.
+        var fragments = GetFragmentsToFitLength(length: count, ContainerStartPosition);
 
         // A properly yielded IEnumerable allows us to read the header data during enumeration.
         // That means stream position is only moved forward - never backward - for a sequential read.
@@ -295,7 +294,7 @@ public class StreamPartition : Stream
             for (int i = 0; i < availableBytesInFragment; i++)
             {
                 var readByte = _container.Source.ReadByte();
-                    
+
                 // Must not attempt to advance and read while at end of stream.
                 Guard.IsNotEqualTo(value: readByte, target: -1);
 
@@ -313,7 +312,7 @@ public class StreamPartition : Stream
     /// Writes the provided bytes to this partition at the given partitionOffset.
     /// </summary>
     /// <param name="bytes">The bytes to write.</param>
-    /// <param name="partitionOffset">The partitionOffset to write <paramref name="bytes"/> to, as if the partition were a single congruent stream.</param>
+    /// <param name="partitionOffset">The offset in the partition to write the provided <paramref name="bytes"/> to, as if the partition were a single congruent sequence of bytes.</param>
     /// <param name="partitionMap">An existing partition map, if you already have it.</param>
     private void WriteBytesToPartition(byte[] bytes, long partitionOffset, byte[]? partitionMap = null)
     {
@@ -322,27 +321,29 @@ public class StreamPartition : Stream
         partitionMap ??= _container.TryGetRawPartitionMap();
         EnsureValidPartitionMap(partitionMap);
 
-        // GetLengthRaw allow us to reuse a known partition map without reading it again.
+        // GetLengthRaw allow us to reuse a known partition map without seeking to read it again.
         var originalLength = GetLengthRaw(partitionMap);
         var bytesWritten = 0L;
 
         // Find only the partitions needed to write the bytes.
-        // Discovery happens from the start of the stream, so pad with partitionOffset.
-        var fragments = GetFragmentsToFitLength(bytes.Length + partitionOffset, ContainerStartPosition);
+        var fragments = GetFragmentsToFitLength(bytes.Length, ContainerStartPosition);
         FragmentData? lastKnownFragment = null;
+        var totalFragmentLengthsSeen = 0L;
 
         // Overwrite data in existing fragments
         // A properly yielded IEnumerable allows us to read the header data during enumeration.
         // That means stream position is only moved forward - never backward - for a sequential read.
         foreach (var fragment in fragments)
         {
-            // Skip fragments until we arrive at the partitionOffset.
-            // If position + length > partitionOffset, we've passed the starting position for our first byte.
-            if (fragment.Position + fragment.Length < partitionOffset)
+            totalFragmentLengthsSeen += fragment.Length;
+
+            // Skip fragments until we arrive at the fragment which holds our partitionOffset.
+            if (totalFragmentLengthsSeen < partitionOffset)
                 continue;
 
             // Skipping fragment header bytes to reach data
             var firstDataBytePositionForFragment = fragment.Position + FragmentHeaderLength;
+            var firstOffsetDataBytePositionForFragment = firstDataBytePositionForFragment + partitionOffset;
 
             var lastBytePositionForFragment = fragment.Position + fragment.Length;
             var availableBytesInFragment = lastBytePositionForFragment - firstDataBytePositionForFragment;
@@ -351,8 +352,10 @@ public class StreamPartition : Stream
             var isLastFragment = fragment.NextPosition == PartitionedStream.PartitionEndSentinel;
             var isLastPartition = lastBytePositionForFragment + partitionMap.Length >= _container.Source.Length;
 
-            // Seek to start of data.
-            _container.Source.Position = firstDataBytePositionForFragment;
+            // Seek to the partitionOffset within this fragment
+            // wait no, you cant do that every fragment
+            TODO fix this 
+            _container.Source.Position = firstOffsetDataBytePositionForFragment;
 
             // If this is the very last fragment of the last partition in the source stream,
             // We can expand the size of the fragment and directly write all remaining bytes
@@ -368,8 +371,8 @@ public class StreamPartition : Stream
                 var newFragmentLength = remainingBytesToWrite;
                 var newFragmentLengthBytes = BitConverter.GetBytes(newFragmentLength);
 
-                _container.Source.Seek(firstDataBytePositionForFragment - 8, SeekOrigin.Begin);
-                _container.Source.Write(newFragmentLengthBytes, 0, 8);
+                _container.Source.Seek(firstDataBytePositionForFragment - FragmentLengthByteCount, SeekOrigin.Begin);
+                _container.Source.Write(newFragmentLengthBytes, 0, (int)FragmentLengthByteCount);
 
                 // Update the length of the partition
                 var bytesWrittenPastEndOfFragment = newFragmentLength - fragment.Length;
@@ -446,7 +449,7 @@ public class StreamPartition : Stream
 
             var state = GetStateRaw(partitionMap);
             SetStateRaw(state | StreamPartitionState.Fragmented, partitionMap);
-                
+
             SavePartitionMap();
         }
 
@@ -457,17 +460,17 @@ public class StreamPartition : Stream
         }
     }
 
-    private IEnumerable<FragmentData> GetFragmentsToFitLength(long length, long partitionStartPosition)
+    private IEnumerable<FragmentData> GetFragmentsToFitLength(long length, long containerStartPosition)
     {
-        var currentPositionPointer = partitionStartPosition;
+        var currentPositionPointer = containerStartPosition;
         var partitionLengthTraveled = 0L;
 
         while (partitionLengthTraveled < length)
         {
-            // Each fragment begins with
+            // Each fragment header consists of
             // 8 bytes for a long (int64) pointer to the partition's next fragment.
             // 8 bytes for a long (int64) length of the fragment's data.
-            _container.Source.Seek(currentPositionPointer, SeekOrigin.Begin);
+            _container.Source.Position = currentPositionPointer;
 
             var nextFragmentPosAndLengthBytes = new byte[16];
             _container.Source.Read(nextFragmentPosAndLengthBytes, 0, nextFragmentPosAndLengthBytes.Length);
