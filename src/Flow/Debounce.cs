@@ -41,18 +41,23 @@ namespace OwlCore
                 return false;
             }
 
-            try
+            // credits: https://stackoverflow.com/a/30740088
+            var delayTask = Task.Delay(timeToWait, debouncerData.TokenSource.Token);
+            var continuationTask = delayTask.ContinueWith(task =>
             {
-                await Task.Delay(timeToWait, debouncerData.TokenSource.Token);
-                Cleanup();
+                // Don't throw the exception if the task cancellation was requested Transfer the insidie Inside delay.Task.IsCancelled.
+            });
 
-                return true;
-            }
-            catch (TaskCanceledException)
+            await continuationTask;
+
+            if (delayTask.IsCanceled)
             {
                 debouncerData.Lock.Release();
                 return false;
             }
+
+            Cleanup();
+            return true;
 
             void Cleanup()
             {
