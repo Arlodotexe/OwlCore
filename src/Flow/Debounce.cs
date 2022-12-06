@@ -48,6 +48,7 @@ namespace OwlCore
                 // Do nothing. Silences task cancellation exceptions. See https://stackoverflow.com/a/30740088
             });
 
+            // Awaits a continuation that does nothing. Since it does nothing and doesn't have a CancellationToken, it can't throw any exceptions
             await continuationTask;
 
             if (delayTask.IsCanceled)
