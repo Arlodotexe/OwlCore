@@ -45,7 +45,7 @@ namespace OwlCore
             var delayTask = Task.Delay(timeToWait, debouncerData.TokenSource.Token);
             var continuationTask = delayTask.ContinueWith(task =>
             {
-                // Don't throw the exception if the task cancellation was requested Transfer the insidie Inside delay.Task.IsCancelled.
+                // Do nothing. Silences task cancellation exceptions. See https://stackoverflow.com/a/30740088
             });
 
             await continuationTask;
