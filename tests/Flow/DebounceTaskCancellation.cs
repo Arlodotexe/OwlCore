@@ -11,7 +11,7 @@ namespace OwlCore.Tests.Flow
     [TestClass]
     public class DebounceTaskCancellation
     {
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000), TestCategory("PerformanceCheck")]
         public async Task Debouncer_TaskCancellationExceptionTest()
         {
             // Didn't use DataRows because they don't exccute the method in parallel.
