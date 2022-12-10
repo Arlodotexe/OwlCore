@@ -11,10 +11,10 @@ namespace OwlCore.Tests.FlowTests
     [TestClass]
     public class FlowTests
     {
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000), TestCategory("PerformanceCheck")]
         public async Task Debouncer_TaskCancellationExceptionTest()
         {
-            // Didn't use DataRows because they don't exccute the method in parallel.
+            // Didn't use DataRows because they don't execute the method in parallel.
             var flowDebouncePayloads = new List<FlowDebouncePayload>()
             {
                 new FlowDebouncePayload() { Delay = 2, FlowId = "1" },
