@@ -41,18 +41,24 @@ namespace OwlCore
                 return false;
             }
 
-            try
+            // credits: https://stackoverflow.com/a/30740088
+            var delayTask = Task.Delay(timeToWait, debouncerData.TokenSource.Token);
+            var continuationTask = delayTask.ContinueWith(task =>
             {
-                await Task.Delay(timeToWait, debouncerData.TokenSource.Token);
-                Cleanup();
+                // Do nothing. Silences task cancellation exceptions. See https://stackoverflow.com/a/30740088
+            });
 
-                return true;
-            }
-            catch (TaskCanceledException)
+            // Awaits a continuation that does nothing. Since it does nothing and doesn't have a CancellationToken, it can't throw any exceptions
+            await continuationTask;
+
+            if (delayTask.IsCanceled)
             {
                 debouncerData.Lock.Release();
                 return false;
             }
+
+            Cleanup();
+            return true;
 
             void Cleanup()
             {

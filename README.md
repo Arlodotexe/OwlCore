@@ -1,4 +1,8 @@
-# OwlCore [![](https://img.shields.io/badge/Documentation-DocFX-brightgreen)](http://arlo.site/owlcore)  [![Download from Nuget](https://img.shields.io/nuget/v/OwlCore.svg)](https://www.nuget.org/packages/OwlCore/) [![CodeFactor](https://www.codefactor.io/repository/github/arlodotexe/owlcore/badge)](https://www.codefactor.io/repository/github/arlodotexe/owlcore) ![](https://img.shields.io/nuget/dt/OwlCore) ![](https://img.shields.io/github/license/Arlodotexe/OwlCore)
+
+
+<p align="center"><img src="https://github.com/Arlodotexe/OwlCore/raw/main/src/logo.png" width="125" /> </p>
+
+# OwlCore [![](https://img.shields.io/badge/Documentation-DocFX-brightgreen)](https://www.fuget.org/packages/OwlCore/)  [![Download from Nuget](https://img.shields.io/nuget/v/OwlCore.svg)](https://www.nuget.org/packages/OwlCore/) [![CodeFactor](https://www.codefactor.io/repository/github/arlodotexe/owlcore/badge)](https://www.codefactor.io/repository/github/arlodotexe/owlcore) [![](https://img.shields.io/nuget/dt/OwlCore)](https://www.nuget.org/packages/OwlCore) [![](https://img.shields.io/github/license/Arlodotexe/OwlCore)](LICENSE.txt)
 
 **Have you ever seen an owl do a barrel roll? Me neither.**
 
