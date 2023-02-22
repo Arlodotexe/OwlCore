@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.1.0</Version>
+		<Version>0.2.0</Version>
 		<Product>OwlCore</Product>
 		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
@@ -34,6 +34,15 @@ The experimental, available in separate packages:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+-- 0.2.0 ---
+[Breaking]
+OwlCore.IO.Streams.BitStream has been removed. Please use System.IO.MemoryStream instead.
+The namespace OwlCore.IO.Streams has been removed.
+Inherited breaking changes from OwlCore.Storage 0.8.0.
+
+[Improvements]
+All dependent packages have been updated to the latest version.
+
 --- 0.1.0 ---
 This package now follows a modified variant of semver2.0, standard across all new OwlCore packages. Breaking changes may occur as a minor version bump if the major version is 0.
 
@@ -563,19 +572,19 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="OwlCore.Storage" Version="0.5.0" />
-		<PackageReference Include="OwlCore.Extensions" Version="0.3.0" />
-		<PackageReference Include="OwlCore.ComponentModel" Version="0.0.0" />
+		<PackageReference Include="OwlCore.Storage" Version="0.8.2" />
+		<PackageReference Include="OwlCore.Extensions" Version="0.5.0" />
+		<PackageReference Include="OwlCore.ComponentModel" Version="0.2.0" />
 
-		<PackageReference Include="CommunityToolkit.Common" Version="8.0.0" />
-		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.0.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.1.0" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
 
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="System.Text.Json" Version="6.0.4" />
-		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="System.Text.Json" Version="7.0.2" />
+		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
