@@ -42,6 +42,7 @@ Inherited breaking changes from OwlCore.Storage 0.8.0.
 
 [Improvements]
 All dependent packages have been updated to the latest version.
+Gracefully handle task cancellation in Flow.Debounce. No longer throws/catches to check for a canceled task. Co-authored-by: amaidniazi amaidhassan@hotmail.com
 
 --- 0.1.0 ---
 This package now follows a modified variant of semver2.0, standard across all new OwlCore packages. Breaking changes may occur as a minor version bump if the major version is 0.
