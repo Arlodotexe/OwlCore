@@ -15,7 +15,7 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
 		<Author>Arlo Godfrey</Author>
-		<Version>0.2.0</Version>
+		<Version>0.2.1</Version>
 		<Product>OwlCore</Product>
 		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
 		<Description>Have you ever seen an owl do a barrel roll? Me neither.
@@ -34,6 +34,10 @@ The experimental, available in separate packages:
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
 		<PackageReleaseNotes>
+--- 0.2.1 ---
+[New]
+Updated OwlCore.ComponentModel to 0.3.0. No functional changes.
+
 -- 0.2.0 ---
 [Breaking]
 OwlCore.IO.Streams.BitStream has been removed. Please use System.IO.MemoryStream instead.
@@ -575,7 +579,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 	<ItemGroup>
 		<PackageReference Include="OwlCore.Storage" Version="0.8.2" />
 		<PackageReference Include="OwlCore.Extensions" Version="0.5.0" />
-		<PackageReference Include="OwlCore.ComponentModel" Version="0.2.0" />
+		<PackageReference Include="OwlCore.ComponentModel" Version="0.3.0" />
 
 		<PackageReference Include="CommunityToolkit.Common" Version="8.1.0" />
 		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
