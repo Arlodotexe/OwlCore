@@ -12,12 +12,12 @@ Essential supplemental tooling for .NET development.
 - [OwlCore.Storage](https://github.com/Arlodotexe/OwlCore.Storage): The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
 - [OwlCore.Extensions](https://github.com/Arlodotexe/OwlCore.Extensions): A collection of exceptionally useful extension methods.
 - [OwlCore.ComponentModel](https://github.com/Arlodotexe/OwlCore.ComponentModel): Provides classes used to implement the run-time behavior of components. `SettingsBase`, `IDelegatable{T}`, `IAsyncInit`, etc.
-- OwlCore.AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
-- Much more not listed, much more to come.
 
 ## Also available
 - [OwlCore.Remoting](https://github.com/Arlodotexe/OwlCore.Remoting): A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
 - [OwlCore.Kubo](https://github.com/Arlodotexe/OwlCore.Kubo): A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
+- [OwlCore.AbstractUI](https://github.com/Arlodotexe/OwlCore.AbstractUI) - A set of models with serializable states that can be templated as controls.
+- Much more not listed, much more to come.
 
 ## Install
 Published releases are available on [NuGet](https://www.nuget.org/packages/OwlCore). To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console).
