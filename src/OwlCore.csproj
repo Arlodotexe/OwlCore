@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>9.0</LangVersion>
-		<WarningsAsErrors>nullable</WarningsAsErrors>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<IncludeSymbols>true</IncludeSymbols>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
 
-		<!-- Include symbol files (*.pdb) in the built .nupkg -->
-		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <!-- Include symbol files (*.pdb) in the built .nupkg -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
-		<Author>Arlo Godfrey</Author>
-		<Version>0.2.1</Version>
-		<Product>OwlCore</Product>
-		<PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
-		<Description>Have you ever seen an owl do a barrel roll? Me neither.
+    <Author>Arlo Godfrey</Author>
+    <Version>0.3.0</Version>
+    <Product>OwlCore</Product>
+    <PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
+    <Description>Have you ever seen an owl do a barrel roll? Me neither.
 
 Essential supplemental tooling for .NET development. Included in this package:
 - OwlCore.Storage: The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
@@ -31,9 +31,16 @@ The experimental, available in separate packages:
 - OwlCore.Remoting: A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
 - OwlCore.Kubo: A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
 		</Description>
-		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageIcon>logo.png</PackageIcon>
-		<PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>
+--- 0.3.0 ---
+[Breaking]
+OwlCore.AbstractUI has been moved into a separate package, removing several transient dependencies such as the MVVM toolkit.
+
+[Improvements]
+Updated all dependencies to latest stable version.
+
 --- 0.2.1 ---
 [New]
 Updated OwlCore.ComponentModel to 0.3.0. No functional changes.
@@ -548,59 +555,64 @@ Fixed and improved type handling for NewtonsoftRemoteMessageConverter.
 Added additional checks, exceptions and instructions for mismatched data types in remote properties and method parameters.
 Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 		</PackageReleaseNotes>
-		<DebugType>embedded</DebugType>
-		<NeutralLanguage>en</NeutralLanguage>
-		<Authors>Arlo Godfrey</Authors>
-	</PropertyGroup>
+    <DebugType>embedded</DebugType>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Authors>Arlo Godfrey</Authors>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<DebugType>full</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<Optimize>true</Optimize>
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<Deterministic>true</Deterministic>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="LICENSE.txt">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="OwlCore.Storage" Version="0.8.2" />
-		<PackageReference Include="OwlCore.Extensions" Version="0.5.0" />
-		<PackageReference Include="OwlCore.ComponentModel" Version="0.3.0" />
+  <ItemGroup>
+    <PackageReference Include="OwlCore.Storage" Version="0.8.5" />
+    <PackageReference Include="OwlCore.Extensions" Version="0.5.0" />
+    <PackageReference Include="OwlCore.ComponentModel" Version="0.3.0" />
 
-		<PackageReference Include="CommunityToolkit.Common" Version="8.1.0" />
-		<PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.2.0" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
 
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-		<PackageReference Include="System.Text.Json" Version="7.0.2" />
-		<PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
-	</ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-	</ItemGroup>
+    <PackageReference Include="PolySharp" Version="1.13.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <None Update="logo.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
