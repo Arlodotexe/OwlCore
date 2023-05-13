@@ -15,7 +15,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <Author>Arlo Godfrey</Author>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <Product>OwlCore</Product>
     <PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
     <Description>Have you ever seen an owl do a barrel roll? Me neither.
@@ -24,19 +24,23 @@ Essential supplemental tooling for .NET development. Included in this package:
 - OwlCore.Storage: The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
 - OwlCore.Extensions: A collection of exceptionally useful extension methods.
 - OwlCore.ComponentModel: Provides classes used to implement the run-time behavior of components. SettingsBase, IDelegatable{T}, IAsyncInit, etc.
-- OwlCore.AbstractUI - Abstracts simple UI elements as pure data. Send over a network, store on disk, share between platforms, etc. Make something else worry about rendering and interacting.
 - Much more not listed, much more to come.
 
 The experimental, available in separate packages:
 - OwlCore.Remoting: A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
 - OwlCore.Kubo: A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
+- OwlCore.AbstractUI - A set of models with serializable states that can be templated as controls.
 		</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>
+--- 0.4.0 ---
+[Breaking]
+Removed several transient dependencies such as CommunityToolkit.Mvvm, CommunityToolkit.Common, and Newtonsoft.Json.
+
 --- 0.3.0 ---
 [Breaking]
-OwlCore.AbstractUI has been moved into a separate package, removing several transient dependencies such as the MVVM toolkit.
+OwlCore.AbstractUI has been moved into a separate package.
 
 [Improvements]
 Updated all dependencies to latest stable version.
@@ -587,14 +591,10 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
     <PackageReference Include="OwlCore.Storage" Version="0.8.5" />
     <PackageReference Include="OwlCore.Extensions" Version="0.5.0" />
     <PackageReference Include="OwlCore.ComponentModel" Version="0.3.0" />
-
-    <PackageReference Include="CommunityToolkit.Common" Version="8.2.0" />
     <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
 
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
     <PackageReference Include="PolySharp" Version="1.13.1">
       <PrivateAssets>all</PrivateAssets>
