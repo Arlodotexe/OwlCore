@@ -9,7 +9,7 @@
 Essential supplemental tooling for .NET development.
 
 ## Included in this package
-- [OwlCore.Storage](https://github.com/Arlodotexe/OwlCore.Storage): The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
+- [OwlCore.Storage](https://github.com/Arlodotexe/OwlCore.Storage): The most flexible file system abstraction, ever. Built in partnership with the UWP Community.
 - [OwlCore.Extensions](https://github.com/Arlodotexe/OwlCore.Extensions): A collection of exceptionally useful extension methods.
 - [OwlCore.ComponentModel](https://github.com/Arlodotexe/OwlCore.ComponentModel): Provides classes used to implement the run-time behavior of components. `SettingsBase`, `IDelegatable{T}`, `IAsyncInit`, etc.
 
