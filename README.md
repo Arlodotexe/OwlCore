@@ -32,8 +32,6 @@ Or using [dotnet](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet)
 
 We accept donations [here](https://github.com/sponsors/Arlodotexe) and [here](https://www.patreon.com/arlodotexe), and we do not have any active bug bounties.
 
-If you’re looking to contract a new project, new features, improvements or bug fixes, please contact me via Email or Discord.
-
 ## Versioning
 
 Version numbering follows the Semantic versioning approach. However, if the major version is `0`, the code is considered alpha and breaking changes may occur as a minor update.
