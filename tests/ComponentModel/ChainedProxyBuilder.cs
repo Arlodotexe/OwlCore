@@ -30,9 +30,9 @@ namespace OwlCore.Tests.ComponentModel
             for (int i = 0; i < itemCount; i++)
             {
                 Assert.AreEqual(i.ToString(), current.Id);
-                Assert.IsInstanceOfType(current, typeof(IDelegatable<IChainedProxyBuilderTest>));
+                Assert.IsInstanceOfType(current, typeof(IDelegable<IChainedProxyBuilderTest>));
 
-                current = ((IDelegatable<IChainedProxyBuilderTest>)current).Inner;
+                current = ((IDelegable<IChainedProxyBuilderTest>)current).Inner;
             }
 
             Assert.AreEqual(current, finalTestClass);
@@ -59,9 +59,9 @@ namespace OwlCore.Tests.ComponentModel
             for (int i = 0; i < itemCount; i++)
             {
                 Assert.AreEqual(current.Id, finalTestClass.Id, "Constructed chain with no overrides should always delegate to innermost implementation.");
-                Assert.IsInstanceOfType(current, typeof(IDelegatable<IChainedProxyBuilderTest>));
+                Assert.IsInstanceOfType(current, typeof(IDelegable<IChainedProxyBuilderTest>));
 
-                current = ((IDelegatable<IChainedProxyBuilderTest>)current).Inner;
+                current = ((IDelegable<IChainedProxyBuilderTest>)current).Inner;
             }
 
             Assert.AreEqual(current, finalTestClass);
@@ -83,7 +83,7 @@ namespace OwlCore.Tests.ComponentModel
             public override string Id { get; set; }
         }
 
-        public class DelegatingChainedProxyBuilderTestBase : IChainedProxyBuilderTest, IDelegatable<IChainedProxyBuilderTest>
+        public class DelegatingChainedProxyBuilderTestBase : IChainedProxyBuilderTest, IDelegable<IChainedProxyBuilderTest>
         {
             public DelegatingChainedProxyBuilderTestBase(IChainedProxyBuilderTest inner)
             {
