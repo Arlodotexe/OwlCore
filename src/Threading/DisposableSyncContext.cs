@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CommunityToolkit.Diagnostics;
+using System;
 using System.Threading;
-using CommunityToolkit.Diagnostics;
 
 // ReSharper disable once CheckNamespace
 namespace OwlCore
@@ -10,11 +10,6 @@ namespace OwlCore
     /// </summary>
     public static partial class Threading
     {
-        internal static SynchronizationContext? PrimarySyncContext { get; set; }
-
-        /// <inheritdoc cref="DisposableSyncContext"/>
-        public static DisposableSyncContext PrimaryContext => new DisposableSyncContext(PrimarySyncContext);
-
         /// <summary>
         /// A helper class that can run code wrapped in a <see langword="using"/> statement on the given sync context.
         /// </summary>
@@ -23,7 +18,7 @@ namespace OwlCore
             private readonly SynchronizationContext _originalContext;
 
             /// <summary>
-            /// Creates a new instance of <see cref="Threading.OnPrimaryThread"/>.
+            /// Creates a new instance of <see cref="DisposableSyncContext"/>.
             /// </summary>
             public DisposableSyncContext(SynchronizationContext? newContext)
             {
