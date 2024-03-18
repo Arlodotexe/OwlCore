@@ -15,7 +15,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <Author>Arlo Godfrey</Author>
-    <Version>0.4.1</Version>
+    <Version>0.5.0</Version>
     <Product>OwlCore</Product>
     <PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
     <Description>Have you ever seen an owl do a barrel roll? Me neither.
@@ -34,6 +34,14 @@ The experimental, available in separate packages:
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>
+--- 0.5.0 ---
+[Improvements]
+Updated all dependencies to latest stable version.
+
+[Breaking]
+Inherited breaking changes from OwlCore.Storage 0.10.0.
+The static Threading.OnPrimaryThread and related helpers were removed. Instead, use SynchronizationContext.Current and related extension methods.
+
 --- 0.4.1 ---
 [Improvements]
 Updated all dependencies to latest stable version.
