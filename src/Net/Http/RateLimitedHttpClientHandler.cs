@@ -15,6 +15,7 @@ namespace OwlCore.Net.Http
     /// <para/>
     /// You can assign a different <c>InnerHandler</c>, including other <see cref="DelegatingHandler"/>s, to chain handlers together.
     /// </remarks>
+    [Obsolete("Use System.Threading.RateLimiting instead")]
     public class RateLimitedHttpClientHandler : DelegatingHandler
     {
         private readonly TimeSpan _cooldownWindowTimeSpan;

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -15,25 +15,20 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <Author>Arlo Godfrey</Author>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Product>OwlCore</Product>
     <PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
-    <Description>Have you ever seen an owl do a barrel roll? Me neither.
-
-Essential supplemental tooling for .NET development. Included in this package:
-- OwlCore.Storage: The fundamental concepts of files and folders carefully abstracted into standard interfaces. Interact with Local Disk, Cloud Storage, Blob Storage, protocol-based storage, and even 100% in-memory storage, all using the same interfaces.
-- OwlCore.Extensions: A collection of exceptionally useful extension methods.
-- OwlCore.ComponentModel: Provides classes used to implement the run-time behavior of components. SettingsBase, IDelegatable{T}, IAsyncInit, etc.
-- Much more not listed, much more to come.
-
-The experimental, available in separate packages:
-- OwlCore.Remoting: A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
-- OwlCore.Kubo: A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
-- OwlCore.AbstractUI - A set of models with serializable states that can be templated as controls.
+    <Description>Have you ever seen an owl do a barrel roll? Me neither. Essential supplemental tooling for .NET development.
 		</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>
+--- 0.6.0 ---
+[Improvements]
+Updated all dependencies to latest stable version.
+Moved OwlCore.Diagnostics to separate package with new ProcessHelpers.
+Marked RateLimitedHttpClientHandler as obsolete in favor of the new System.Threading.RateLimiting package.
+
 --- 0.5.0 ---
 [Improvements]
 Updated all dependencies to latest stable version.
@@ -574,6 +569,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
     <DebugType>embedded</DebugType>
     <NeutralLanguage>en</NeutralLanguage>
     <Authors>Arlo Godfrey</Authors>
+    <UserSecretsId>e51270f4-7572-455f-afa5-3a45a6e27b05</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -601,9 +597,10 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
 
   <ItemGroup>
     <PackageReference Include="OwlCore.ComponentModel.Settings" Version="0.0.0" />
-    <PackageReference Include="OwlCore.Storage" Version="0.10.0" />
-    <PackageReference Include="OwlCore.Extensions" Version="0.7.0" />
-    <PackageReference Include="OwlCore.ComponentModel" Version="0.7.0" />
+    <PackageReference Include="OwlCore.Diagnostics" Version="0.0.0" />
+    <PackageReference Include="OwlCore.Storage" Version="0.11.3" />
+    <PackageReference Include="OwlCore.Extensions" Version="0.8.0" />
+    <PackageReference Include="OwlCore.ComponentModel" Version="0.8.1" />
     <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2" />
 
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -613,7 +610,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.0" />
   </ItemGroup>
 

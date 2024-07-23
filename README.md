@@ -12,12 +12,13 @@ Essential supplemental tooling for .NET development.
 - [OwlCore.Storage](https://github.com/Arlodotexe/OwlCore.Storage): The most flexible file system abstraction, ever. Built in partnership with the UWP Community.
 - [OwlCore.Extensions](https://github.com/Arlodotexe/OwlCore.Extensions): A collection of exceptionally useful extension methods.
 - [OwlCore.ComponentModel](https://github.com/Arlodotexe/OwlCore.ComponentModel): Provides classes used to implement the run-time behavior of components. `SettingsBase`, `IDelegatable{T}`, `IAsyncInit`, etc.
+- [OwlCore.Diagnostics](https://github.com/Arlodotexe/OwlCore.Diagnostics): Supplemental diagnostic tooling for dotnet.
 
 ## Also available
 - [OwlCore.Remoting](https://github.com/Arlodotexe/OwlCore.Remoting): A extremely lightweight and flexible RPC framework for .NET Standard 2.0.
-- [OwlCore.Kubo](https://github.com/Arlodotexe/OwlCore.Kubo): A library of essential tooling for Kubo, the earliest and most widely used implementation of IPFS.
-- [OwlCore.AbstractUI](https://github.com/Arlodotexe/OwlCore.AbstractUI) - A set of models with serializable states that can be templated as controls.
-- Much more not listed, much more to come.
+- [OwlCore.Kubo](https://github.com/Arlodotexe/OwlCore.Kubo): A library of essential tooling for Kubo, the earliest and most widely used implementation of ipfs.
+- [OwlCore.Nomad.Kubo](https://github.com/Arlodotexe/OwlCore.Nomad.Kubo): Shared tooling for building user-centric distributed applications powered by event sourcing on ipfs.
+- Much more not listed, much more to come. Search 'OwlCore' on nuget.
 
 ## Install
 Published releases are available on [NuGet](https://www.nuget.org/packages/OwlCore). To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console).
