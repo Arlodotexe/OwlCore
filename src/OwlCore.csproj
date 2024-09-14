@@ -15,7 +15,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <Author>Arlo Godfrey</Author>
-    <Version>0.6.0</Version>
+    <Version>0.6.1</Version>
     <Product>OwlCore</Product>
     <PackageProjectUrl>https://github.com/Arlodotexe/OwlCore</PackageProjectUrl>
     <Description>Have you ever seen an owl do a barrel roll? Me neither. Essential supplemental tooling for .NET development.
@@ -23,6 +23,13 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>
+--- 0.6.1 ---
+[Fixes]
+Inherited fixes from key components in OwlCore.ComponentModel 0.9.1.
+
+[Improvements]
+Updated all transient dependencies to the latest version.
+
 --- 0.6.0 ---
 [Improvements]
 Updated all dependencies to latest stable version.
@@ -596,12 +603,12 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OwlCore.ComponentModel.Settings" Version="0.0.0" />
+    <PackageReference Include="OwlCore.ComponentModel.Settings" Version="0.1.1" />
     <PackageReference Include="OwlCore.Diagnostics" Version="0.0.0" />
-    <PackageReference Include="OwlCore.Storage" Version="0.11.3" />
-    <PackageReference Include="OwlCore.Extensions" Version="0.8.0" />
-    <PackageReference Include="OwlCore.ComponentModel" Version="0.8.1" />
-    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2" />
+    <PackageReference Include="OwlCore.Storage" Version="0.12.0" />
+    <PackageReference Include="OwlCore.Extensions" Version="0.9.1" />
+    <PackageReference Include="OwlCore.ComponentModel" Version="0.9.1" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.3.1" />
 
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
@@ -611,7 +618,7 @@ Exposed a new SerializerSettings property for NewtonsoftRemoteMessageConverter.
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.0" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
