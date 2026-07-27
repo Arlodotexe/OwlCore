@@ -15,7 +15,7 @@ namespace OwlCore
         /// </summary>
         public class DisposableSyncContext : IDisposable
         {
-            private readonly SynchronizationContext _originalContext;
+            private readonly SynchronizationContext? _originalContext;
 
             /// <summary>
             /// Creates a new instance of <see cref="DisposableSyncContext"/>.

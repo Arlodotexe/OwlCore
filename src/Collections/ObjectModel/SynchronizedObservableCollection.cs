@@ -88,7 +88,7 @@ namespace OwlCore.Collections.ObjectModel
 #endif
         private object? _syncRoot;
 
-        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        event PropertyChangedEventHandler? INotifyPropertyChanged.PropertyChanged
         {
             add => PropertyChanged += value;
             remove => PropertyChanged -= value;
@@ -156,7 +156,7 @@ namespace OwlCore.Collections.ObjectModel
 
         object ICollection.SyncRoot => SyncRoot;
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
 #pragma warning disable CS8603 // Possible null reference return.
             get => this[index];
@@ -165,7 +165,7 @@ namespace OwlCore.Collections.ObjectModel
             {
                 try
                 {
-                    this[index] = (T)value;
+                    this[index] = (T)value!;
                 }
                 catch (InvalidCastException)
                 {
@@ -275,7 +275,7 @@ namespace OwlCore.Collections.ObjectModel
             return SynchronizationContext.Current ?? new SynchronizationContext();
         }
 
-        private static bool IsCompatibleObject(object value)
+        private static bool IsCompatibleObject(object? value)
         {
             // Non-null values are fine.  Only accept nulls if T is a class or Nullable<U>.
             // Note that default(T) is not equal to null for value types except when T is Nullable<U>. 
@@ -384,7 +384,7 @@ namespace OwlCore.Collections.ObjectModel
             OnNotifyItemAdded(item, index);
         }
 
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             _itemsLocker.EnterWriteLock();
 
@@ -396,7 +396,7 @@ namespace OwlCore.Collections.ObjectModel
                 CheckReentrancy();
 
                 index = _items.Count;
-                item = (T)value;
+                item = (T)value!;
 
                 _items.Insert(index, item);
             }
@@ -545,7 +545,7 @@ namespace OwlCore.Collections.ObjectModel
             }
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             if (!IsCompatibleObject(value))
             {
@@ -556,7 +556,7 @@ namespace OwlCore.Collections.ObjectModel
 
             try
             {
-                return _items.Contains((T)value);
+                return _items.Contains((T)value!);
             }
             finally
             {
@@ -612,7 +612,7 @@ namespace OwlCore.Collections.ObjectModel
             }
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             if (!IsCompatibleObject(value))
             {
@@ -623,7 +623,7 @@ namespace OwlCore.Collections.ObjectModel
 
             try
             {
-                return _items.IndexOf((T)value);
+                return _items.IndexOf((T)value!);
             }
             finally
             {
@@ -659,11 +659,11 @@ namespace OwlCore.Collections.ObjectModel
             OnNotifyItemAdded(item, index);
         }
 
-        void IList.Insert(int index, object value)
+        void IList.Insert(int index, object? value)
         {
             try
             {
-                Insert(index, (T)value);
+                Insert(index, (T)value!);
             }
             catch (InvalidCastException)
             {
@@ -734,11 +734,11 @@ namespace OwlCore.Collections.ObjectModel
             return true;
         }
 
-        void IList.Remove(object value)
+        void IList.Remove(object? value)
         {
             if (IsCompatibleObject(value))
             {
-                Remove((T)value);
+                Remove((T)value!);
             }
         }
 

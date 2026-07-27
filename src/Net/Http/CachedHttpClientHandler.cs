@@ -54,7 +54,7 @@ namespace OwlCore.Net.Http
                 Directory.CreateDirectory(path);
 
             // check if item is cached
-            var cachedData = ReadCachedFile(path, request.RequestUri.AbsoluteUri);
+            var cachedData = ReadCachedFile(path, request.RequestUri!.AbsoluteUri);
 
             var shouldUseCache = true;
             if (cachedData != null)

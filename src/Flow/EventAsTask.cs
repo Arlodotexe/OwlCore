@@ -67,7 +67,7 @@ namespace OwlCore
                 return null;
             }
 
-            void EventHandler(object sender, TResult eventArgs) => completionSource.TrySetResult((sender, eventArgs));
+            void EventHandler(object? sender, TResult eventArgs) => completionSource.TrySetResult((sender, eventArgs));
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace OwlCore
                 return null;
             }
 
-            void EventHandler(object sender, EventArgs eventArgs) => completionSource.TrySetResult((sender, eventArgs));
+            void EventHandler(object? sender, EventArgs eventArgs) => completionSource.TrySetResult((sender, eventArgs));
         }
 
         /// <summary>
